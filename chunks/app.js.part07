@@ -1,0 +1,97 @@
+.forEach(b=>b.addEventListener('click',()=>{if(state.analyzer.editing){const ta=document.getElementById('client-text');if(ta){if(state.analyzer.clientMode==='short')state.analyzer.clientShort=ta.value;else state.analyzer.clientText=ta.value;}}state.analyzer.clientMode=b.dataset.clientMode;state.analyzer.editing=false;render();}));
+  const copy=document.getElementById('copy-client'); if(copy) copy.addEventListener('click',copyClient);
+  const exp=document.getElementById('export-client'); if(exp) exp.addEventListener('click',exportClientImage);
+  const share=document.getElementById('share-client'); if(share) share.addEventListener('click',shareClient);
+  const reset=document.getElementById('reset-pattern-filters'); if(reset) reset.addEventListener('click',()=>{state.library={query:'',bias:'All',difficulty:'All'};render();});
+  const save=document.getElementById('save-history'); if(save) save.addEventListener('click',async()=>{await saveCurrentAnalysisToHistory(true);render();});
+  const settings=document.getElementById('signature-settings'); if(settings) settings.addEventListener('click',openSignatureModal);
+  document.querySelectorAll('[data-history-open]').forEach(b=>b.addEventListener('click',()=>loadHistoryIntoAnalyzer(b.dataset.historyOpen,false)));
+}
+async function copyClient(){
+  await updateCurrentHistoryText();
+  const r=state.analyzer.result,p=state.profile; const text=state.analyzer.clientMode==='short'?state.analyzer.clientShort:state.analyzer.clientText; let out=`${r.symbol} – GÓC NHÌN KỸ THUẬT\n\n${text}`; if(p.enabled&&p.name)out+=`\n\n${p.name}\n${p.title}${p.unit?` | ${p.unit}`:''}${p.contact?`\n${p.contact}`:''}`;
+  try{await navigator.clipboard.writeText(out); toast('Đã copy bản nhận định.');}catch{prompt('Copy nội dung:',out);}
+}
+async function exportClientImage(){
+  const r=state.analyzer.result,p=state.profile; if(!r) return;
+  try{
+    const W=1080,H=1350,canvas=document.createElement('canvas'); canvas.width=W;canvas.height=H;const ctx=canvas.getContext('2d');
+    ctx.fillStyle='#f4f2ec';ctx.fillRect(0,0,W,H);
+    ctx.fillStyle='#1a2230';ctx.font='700 24px Arial';ctx.fillText('chartlab.phuongtuan',70,68);
+    ctx.fillStyle='#b57a17';ctx.font='700 16px Arial';ctx.fillText('TECHNICAL VIEW',70,101);
+    let y=145;
+    if(state.analyzer.preview){
+      try{const img=await loadImage(state.analyzer.preview);const box={x:70,y,w:940,h:470};drawCoverImage(ctx,img,box);ctx.strokeStyle='#d6cfbf';ctx.strokeRect(box.x,box.y,box.w,box.h);y+=510;}catch{}
+    }
+    ctx.fillStyle='#716957';ctx.font='700 17px Arial';ctx.fillText(`${r.symbol} · ${String(r.timeframe).toUpperCase()}`,70,y);y+=46;
+    ctx.fillStyle='#17202d';ctx.font='700 42px Arial';ctx.fillText('Góc nhìn kỹ thuật',70,y);y+=55;
+    const exportText=state.analyzer.clientMode==='short'?state.analyzer.clientShort:state.analyzer.clientText;ctx.fillStyle='#343c48';ctx.font='24px Arial';y=drawWrappedText(ctx,exportText,70,y,940,38, y<1020?15:10);
+    if(p.enabled&&p.name){y=Math.min(y+42,1190);ctx.strokeStyle='#d3ccbd';ctx.beginPath();ctx.moveTo(70,y);ctx.lineTo(1010,y);ctx.stroke();y+=34;ctx.fillStyle='#1d2733';ctx.font='700 23px Arial';ctx.fillText(p.name,70,y);y+=30;ctx.fillStyle='#6f6758';ctx.font='19px Arial';ctx.fillText(`${p.title||''}${p.unit?` | ${p.unit}`:''}`,70,y);if(p.contact){y+=27;ctx.fillText(p.contact,70,y);}}
+    ctx.fillStyle='#958b79';ctx.font='15px Arial';drawWrappedText(ctx,'Phân tích kỹ thuật mang tính tham khảo dựa trên dữ liệu hiển thị trên biểu đồ và không phải khuyến nghị mua/bán.',70,1310,940,22,2);
+    const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/png',.95));if(!blob)throw new Error('Không tạo được ảnh');
+    const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`chartlab_${safeFileName(r.symbol||'chart')}_${safeFileName(r.timeframe||'timeframe')}.png`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);toast('Đã xuất ảnh nhận định PNG.');
+  }catch(err){toast('Không xuất được ảnh: '+(err?.message||'Lỗi không xác định'));}
+}
+function loadImage(src){return new Promise((resolve,reject)=>{const img=new Image();img.onload=()=>resolve(img);img.onerror=reject;img.src=src;});}
+function drawCoverImage(ctx,img,box){const ir=img.width/img.height,br=box.w/box.h;let sx=0,sy=0,sw=img.width,sh=img.height;if(ir>br){sw=img.height*br;sx=(img.width-sw)/2}else{sh=img.width/br;sy=(img.height-sh)/2}ctx.drawImage(img,sx,sy,sw,sh,box.x,box.y,box.w,box.h);}
+function drawWrappedText(ctx,text,x,y,maxWidth,lineHeight,maxLines=20){const paragraphs=String(text||'').split(/\n+/);let lines=0;for(const para of paragraphs){const words=para.split(/\s+/);let line='';for(const word of words){const test=line?line+' '+word:word;if(ctx.measureText(test).width>maxWidth&&line){ctx.fillText(line,x,y);y+=lineHeight;lines++;line=word;if(lines>=maxLines)return y;}else line=test;}if(line){ctx.fillText(line,x,y);y+=lineHeight;lines++;if(lines>=maxLines)return y;}y+=8;}return y;}
+function safeFileName(s){return String(s).trim().replace(/[^a-z0-9_-]+/gi,'_').replace(/^_+|_+$/g,'')||'chart';}
+
+function openSignatureModal(){
+  const p=state.profile; const wrap=document.createElement('div'); wrap.className='modal-backdrop'; wrap.innerHTML=`<div class="modal"><div class="modal-head"><div><span class="kicker">LOCAL PROFILE</span><h2>Chữ ký tư vấn viên</h2></div><button id="modal-close">×</button></div><p>Thông tin chỉ được lưu trên trình duyệt hiện tại bằng localStorage. Không cần tài khoản đăng nhập.</p>${[['name','Tên hiển thị','Nguyễn Văn A'],['title','Chức danh','Tư vấn đầu tư'],['unit','Đơn vị','Agriseco Miền Trung'],['contact','Điện thoại / Zalo','Không bắt buộc']].map(([k,l,ph])=>`<label class="modal-field"><span>${l}</span><input data-profile="${k}" value="${escAttr(p[k]||'')}" placeholder="${ph}"></label>`).join('')}<label class="toggle"><input id="profile-enabled" type="checkbox" ${p.enabled?'checked':''}>Hiển thị chữ ký trong bản gửi khách hàng</label><button class="primary full" id="save-profile">Lưu trên thiết bị này</button></div>`;
+  document.body.appendChild(wrap); const close=()=>wrap.remove(); wrap.addEventListener('click',e=>{if(e.target===wrap)close()}); wrap.querySelector('#modal-close').onclick=close; wrap.querySelector('#save-profile').onclick=()=>{const next={...p};wrap.querySelectorAll('[data-profile]').forEach(i=>next[i.dataset.profile]=i.value);next.enabled=wrap.querySelector('#profile-enabled').checked;state.profile=next;localStorage.setItem('chartlab_signature',JSON.stringify(next));close();toast('Đã lưu chữ ký trên thiết bị này.');};
+}
+function loadProfile(){try{return JSON.parse(localStorage.getItem('chartlab_signature'))||{name:'',title:'Tư vấn đầu tư',unit:'Agriseco Miền Trung',contact:'',enabled:true}}catch{return {name:'',title:'Tư vấn đầu tư',unit:'Agriseco Miền Trung',contact:'',enabled:true}}}
+async function shareClient(){
+  const a=state.analyzer,r=a.result;if(!r)return;
+  const blocked=r.analysisStatus?.status==='NeedsBetterImage';
+  const text=blocked?(a.clientMode==='short'?a.clientShort:a.clientText):buildClientShareText();
+  if(navigator.share){
+    try{await navigator.share({title:`${r.symbol||'Chart'} · Góc nhìn kỹ thuật`,text});return;}catch(e){if(e?.name==='AbortError')return;}
+  }
+  try{await navigator.clipboard.writeText(text);toast('Thiết bị chưa hỗ trợ Share — đã copy nội dung.');}catch{toast('Không thể chia sẻ trên trình duyệt này.');}
+}
+function buildClientShareText(){
+  const a=state.analyzer,r=a.result,p=state.profile;
+  let text=(a.clientMode==='short'?a.clientShort:a.clientText)||'';
+  if(p.enabled && p.name){text += `\n\n${p.name}${p.title?` · ${p.title}`:''}${p.unit?` | ${p.unit}`:''}${p.contact?`\n${p.contact}`:''}`;}
+  return `${r.symbol||'CHART'} · ${String(r.timeframe||'').toUpperCase()}\n\n${text}\n\nPhân tích kỹ thuật mang tính tham khảo, không phải khuyến nghị mua/bán.`;
+}
+function toast(msg){const t=document.createElement('div');t.className='toast';t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.classList.add('show'),20);setTimeout(()=>{t.classList.remove('show');setTimeout(()=>t.remove(),200)},1800);}
+
+function pageWrap(content,wide=''){return `<div class="page-wrap ${wide}">${content}</div>`;}
+function breadcrumb(items){return `<div class="breadcrumb"><button data-nav="/">ChartLab</button>${items.map((x,i)=>`<span>/</span><button class="${i===items.length-1?'current':''}" ${i===0&&x==='Pattern Library'?'data-nav="/library"':''}>${x}</button>`).join('')}</div>`;}
+function normalizeBias(b=''){const x=b.toLowerCase();if(x.includes('bull'))return 'Bullish';if(x.includes('bear'))return 'Bearish';return 'Neutral';}
+function truncate(s,n){return s?.length>n?s.slice(0,n-1)+'…':s;}
+function escText(s=''){return String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));}
+function escAttr(s=''){return escText(s).replace(/"/g,'&quot;');}
+
+function learningDiagram(patternId,size=''){
+  if(wyckoffLessons.some(p=>p.id===patternId)) return wyckoffDiagram(patternId,size);
+  if(volumePrinciples.some(p=>p.id===patternId)) return volumeDiagram(patternId,size);
+  return chartPatterns.some(p=>p.id===patternId) ? chartPatternDiagram(patternId,size) : candlesDiagram(patternId,size);
+}
+
+function wyckoffDiagram(id,size=''){
+  const p=wyckoffLessons.find(x=>x.id===id), spec=p?.diagram||{}, points=spec.points||[[0,70],[25,35],[50,65],[75,30],[100,50]];
+  const w=220,h=130,pad=14, plotTop=14,plotBottom=106;
+  const px=x=>pad+x*(w-2*pad)/100, py=y=>plotTop+y*(plotBottom-plotTop)/100;
+  const pts=points.map(([x,y])=>`${px(x)},${py(y)}`).join(' ');
+  const guides=(spec.guides||[]).map(g=>`<line x1="${px(g[0])}" y1="${py(g[1])}" x2="${px(g[2])}" y2="${py(g[3])}" class="wy-guide"/>`).join('');
+  let marker='';
+  if(spec.marker){const [mx,my,label]=spec.marker;marker=`<g class="wy-marker"><circle cx="${px(mx)}" cy="${py(my)}" r="4"/><text x="${px(mx)+6}" y="${py(my)-6}">${escText(label)}</text></g>`;}
+  let vols='';
+  if(Array.isArray(spec.volume)){const vmax=Math.max(...spec.volume,1),step=(w-2*pad)/(spec.volume.length-1||1);vols=spec.volume.map((v,i)=>{const bh=v/vmax*26,x=pad+i*step-5;return `<rect x="${x}" y="${h-7-bh}" width="10" height="${bh}" rx="2" class="wy-vol"/>`;}).join('');}
+  return `<div class="candle-diagram wyckoff-diagram ${size}"><svg viewBox="0 0 ${w} ${h}" aria-label="Sơ đồ ${p?.name||id}">${guides}<polyline points="${pts}" class="wy-price"/>${marker}${vols}</svg></div>`;
+}
+
+function volumeDiagram(id,size=''){
+  const p=volumePrinciples.find(x=>x.id===id), spec=p?.diagram||{}, price=spec.price||[50,52,51,54,53,56], volume=spec.volume||[4,5,4,6,5,7];
+  const w=220,h=130,pad=14,priceTop=12,priceBottom=82,volTop=94,volBottom=119;
+  const pmin=Math.min(...price),pmax=Math.max(...price),pr=pmax-pmin||1;
+  const vmax=Math.max(...volume,1),step=(w-2*pad)/(price.length-1||1);
+  const py=v=>priceBottom-(v-pmin)/pr*(priceBottom-priceTop);
+  const pts=price.map((v,i)=>`${pad+i*step},${py(v)}`).join(' ');
+  const level=Number.isFinite(spec.level)?`<line x1="${pad}" x2="${w-pad}" y1="${py(spec.level)}" y2="${py(spec.level)}" class="vol-level"/>`:'';
+  const bars=volume.map((v,i)=>{const bw=Math.max(7,Math.min(18,step*.55)),x=pad+i*step-bw/2,bh=(v/vmax)*(volBottom-volTop);const hi=i===spec.highlight?' highlight':'';return `<rect x="${x}" y="${volBottom-bh}" width="${bw}" height="${bh}" rx="2" class="vol-bar${hi}"/>`;}).join('');
+  return `<div class="candle-diagram volume-diagram ${size}"><svg viewBox="0 0 ${w} ${h}" aria-label="Sơ đồ ${p?.name||id}">${level}<polyline points="${pts}" class="vol-price"/><line x1="${pad}" x2="${w-pad}" y1="${volTop-5}" y2="${volTop-5}" class="vol-separator"/>${bar
