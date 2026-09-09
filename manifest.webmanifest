@@ -1,0 +1,12 @@
+{
+  "name": "chartlab.phuongtuan",
+  "short_name": "ChartLab",
+  "description": "Technical Analysis Learning & Chart Analyzer",
+  "start_url": "./#/",
+  "display": "standalone",
+  "background_color": "#080d18",
+  "theme_color": "#080d18",
+  "icons": [
+    {"src":"./icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any"}
+  ]
+}
