@@ -1,0 +1,109 @@
+úc demo đang thiên hướng tích cực nhưng cần xác nhận tại vùng đỉnh gần nhất. Khi AI backend được kết nối, kết luận sẽ được tạo trực tiếp từ screenshot và hiển thị confidence cho từng nhận định.',clientShort:`${symbol} hiện có cấu trúc kỹ thuật demo tương đối tích cực. Cần theo dõi vùng đỉnh gần nhất; tín hiệu sẽ thuyết phục hơn nếu breakout đi kèm thanh khoản cải thiện. Nếu mất vùng đáy gần nhất, góc nhìn ngắn hạn cần được đánh giá lại.`,clientText:`${symbol} hiện đang duy trì cấu trúc kỹ thuật tương đối tích cực trong ví dụ minh hoạ. Giá cần được theo dõi tại vùng đỉnh gần nhất; tín hiệu sẽ thuyết phục hơn nếu có sự xác nhận của thanh khoản. Ngược lại, nếu cấu trúc đáy gần nhất bị phá vỡ, xu hướng ngắn hạn cần được đánh giá lại.`,warnings:['Đây là kết quả demo, không được tạo từ screenshot.']};}
+function normalizeApiResult(raw,symbol,timeframe){
+  const block=(title,x={})=>({title,value:x.value||'Chưa đủ dữ liệu',note:x.note||'',confidence:x.confidence||'Insufficient'});
+  const patternId=raw?.candlestick?.patternId||'';
+  const priceActionId=raw?.priceAction?.patternId||'';
+  const chartPatternId=raw?.chartPattern?.patternId||'';
+  const volumePatternId=raw?.volume?.patternId||'';
+  const wyckoffId=raw?.wyckoff?.patternId||'';
+  const link=patternId&&patterns.some(p=>p.id===patternId)?`/pattern/${patternId}`:'';
+  const priceActionLink=priceActionId&&priceActionPatterns.some(p=>p.id===priceActionId)?`/pattern/${priceActionId}`:'';
+  const chartPatternLink=chartPatternId&&chartPatterns.some(p=>p.id===chartPatternId)?`/pattern/${chartPatternId}`:'';
+  const volumeLink=volumePatternId&&volumePrinciples.some(p=>p.id===volumePatternId)?`/pattern/${volumePatternId}`:'';
+  const wyckoffLink=wyckoffId&&wyckoffLessons.some(p=>p.id===wyckoffId)?`/pattern/${wyckoffId}`:'';
+  return {
+    source:'live',
+    symbol:raw.symbol||symbol||'CỔ PHIẾU',
+    timeframe:raw.timeframe||timeframe,
+    analysisStatus:raw.analysisStatus||{status:'Limited',message:'Phân tích có giới hạn.',missing:[]},
+    imageQuality:raw.imageQuality||{},
+    advisorView:raw.advisorView||{bias:'Insufficient',confidence:'Insufficient',headline:'Chưa đủ dữ liệu',watch:'—',confirmation:'—',invalidation:'—'},
+    sections:[
+      block('MARKET STRUCTURE',raw.marketStructure),
+      block('KEY LEVELS',raw.keyLevels),
+      {...block('CANDLESTICK',raw.candlestick),link},
+      {...block('PRICE ACTION',raw.priceAction),link:priceActionLink},
+      {...block('CHART PATTERN',raw.chartPattern),link:chartPatternLink},
+      {...block('VOLUME',raw.volume),link:volumeLink},
+      {...block('WYCKOFF',raw.wyckoff),link:wyckoffLink}
+    ],
+    conclusion:raw.conclusion||'Không đủ dữ liệu để kết luận.',
+    clientShort:raw.clientShort||raw.clientText||'Ảnh hiện tại chưa đủ dữ liệu để tạo nhận định gửi khách hàng.',
+    clientText:raw.clientText||raw.clientShort||'Ảnh hiện tại chưa đủ dữ liệu để tạo nhận định gửi khách hàng.',
+    warnings:Array.isArray(raw.warnings)?raw.warnings:[]
+  };
+}
+async function runAnalyzer(){
+  const a=state.analyzer;
+  if(!a.file||a.loading)return;
+  a.loading=true;a.error='';a.result=null;a.tab='analysis';render();
+  try{
+    const symbol=(a.symbol||'CỔ PHIẾU').toUpperCase();
+    if(API_ENDPOINT){
+      const imageDataUrl=await fileToOptimizedDataUrl(a.file);
+      const body=JSON.stringify({imageDataUrl,symbol,timeframe:a.timeframe});
+      const callBackend=async(accessCode='')=>{
+        const headers={'Content-Type':'application/json'};
+        if(accessCode)headers['X-ChartLab-Access']=accessCode;
+        const response=await fetch(API_ENDPOINT,{method:'POST',headers,body});
+        const data=await response.json().catch(()=>({}));
+        return {response,data};
+      };
+      let accessCode=localStorage.getItem(AI_ACCESS_STORAGE_KEY)||'';
+      let {response,data}=await callBackend(accessCode);
+      if(response.status===401&&data?.code==='ACCESS_REQUIRED'){
+        const entered=window.prompt('Nhập mã truy cập AI ChartLab. Mã này được lưu trên thiết bị để dùng cho các lần sau.');
+        if(!entered)throw new Error('Chưa nhập mã truy cập AI.');
+        accessCode=String(entered).trim();
+        localStorage.setItem(AI_ACCESS_STORAGE_KEY,accessCode);
+        ({response,data}=await callBackend(accessCode));
+        if(response.status===401&&data?.code==='ACCESS_REQUIRED'){
+          localStorage.removeItem(AI_ACCESS_STORAGE_KEY);
+          throw new Error('Mã truy cập AI chưa đúng. Hãy thử lại.');
+        }
+      }
+      if(!response.ok||!data.ok)throw new Error(data.detail||data.error||`Backend error ${response.status}`);
+      a.result=normalizeApiResult(data.result,symbol,a.timeframe);
+    }else if(config.allowDemoFallback!==false){
+      await new Promise(r=>setTimeout(r,350));
+      a.result=demoResult(symbol,a.timeframe);
+    }else{
+      throw new Error('Chưa cấu hình AI backend trong config.js.');
+    }
+    a.clientShort=a.result.clientShort;a.clientText=a.result.clientText;a.clientMode='short';a.editing=false;
+    await saveCurrentAnalysisToHistory(false);
+  }catch(error){
+    a.error=error?.message||'Không xác định được lỗi.';
+  }finally{
+    a.loading=false;render();
+  }
+}
+async function fileToOptimizedDataUrl(file){
+  if(!file)return '';
+  try{
+    const bitmap=await createImageBitmap(file);
+    const maxSide=2000, scale=Math.min(1,maxSide/Math.max(bitmap.width,bitmap.height));
+    const canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round(bitmap.width*scale));canvas.height=Math.max(1,Math.round(bitmap.height*scale));
+    const ctx=canvas.getContext('2d',{alpha:false});ctx.fillStyle='#ffffff';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.drawImage(bitmap,0,0,canvas.width,canvas.height);bitmap.close?.();
+    let out=canvas.toDataURL('image/jpeg',0.88);
+    if(out.length>6_500_000)out=canvas.toDataURL('image/jpeg',0.72);
+    return out;
+  }catch{
+    return await new Promise((resolve,reject)=>{const fr=new FileReader();fr.onload=()=>resolve(fr.result);fr.onerror=()=>reject(fr.error||new Error('Không đọc được ảnh'));fr.readAsDataURL(file);});
+  }
+}
+
+
+
+function loadHistoryMeta(){try{const x=JSON.parse(localStorage.getItem(HISTORY_META_KEY)||'[]');return Array.isArray(x)?x.slice(0,HISTORY_MAX):[]}catch{return []}}
+function persistHistoryMeta(){try{localStorage.setItem(HISTORY_META_KEY,JSON.stringify(state.history.slice(0,HISTORY_MAX)))}catch(e){console.warn('History metadata save failed',e)}}
+function historyId(){return `a_${Date.now().toString(36)}_${Math.random().toString(36).slice(2,8)}`}
+function openHistoryDB(){return new Promise((resolve,reject)=>{if(!('indexedDB' in window))return reject(new Error('IndexedDB unavailable'));const req=indexedDB.open('chartlab_local_v1',1);req.onupgradeneeded=()=>{const db=req.result;if(!db.objectStoreNames.contains('analyses'))db.createObjectStore('analyses',{keyPath:'id'})};req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error||new Error('Không mở được IndexedDB'));})}
+async function idbPut(record){if(!('indexedDB' in window))return;try{const db=await openHistoryDB();await new Promise((resolve,reject)=>{const tx=db.transaction('analyses','readwrite');tx.objectStore('analyses').put(record);tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error)});db.close()}catch(e){console.warn('IndexedDB put failed',e)}}
+async function idbGet(id){if(!('indexedDB' in window))return null;try{const db=await openHistoryDB();const out=await new Promise((resolve,reject)=>{const tx=db.transaction('analyses','readonly');const req=tx.objectStore('analyses').get(id);req.onsuccess=()=>resolve(req.result||null);req.onerror=()=>reject(req.error)});db.close();return out}catch(e){console.warn('IndexedDB get failed',e);return null}}
+async function idbDelete(id){if(!('indexedDB' in window))return;try{const db=await openHistoryDB();await new Promise((resolve,reject)=>{const tx=db.transaction('analyses','readwrite');tx.objectStore('analyses').delete(id);tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error)});db.close()}catch(e){console.warn('IndexedDB delete failed',e)}}
+async function historyImageAssets(file){if(!file)return {blob:null,thumb:''};try{const bitmap=await createImageBitmap(file);const make=(maxSide,quality)=>{const scale=Math.min(1,maxSide/Math.max(bitmap.width,bitmap.height)),c=document.createElement('canvas');c.width=Math.max(1,Math.round(bitmap.width*scale));c.height=Math.max(1,Math.round(bitmap.height*scale));const ctx=c.getContext('2d',{alpha:false});ctx.fillStyle='#fff';ctx.fillRect(0,0,c.width,c.height);ctx.drawImage(bitmap,0,0,c.width,c.height);return c};const full=make(1600,.76),thumbCanvas=make(360,.64);const blob=await new Promise(r=>full.toBlob(r,'image/jpeg',.76));const thumb=thumbCanvas.toDataURL('image/jpeg',.64);bitmap.close?.();return {blob,thumb}}catch{return {blob:file,thumb:''}}}
+async function saveCurrentAnalysisToHistory(showToast=false){const a=state.analyzer;if(!a.result)return;let id=a.historyId;const existing=id?state.history.find(x=>x.id===id):null;let thumb=existing?.thumb||'';let blob=null;if(a.file&&!existing){const assets=await historyImageAssets(a.file);thumb=assets.thumb;blob=assets.blob}if(!id)id=historyId();const now=Date.now();const meta={id,createdAt:existing?.createdAt||now,updatedAt:now,symbol:a.result.symbol||a.symbol||'CỔ PHIẾU',timeframe:a.result.timeframe||a.timeframe,source:a.result.source||'demo',pinned:Boolean(existing?.pinned),thumb,result:a.result,clientShort:a.clientShort||a.result.clientShort||'',clientText:a.clientText||a.result.clientText||''};const beforeIds=new Set(state.history.map(x=>x.id));const next=[meta,...state.history.filter(x=>x.id!==id)].sort((x,y)=>(Number(y.pinned)-Number(x.pinned))||(y.updatedAt-x.updatedAt));const kept=next.slice(0,HISTORY_MAX);const keptIds=new Set(kept.map(x=>x.id));const dropped=[...beforeIds].filter(x=>!keptIds.has(x));state.history=kept;a.historyId=keptIds.has(id)?id:'';persistHistoryMeta();if(blob&&keptIds.has(id))await idbPut({id,imageBlob:blob,updatedAt:now});for(const oldId of dropped)await idbDelete(oldId);if(showToast)toast(existing?'Đã cập nhật lịch sử.':(keptIds.has(id)?'Đã lưu vào lịch sử trên thiết bị.':'Lịch sử đã đầy các mục được ghim.'));return keptIds.has(id)?id:''}
+async function updateCurrentHistoryText(){const a=state.analyzer;if(!a.historyId)return;const item=state.history.find(x=>x.id===a.historyId);if(!item)return;item.clientShort=a.clientShort;item.clientText=a.clientText;item.updatedAt=Date.now();persistHistoryMeta()}
+async function loadHistoryIntoAnalyzer(id,rerun=false){const item=state.history.find(x=>x.id===id);if(!item)return;const rec=await idbGet(id);const a=state.analyzer;if(a.preview)try{URL.revokeObjectURL(a.preview)}catch{};a.symbol=item.symbol||'';a.timeframe=item.timeframe||'Daily';a.historyId=rerun?'':id;a.error='';a.loading=false;a.editing=false;a.clientMode='short';a.clientShort=item.clientShort||item.result?.clientShort||'';a.clientText=item.clientText||item.result?.clientText||'';a.result=rerun?null:item.result||null;a.file=null;a.preview=item.thumb||'';if(rec?.imageBlob){const file=new File([rec.imageBlob],`${safeFileName(item.symbol||'chart')}.jpg`,{type:rec.imageBlob.type||'image/jpeg'});a.file=file;a.preview=URL.createObjectURL(rec.imageBlob)}location.hash='/analyzer';if(rerun){if(!a.file){toast('Ảnh gốc đã nén không còn trên thiết bị; hãy chọn lại ảnh để phân tích.');return}setTimeout(()=>runAnalyzer(),120)}}
+function bindHistoryPage(){document.querySelectorAll('[data-history-open]').forEach(b=>b.a
