@@ -1,0 +1,65 @@
+ddEventListener('click',()=>loadHistoryIntoAnalyzer(b.dataset.historyOpen,false)));document.querySelectorAll('[data-history-rerun]').forEach(b=>b.addEventListener('click',()=>loadHistoryIntoAnalyzer(b.dataset.historyRerun,true)));document.querySelectorAll('[data-history-pin]').forEach(b=>b.addEventListener('click',()=>{const item=state.history.find(x=>x.id===b.dataset.historyPin);if(!item)return;if(!item.pinned&&state.history.filter(x=>x.pinned).length>=6){toast('Có thể ghim tối đa 6 phân tích.');return}item.pinned=!item.pinned;item.updatedAt=Date.now();persistHistoryMeta();render()}));document.querySelectorAll('[data-history-delete]').forEach(b=>b.addEventListener('click',async()=>{const id=b.dataset.historyDelete;state.history=state.history.filter(x=>x.id!==id);persistHistoryMeta();await idbDelete(id);if(state.analyzer.historyId===id)state.analyzer.historyId='';render();toast('Đã xóa khỏi lịch sử.')}));const clear=document.getElementById('clear-history-unpinned');if(clear)clear.addEventListener('click',async()=>{const ids=state.history.filter(x=>!x.pinned).map(x=>x.id);state.history=state.history.filter(x=>x.pinned);persistHistoryMeta();for(const id of ids)await idbDelete(id);render();toast('Đã xóa các mục chưa ghim.')})}
+
+function historyPage(){
+  const items=[...state.history].sort((a,b)=>(Number(b.pinned)-Number(a.pinned))||((b.updatedAt||b.createdAt)-(a.updatedAt||a.createdAt)));
+  const pinned=items.filter(x=>x.pinned).length;
+  const cards=items.map(item=>{
+    const adv=item.result?.advisorView||{};
+    const status=item.result?.analysisStatus?.status||'Limited';
+    return `<article class="history-card ${item.pinned?'pinned':''}" data-history-id="${escAttr(item.id)}">
+      <div class="history-thumb">${item.thumb?`<img src="${item.thumb}" alt="${escAttr(item.symbol)} chart">`:`<div class="history-placeholder">${cameraIcon(true)}</div>`}<span class="history-source ${item.source==='live'?'live':''}">${item.source==='live'?'AI':'DEMO'}</span></div>
+      <div class="history-body"><div class="history-meta"><span>${formatHistoryDate(item.createdAt)}</span><span>${escText(item.timeframe||'Daily')}</span></div><h3>${escText(item.symbol||'CỔ PHIẾU')}</h3><p>${escText(adv.headline||item.result?.conclusion||'Nhận định kỹ thuật')}</p>
+      <div class="history-signals"><b class="${biasClass(adv.bias)}">${biasLabel(adv.bias)}</b><span>${escText(adv.confidence||status)}</span></div>
+      <div class="history-actions"><button data-history-open="${escAttr(item.id)}">Mở lại</button><button data-history-rerun="${escAttr(item.id)}">Phân tích lại</button><button data-history-pin="${escAttr(item.id)}">${item.pinned?'★ Bỏ ghim':'☆ Ghim'}</button><button class="danger" data-history-delete="${escAttr(item.id)}">Xóa</button></div></div>
+    </article>`;
+  }).join('');
+  return pageWrap(`<div class="history-head"><div><span class="kicker">LOCAL ANALYSIS HISTORY</span><h1>Lịch sử phân tích</h1><p>Mở lại kết quả cũ, lấy lại bản gửi khách hàng hoặc nạp chart để phân tích lại. Dữ liệu chỉ nằm trên trình duyệt hiện tại.</p></div><div class="history-stats"><div><b>${items.length}</b><span>Đã lưu</span></div><div><b>${pinned}</b><span>Đã ghim</span></div></div></div>
+  <div class="history-toolbar"><button class="primary" data-nav="/analyzer">${cameraIcon()} Phân tích chart mới</button>${items.length?`<button class="secondary" id="clear-history-unpinned">Xóa mục chưa ghim</button>`:''}</div>
+  ${items.length?`<div class="history-grid">${cards}</div>`:`<div class="history-empty"><div>${cameraIcon(true)}</div><h2>Chưa có phân tích nào được lưu</h2><p>Sau khi Analyzer tạo kết quả, ChartLab sẽ tự lưu tối đa 12 phân tích gần nhất trên thiết bị này.</p><button class="primary" data-nav="/analyzer">Phân tích chart đầu tiên</button></div>`}
+  <div class="history-privacy"><b>LOCAL ONLY</b><p>Metadata + thumbnail được lưu bằng localStorage; ảnh đã nén được lưu bằng IndexedDB để phục vụ “Phân tích lại”. Xóa dữ liệu trình duyệt sẽ xóa lịch sử này.</p></div>`,'wide');
+}
+function formatHistoryDate(ts){try{return new Intl.DateTimeFormat('vi-VN',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}).format(new Date(ts));}catch{return ''}}
+
+function methodologyPage(){
+  const cards=[['01','Source traceability','Mỗi pattern/setup có URL nguồn và trạng thái Verified. Candlestick, Price Action và Classical Chart Patterns dùng taxonomy nguồn riêng, không trộn số liệu.'],['02','Pattern + Context','Hình dạng không đủ để kết luận. Trend, vùng giá, confirmation và thất bại của mẫu hình luôn được trình bày cùng nhau.'],['03','Relative thresholds','TA-Lib dùng các ngưỡng tương đối cho candlestick; Price Action cũng tránh tolerance pixel/phần trăm cứng nếu nguồn không quy định.'],['04','No forced answer','Nếu ảnh chart không đủ rõ, Analyzer phải hạ confidence hoặc trả “không đủ dữ liệu”, thay vì suy đoán để lấp đầy template.'],['05','Learning = Analyzer rules','Giáo trình và AI Analyzer dùng cùng rulebook, gồm Candlestick, Price Action, Chart Pattern, Price-Volume và Wyckoff Rulebook riêng.'],['06','Versioned audit','Mọi thay đổi rule được version hóa; Level 06–09 có file source audit riêng để kiểm định.']];
+  return pageWrap(`<div class="listing-head"><div><span class="kicker">METHODOLOGY</span><h1>ChartLab phân tích như thế nào?</h1><h2>Nguồn rõ · Rule rõ · Confidence rõ</h2><p>Website tách việc “nhận diện đúng hình dạng” khỏi việc “pattern có đáng tin trong context hiện tại hay không”.</p></div></div><div class="method-grid">${cards.map(x=>`<article class="method-card"><span>${x[0]}</span><h3>${x[1]}</h3><p>${x[2]}</p></article>`).join('')}</div><div class="source-list"><h2>Nguồn nền</h2><a href="https://ta-lib.org/functions/" target="_blank"><b>TA-Lib Pattern Recognition</b><span>Baseline kỹ thuật cho 61 candlestick patterns ↗</span></a><a href="https://cmtassociation.org/tradingview-ideas/dcxlln1c-introduction-to-reversal-bar-patterns-part-1/" target="_blank"><b>CMT Association</b><span>Context cho reversal bars / Outside Key Reversal ↗</span></a><a href="https://www.tradingview.com/support/solutions/43000591665-inside-bar-strategy/" target="_blank"><b>TradingView Education</b><span>Inside / Outside Bar geometry ↗</span></a><a href="https://priceaction.com/price-action-university/strategies/" target="_blank"><b>PriceAction.com</b><span>Inside Bar · Pin Bar · False Breakout · Fakey · Combo ↗</span></a><a href="https://www.penguinrandomhouse.com/books/350650/japanese-candlestick-charting-techniques-by-steve-nison/" target="_blank"><b>Steve Nison</b><span>Japanese candlestick reference, gồm Tweezer vocabulary ↗</span></a><a href="https://chartschool.stockcharts.com/table-of-contents/chart-analysis/chart-patterns" target="_blank"><b>StockCharts ChartSchool</b><span>Baseline nguồn cho Level 07 Classical Chart Patterns ↗</span></a><a href="https://cmtassociation.org/wp-content/uploads/2025/12/CMT-PROGRAM-GUIDE-2026-1.pdf" target="_blank"><b>CMT Association</b><span>Classical Techniques curriculum: triangles, double/triple tops-bottoms, flags/pennants ↗</span></a><a href="https://content.cmtassociation.org/a/volume-and-volatility" target="_blank"><b>CMT Association – Volume</b><span>Volume = participation và vai trò xác nhận price move ↗</span></a><a href="https://www.wyckoffanalytics.com/wyckoff-method/" target="_blank"><b>Wyckoff Analytics</b><span>Supply/Demand + Effort versus Result cho Level 08–09 ↗</span></a><a href="https://wyckoffstockmarketinstitute.com/Archives/Goals_Laws_steps.pdf" target="_blank"><b>Wyckoff Stock Market Institute</b><span>Three Laws: Supply & Demand · Cause & Effect · Effort vs Result ↗</span></a></div>`);
+}
+function notFoundPage(){return pageWrap(`<div class="not-found"><span class="kicker">404</span><h1>Trang chưa có trong v1.0</h1><p>Quay về thư viện hoặc Chart Analyzer để tiếp tục.</p><div class="hero-actions"><button class="primary" data-nav="/">Trang chủ</button><button class="secondary" data-nav="/library">Pattern Library</button></div></div>`);}
+
+function bindPage(r){
+  if (r==='/library' || /^\/level\/[2-9]$/.test(r)) bindListing();
+  if (r==='/analyzer') bindAnalyzer();
+  if (r==='/history') bindHistoryPage();
+  document.querySelectorAll('.pattern-card').forEach(el=>el.addEventListener('keydown',e=>{if(e.key==='Enter') location.hash=el.dataset.nav;}));
+}
+function bindListing(){
+  const s=document.getElementById('pattern-search'); if(s) s.addEventListener('input',e=>{state.library.query=e.target.value; refreshListing();});
+  document.querySelectorAll('[data-filter] button').forEach(btn=>btn.addEventListener('click',()=>{state.library[btn.parentElement.dataset.filter]=btn.dataset.value; refreshListing();}));
+}
+function refreshListing(){
+  const r=route(), levelMatch=r.match(/^\/level\/(\d+)$/);
+  if(levelMatch && Number(levelMatch[1])===6){
+    const main=document.querySelector('main'); if(main) main.innerHTML=priceActionPage(levels[5]); bindListing(); return;
+  }
+  if(levelMatch && Number(levelMatch[1])===7){
+    const main=document.querySelector('main'); if(main) main.innerHTML=chartPatternPage(levels[6]); bindListing(); return;
+  }
+  if(levelMatch && Number(levelMatch[1])===8){
+    const main=document.querySelector('main'); if(main) main.innerHTML=volumePage(levels[7]); bindListing(); return;
+  }
+  if(levelMatch && Number(levelMatch[1])===9){
+    const main=document.querySelector('main'); if(main) main.innerHTML=wyckoffPage(levels[8]); bindListing(); return;
+  }
+  let list=patterns,title='Pattern Library',vi='Thư viện mẫu hình',eyebrow='61 VERIFIED PATTERNS';
+  if(levelMatch){const n=Number(levelMatch[1]),l=levels[n-1]; list=n===5?patterns.filter(p=>p.candles>=4):patterns.filter(p=>p.candles===n-1); title=l.title;vi=l.vi;eyebrow=`LEVEL ${l.n}`;}
+  const main=document.querySelector('main'); if(main) main.innerHTML=listingPage(list,title,vi,eyebrow); bindListing();
+}
+function bindAnalyzer(){
+  const f=document.getElementById('chart-file'); if(f) f.addEventListener('change',e=>{const file=e.target.files?.[0]; if(!file)return; if(state.analyzer.preview) URL.revokeObjectURL(state.analyzer.preview); state.analyzer.file=file;state.analyzer.preview=URL.createObjectURL(file);state.analyzer.historyId='';state.analyzer.result=null;state.analyzer.clientShort='';state.analyzer.clientText=''; render();});
+  const sym=document.getElementById('chart-symbol'); if(sym) sym.addEventListener('input',e=>state.analyzer.symbol=e.target.value.toUpperCase());
+  const tf=document.getElementById('chart-timeframe'); if(tf) tf.addEventListener('change',e=>state.analyzer.timeframe=e.target.value);
+  const analyze=document.getElementById('analyze-button'); if(analyze) analyze.addEventListener('click',runAnalyzer);
+  document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>{state.analyzer.tab=b.dataset.tab;render();}));
+  const edit=document.getElementById('edit-client'); if(edit) edit.addEventListener('click',async()=>{const wasEditing=state.analyzer.editing;if(wasEditing){const ta=document.getElementById('client-text'); if(ta){if(state.analyzer.clientMode==='short')state.analyzer.clientShort=ta.value;else state.analyzer.clientText=ta.value;}}state.analyzer.editing=!state.analyzer.editing;if(wasEditing)await updateCurrentHistoryText();render();});
+  const ta=document.getElementById('client-text'); if(ta) ta.addEventListener('input',e=>{if(state.analyzer.clientMode==='short')state.analyzer.clientShort=e.target.value;else state.analyzer.clientText=e.target.value;});
+  document.querySelectorAll('[data-client-mode]')
