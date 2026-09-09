@@ -1,0 +1,131 @@
+ows; Ascending Triangle có resistance ngang.'},{id:'descendingtriangle', note:'Symmetrical Triangle trung tính trước breakout; Descending Triangle có support ngang và bearish bias.'}],
+  ascendingtriangle: [{id:'symmetricaltriangle', note:'Ascending Triangle có resistance ngang + higher lows.'},{id:'descendingtriangle', note:'Hai right-angle triangles đối xứng: một có higher lows, một có lower highs.'}],
+  descendingtriangle: [{id:'symmetricaltriangle', note:'Descending Triangle có support ngang + lower highs.'},{id:'ascendingtriangle', note:'Hai right-angle triangles đối xứng về cấu trúc supply/demand.'}],
+  rectangle: [{id:'symmetricaltriangle', note:'Rectangle có hai biên gần song song; Symmetrical Triangle có hai biên hội tụ.'}],
+  bullflag: [{id:'bullpennant', note:'Cùng là continuation sau flagpole; Flag là kênh nhỏ song song, Pennant là tam giác nhỏ hội tụ.'},{id:'bearflag', note:'Cùng hình học flag nhưng khác hướng prior trend và breakout.'}],
+  bearflag: [{id:'bearpennant', note:'Cùng là continuation sau flagpole; Flag là kênh nhỏ song song, Pennant hội tụ.'},{id:'bullflag', note:'Hai setup đối xứng theo hướng prior move.'}],
+  bullpennant: [{id:'bullflag', note:'Pennant co hẹp bằng hai cạnh hội tụ; Flag giữ hai cạnh gần song song.'},{id:'symmetricaltriangle', note:'Pennant giống một Symmetrical Triangle nhỏ nhưng phải có flagpole và thời gian ngắn.'}],
+  bearpennant: [{id:'bearflag', note:'Pennant co hẹp bằng hai cạnh hội tụ; Flag giữ hai cạnh gần song song.'},{id:'symmetricaltriangle', note:'Pennant cần prior sharp move/flagpole rõ.'}],
+  risingwedge: [{id:'ascendingtriangle', note:'Rising Wedge có cả hai trendline cùng dốc lên và hội tụ; Ascending Triangle có resistance ngang.'},{id:'fallingwedge', note:'Hai wedge đối xứng: rising thường bearish, falling thường bullish.'}],
+  fallingwedge: [{id:'descendingtriangle', note:'Falling Wedge có cả hai trendline cùng dốc xuống và hội tụ; Descending Triangle có support ngang.'},{id:'risingwedge', note:'Hai wedge đối xứng về slope và thiên hướng.'}],
+  cupwithhandle: [{id:'roundingbottom', note:'Cup With Handle có prior uptrend và handle trước breakout; Rounding Bottom là reversal đáy chậm.'}],
+  roundingbottom: [{id:'cupwithhandle', note:'Rounding Bottom không bắt buộc handle hay prior uptrend như Cup With Handle.'},{id:'inverseheadshoulders', note:'Cả hai là bottom reversal nhưng một dạng cong liên tục, một có ba troughs rõ.'}],
+  broadeningtop: [{id:'symmetricaltriangle', note:'Broadening Top mở rộng range với HH + LL; Symmetrical Triangle co hẹp range với LH + HL.'}],
+  accumulation: [{id:'distribution', note:'Accumulation chuẩn bị cho markup sau downtrend; Distribution chuẩn bị cho markdown sau uptrend.'},{id:'reaccumulation', note:'Re-accumulation nằm trong uptrend lớn hơn và thường không có stopping climax rõ như primary accumulation.'}],
+  distribution: [{id:'accumulation', note:'Hai schematic đối xứng về supply-demand và prior trend.'},{id:'redistribution', note:'Redistribution là continuation range trong downtrend thay vì market top sau uptrend.'}],
+  reaccumulation: [{id:'redistribution', note:'Cùng là continuation trading range, nhưng một nằm trong uptrend và một nằm trong downtrend.'},{id:'accumulation', note:'Primary accumulation thường xuất hiện sau downtrend và có stopping action rõ hơn.'}],
+  redistribution: [{id:'reaccumulation', note:'Hai cấu trúc continuation đối xứng theo prior trend.'},{id:'distribution', note:'Primary distribution thường xuất hiện sau uptrend và đóng vai trò market top.'}],
+  spring: [{id:'ututad', note:'Spring xuyên support rồi quay lại range; UT/UTAD xuyên resistance rồi quay lại range.'},{id:'test', note:'Test sau Spring đánh giá supply còn lại; Spring là cú false break ban đầu.'}],
+  ututad: [{id:'spring', note:'UT/UTAD là bull trap phía trên resistance; Spring là bear trap phía dưới support.'},{id:'sow', note:'SOW sau UT/UTAD giúp xác nhận supply đang chiếm ưu thế.'}],
+  sos: [{id:'sow', note:'SOS thể hiện demand dominance; SOW thể hiện supply dominance.'},{id:'lps', note:'LPS thường là reaction nhẹ sau SOS trong Phase D.'}],
+  sow: [{id:'sos', note:'SOS và SOW là cặp đối xứng Strength/Weakness.'},{id:'lpsy', note:'LPSY thường là rally yếu sau SOW.'}],
+  lps: [{id:'lpsy', note:'LPS là reaction giữ support trong accumulation; LPSY là rally yếu gặp supply trong distribution.'},{id:'sos', note:'LPS thường được đọc sau một SOS hoặc khi demand đã thắng rõ hơn.'}],
+  lpsy: [{id:'lps', note:'Hai sự kiện đối xứng theo demand/supply.'},{id:'sow', note:'LPSY thường đi sau SOW trong Phase D distribution.'}],
+  sc: [{id:'bc', note:'Selling Climax kết thúc/giảm mạnh selling pressure sau downtrend; Buying Climax đối xứng ở cuối uptrend.'},{id:'ps', note:'PS thường xuất hiện trước SC như dấu hiệu stopping action ban đầu.'}],
+  bc: [{id:'sc', note:'BC và SC là hai climax đối xứng theo prior trend.'},{id:'psy', note:'PSY thường xuất hiện trước BC.'}],
+  ps: [{id:'psy', note:'PS là preliminary support sau downtrend; PSY là preliminary supply sau uptrend.'}],
+  psy: [{id:'ps', note:'Hai sự kiện preliminary đối xứng theo prior trend.'}],
+  accphasec: [{id:'distphasec', note:'Phase C accumulation test supply; Phase C distribution test demand.'},{id:'spring', note:'Spring là một khả năng ở Phase C accumulation nhưng không bắt buộc.'}],
+  distphasec: [{id:'accphasec', note:'Hai Phase C đối xứng theo loại test supply/demand.'},{id:'ututad', note:'UT/UTAD là một khả năng ở Phase C distribution nhưng không bắt buộc.'}],
+};
+
+
+const app = document.getElementById('app');
+const state = {
+  library: { query:'', bias:'All', difficulty:'All' },
+  analyzer: { file:null, preview:'', symbol:'', timeframe:'Daily', result:null, tab:'analysis', editing:false, clientMode:'short', clientShort:'', clientText:'', loading:false, error:'', historyId:'' },
+  profile: loadProfile(),
+  history: loadHistoryMeta(),
+};
+
+window.addEventListener('hashchange', render);
+window.addEventListener('DOMContentLoaded', render);
+
+document.addEventListener('keydown', (e) => {
+  if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('[data-nav][tabindex="0"]')) {
+    e.preventDefault();
+    location.hash = e.target.dataset.nav;
+  }
+});
+
+document.addEventListener('click', (e) => {
+  const navEl = e.target.closest('[data-nav]');
+  if (navEl) {
+    e.preventDefault();
+    location.hash = navEl.dataset.nav;
+    return;
+  }
+  const scrollEl = e.target.closest('[data-scroll]');
+  if (scrollEl) document.querySelector(scrollEl.dataset.scroll)?.scrollIntoView({behavior:'smooth'});
+});
+
+function route(){ return (location.hash || '#/').slice(1); }
+function render(){
+  const r = route();
+  const patternId = r.startsWith('/pattern/') ? r.split('/')[2] : null;
+  const compareMatch = r.match(/^\/compare\/([^/]+)\/([^/]+)$/);
+  const levelMatch = r.match(/^\/level\/(\d+)$/);
+  let content = '';
+  if (r === '/') content = homePage();
+  else if (r === '/library') content = listingPage(patterns, 'Pattern Library', 'Thư viện mẫu hình', '61 VERIFIED PATTERNS');
+  else if (r === '/analyzer') content = analyzerPage();
+  else if (r === '/history') content = historyPage();
+  else if (r === '/methodology') content = methodologyPage();
+  else if (r === '/level/1') content = anatomyPage();
+  else if (levelMatch) content = levelPage(Number(levelMatch[1]));
+  else if (compareMatch) content = comparePage(compareMatch[1], compareMatch[2]);
+  else if (patternId) content = patternDetailPage(patternId);
+  else content = notFoundPage();
+  app.innerHTML = `${header(r)}<main id="main-content" tabindex="-1">${content}</main>${footer()}${mobileNav(r)}`;
+  updateDocumentMeta(r);
+  bindPage(r);
+  window.scrollTo({top:0, behavior:'auto'});
+}
+
+function updateDocumentMeta(r){
+  const patternId=r.startsWith('/pattern/')?r.split('/')[2]:'';
+  const p=allLearningPatterns.find(x=>x.id===patternId);
+  const titles={
+    '/':'ChartLab — Technical Analysis Learning',
+    '/library':'Pattern Library — ChartLab',
+    '/analyzer':'AI Chart Analyzer — ChartLab',
+    '/history':'Lịch sử phân tích — ChartLab',
+    '/methodology':'Methodology — ChartLab'
+  };
+  document.title = p ? `${p.name} · ${p.viName} — ChartLab` : (titles[r] || 'chartlab.phuongtuan · v1.0 beta');
+}
+function mobileNav(r){
+  const items=[
+    ['/', '⌂', 'Home'],
+    ['/level/1', '◫', 'Học'],
+    ['/library', '◇', 'Mẫu hình'],
+    ['/history', '◷', 'Lịch sử'],
+    ['/analyzer', '▣', 'Analyzer']
+  ];
+  return `<nav class="mobile-nav" aria-label="Điều hướng mobile">${items.map(([path,icon,label])=>{const active=path==='/'?r==='/':path==='/level/1'?r.startsWith('/level'):r===path;return `<button data-nav="${path}" class="${active?'active':''}"><b>${icon}</b><span>${label}</span></button>`}).join('')}</nav>`;
+}
+function header(r){
+  return `<header class="topbar"><div class="topbar-inner">
+    ${logo()}
+    <nav class="nav-links">
+      <button data-nav="/level/1" class="${r.startsWith('/level')?'active':''}">Học</button>
+      <button data-nav="/library" class="${r==='/library'?'active':''}">Mẫu hình</button>
+      <button data-nav="/history" class="${r==='/history'?'active':''}">Lịch sử${state.history.length?` <small>${state.history.length}</small>`:''}</button>
+      <button data-nav="/methodology" class="${r==='/methodology'?'active':''}">Phương pháp</button>
+    </nav>
+    <button data-nav="/analyzer" class="analyze-nav">${cameraIcon()} Phân tích chart</button>
+  </div></header>`;
+}
+function logo(){ return `<button class="brand" data-nav="/" aria-label="Trang chủ"><span class="brand-mark"><i></i><i></i><i></i></span><span><strong>chartlab</strong><em>.phuongtuan</em></span></button>`; }
+function footer(){ return `<footer><div>${logo()}<p>Technical Analysis Learning & Chart Analyzer</p></div><div><button data-nav="/library">Pattern Library</button><button data-nav="/history">Lịch sử phân tích</button><button data-nav="/methodology">Methodology</button><button data-nav="/analyzer">Chart Analyzer</button></div><small>chartlab.phuongtuan · v1.0 beta · GitHub Pages + optional AI Worker</small></footer>`; }
+
+function homePage(){
+  return `<section class="hero"><div class="hero-glow"></div><div class="hero-copy">
+    <div class="eyebrow"><span class="live-dot"></span> Pattern Engine v1.0 · ${patterns.filter(p=>p.verified).length}/61 candlestick + ${priceActionPatterns.length} price action + ${chartPatterns.length} chart patterns + ${volumePrinciples.length} price-volume + ${wyckoffLessons.length} Wyckoff lessons</div>
+    <h1>Học cách đọc<br><span>ngôn ngữ của giá.</span></h1>
+    <p>Thư viện mẫu hình nến được kiểm định nguồn, trình bày theo Level và một không gian thực hành để biến chart thành nhận định dễ hiểu.</p>
+    <div class="hero-actions"><button class="primary" data-scroll="#levels">Bắt đầu học ${arrow()}</button><button class="secondary" data-nav="/analyzer">${cameraIcon()} Phân tích chart</button></div>
+    <div class="hero-metrics"><div><b>${allLearningPatterns.length}</b><span>Patterns & setups</span></div><div><b>9</b><span>Learning levels</span></div><div><b>100%</b><span>Source traceable</span></div></div>
+  </div><div class="hero-panel"><div class="panel-top"><span>LIVE LEARNING PREVIEW</span><span class="status-pill">CORE</span></div><div class="spotlight-pattern">
+    ${candlesDiagram('hammer','large')}
+    <div class="spotlight-meta"><span>01 CANDLE · BULLISH REVERSAL</span>
