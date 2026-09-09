@@ -1,0 +1,142 @@
+const patterns = window.CHARTLAB_PATTERNS || [];
+const priceActionPatterns = window.CHARTLAB_PRICE_ACTION || [];
+const chartPatterns = window.CHARTLAB_CHART_PATTERNS || [];
+const volumePrinciples = window.CHARTLAB_VOLUME_PRINCIPLES || [];
+const wyckoffLessons = window.CHARTLAB_WYCKOFF || [];
+const allLearningPatterns = [...patterns, ...priceActionPatterns, ...chartPatterns, ...volumePrinciples, ...wyckoffLessons];
+const config = window.CHARTLAB_CONFIG || {};
+const API_ENDPOINT = String(config.apiEndpoint || "").trim();
+const HISTORY_META_KEY='chartlab_history_meta_v1';
+const AI_ACCESS_STORAGE_KEY='chartlab_ai_access_v1';
+const HISTORY_MAX=12;
+
+const levels = [
+  { n:'01', title:'Candlestick Anatomy', vi:'Cấu trúc nến', desc:'OHLC · Thân nến · Bóng nến · Range', status:'ready' },
+  { n:'02', title:'Single Candle', vi:'Mẫu hình 1 nến', bars:1, status:'ready' },
+  { n:'03', title:'Double Candle', vi:'Mẫu hình 2 nến', bars:2, status:'ready' },
+  { n:'04', title:'Triple Candle', vi:'Mẫu hình 3 nến', bars:3, status:'ready' },
+  { n:'05', title:'Multi Candle', vi:'Mẫu hình nhiều nến', multi:true, status:'ready' },
+  { n:'06', title:'Price Action', vi:'Hành vi giá', desc:'Inside Bar · Outside Bar · Pin Bar · Fakey · Tweezer', status:'ready', priceAction:true },
+  { n:'07', title:'Chart Patterns', vi:'Mẫu hình giá', desc:'Double Top · H&S · Triangle · Flag · Wedge...', status:'ready', chartPatterns:true },
+  { n:'08', title:'Price & Volume', vi:'Giá và khối lượng', desc:'Participation · Confirmation · Divergence · Effort vs Result', status:'ready', volumePrinciples:true },
+  { n:'09', title:'Wyckoff', vi:'Phương pháp Wyckoff', desc:'3 Laws · Accumulation · Distribution · Phase A–E · Events', status:'ready', wyckoff:true },
+];
+
+const comparePairs = {
+  hammer: [{id:'hangingman', note:'Hình học gần như giống nhau; khác biệt cốt lõi là vị trí trong xu hướng.'}],
+  hangingman: [{id:'hammer', note:'Hình học gần như giống nhau; Hammer cần bối cảnh giảm, Hanging Man cần bối cảnh tăng.'}],
+  invertedhammer: [{id:'shootingstar', note:'Cùng kiểu thân nhỏ + râu trên dài; khác nhau chủ yếu ở bối cảnh đảo chiều.'}],
+  shootingstar: [{id:'invertedhammer', note:'Cùng kiểu thân nhỏ + râu trên dài; Shooting Star xuất hiện sau tăng, Inverted Hammer sau giảm.'}],
+  dragonflydoji: [{id:'gravestonedoji', note:'Dragonfly từ chối giá thấp bằng râu dưới dài; Gravestone từ chối giá cao bằng râu trên dài.'}],
+  gravestonedoji: [{id:'dragonflydoji', note:'Hai Doji đối xứng về hướng shadow và thường mang hàm ý context khác nhau.'}],
+  doji: [{id:'spinningtop', note:'Doji có Open ≈ Close; Spinning Top vẫn có real body nhỏ nhưng rõ hơn.'}],
+  spinningtop: [{id:'doji', note:'Spinning Top có body nhỏ; Doji gần như không có body.'}],
+  engulfing: [{id:'harami', note:'Engulfing: thân sau bao phủ thân trước. Harami: thân sau nằm bên trong thân trước.'}],
+  harami: [{id:'engulfing', note:'Harami là contraction/inside body; Engulfing là expansion/outside body.'},{id:'haramicross', note:'Harami Cross là biến thể Harami trong đó nến thứ hai là Doji.'}],
+  haramicross: [{id:'harami', note:'Điểm khác biệt là nến thứ hai: Harami Cross yêu cầu Doji.'}],
+  piercing: [{id:'darkcloudcover', note:'Piercing là cặp bullish sau giảm; Dark Cloud Cover là cấu trúc bearish đối xứng sau tăng.'}],
+  darkcloudcover: [{id:'piercing', note:'Hai mẫu đối xứng: một mẫu bullish reversal, một mẫu bearish reversal.'}],
+  morningstar: [{id:'eveningstar', note:'Morning Star đảo chiều tăng sau giảm; Evening Star đảo chiều giảm sau tăng.'},{id:'morningdojistar', note:'Morning Doji Star yêu cầu nến giữa là Doji.'}],
+  eveningstar: [{id:'morningstar', note:'Hai mẫu đối xứng theo bối cảnh và hướng đảo chiều.'},{id:'eveningdojistar', note:'Evening Doji Star yêu cầu nến giữa là Doji.'}],
+  morningdojistar: [{id:'morningstar', note:'Biến thể Doji của Morning Star: nến giữa phải là Doji.'},{id:'eveningdojistar', note:'Hai Doji Star đối xứng theo bối cảnh tăng/giảm.'}],
+  eveningdojistar: [{id:'eveningstar', note:'Biến thể Doji của Evening Star: nến giữa phải là Doji.'},{id:'morningdojistar', note:'Hai Doji Star đối xứng theo bối cảnh tăng/giảm.'}],
+  onneck: [{id:'inneck', note:'Khác biệt chính nằm ở độ sâu mà nến trắng thứ hai hồi vào thân nến đen đầu.'},{id:'thrusting', note:'Thrusting hồi sâu hơn On-Neck nhưng vẫn dưới midpoint của nến đầu.'}],
+  inneck: [{id:'onneck', note:'In-Neck đóng hơi vào thân nến đầu; On-Neck chỉ hồi gần low/close của nến đầu.'},{id:'thrusting', note:'Thrusting hồi sâu hơn In-Neck nhưng chưa đủ để trở thành Piercing.'}],
+  thrusting: [{id:'inneck', note:'Thrusting hồi sâu hơn In-Neck nhưng vẫn dưới midpoint.'},{id:'piercing', note:'Piercing phải đóng trên midpoint của thân nến đầu; Thrusting thì không.'}],
+  marubozu: [{id:'closingmarubozu', note:'Marubozu gần như không có shadow hai đầu; Closing Marubozu chỉ yêu cầu phía đóng cửa gần như không có shadow.'}],
+  closingmarubozu: [{id:'marubozu', note:'Closing Marubozu vẫn có thể có shadow ở phía mở cửa.'}],
+  hikkake: [{id:'hikkakemod', note:'Modified Hikkake thêm điều kiện và một lớp setup để chọn lọc hơn.'}],
+  hikkakemod: [{id:'hikkake', note:'Hikkake cải biên là phiên bản chặt hơn của Hikkake tiêu chuẩn.'}],
+  '3blackcrows': [{id:'identical3crows', note:'Identical Three Crows yêu cầu mỗi nến mở gần close của nến trước, chặt hơn Three Black Crows.'}],
+  identical3crows: [{id:'3blackcrows', note:'Identical Three Crows là biến thể chặt hơn của Three Black Crows.'}],
+  insidebar: [{id:'outsidebar', note:'Inside Bar co hẹp range; Outside Bar mở rộng range vượt cả High và Low nến trước.'},{id:'falsebreakout', note:'Inside Bar là setup nén; False Breakout là hành vi phá level rồi thất bại.'}],
+  outsidebar: [{id:'insidebar', note:'Outside Bar là volatility expansion; Inside Bar là volatility contraction.'},{id:'outsidekeyreversal', note:'Không phải Outside Bar nào cũng là Key Reversal; Key Reversal cần context và close ngược xu hướng.'}],
+  outsidekeyreversal: [{id:'outsidebar', note:'Outside Key Reversal là một subset có context đảo chiều mạnh hơn Outside Bar thông thường.'}],
+  bullishpinbar: [{id:'hammer', note:'Hình học có thể giống Hammer, nhưng Pin Bar là khái niệm rejection rộng hơn và không nên đồng nhất rule.'},{id:'bearishpinbar', note:'Hai Pin Bar đối xứng theo hướng tail bị từ chối.'}],
+  bearishpinbar: [{id:'shootingstar', note:'Hình học có thể gần Shooting Star; context và bộ rule của Price Action khác Candlestick taxonomy.'},{id:'bullishpinbar', note:'Hai Pin Bar đối xứng theo hướng tail bị từ chối.'}],
+  falsebreakout: [{id:'bullishfakey', note:'Fakey là một trường hợp cụ thể: false breakout xảy ra sau Inside Bar.'},{id:'bearishfakey', note:'Fakey là một trường hợp cụ thể: false breakout xảy ra sau Inside Bar.'}],
+  bullishfakey: [{id:'bearishfakey', note:'Cùng cấu trúc Inside Bar + false break, khác hướng cú phá giả.'},{id:'insidebar', note:'Fakey luôn bắt đầu từ Inside Bar nhưng cần thêm bước false breakout.'}],
+  bearishfakey: [{id:'bullishfakey', note:'Cùng cấu trúc Inside Bar + false break, khác hướng cú phá giả.'},{id:'insidebar', note:'Fakey luôn bắt đầu từ Inside Bar nhưng cần thêm bước false breakout.'}],
+  pinbarinsidebar: [{id:'insidepinbar', note:'Pin Bar + Inside Bar có hai bar riêng; Inside Pin Bar là bar thứ hai vừa là Pin Bar vừa là Inside Bar.'}],
+  insidepinbar: [{id:'pinbarinsidebar', note:'Inside Pin Bar là một bar vừa thỏa Pin Bar vừa nằm trong Mother Bar.'}],
+  tweezerbottom: [{id:'tweezertop', note:'Tweezer Bottom lặp lại Low sau giảm; Tweezer Top lặp lại High sau tăng.'}],
+  tweezertop: [{id:'tweezerbottom', note:'Hai pattern đối xứng theo vùng cực trị bị từ chối lặp lại.'}],
+  uptrendvolumeconfirmation: [{id:'newhighvolumedivergence', note:'Cùng trong uptrend: một bên volume xác nhận, một bên volume suy giảm khi giá tạo high mới.'},{id:'healthyretracementlowvolume', note:'Healthy pullback là một mảnh nhỏ bên trong logic xác nhận uptrend.'}],
+  downtrendvolumeconfirmation: [{id:'newlowvolumedivergence', note:'Cùng trong downtrend: một bên volume xác nhận, một bên volume suy giảm khi giá tạo low mới.'}],
+  breakoutvolumeexpansion: [{id:'lowvolumebreakout', note:'Cùng là breakout; khác biệt cốt lõi nằm ở mức participation phía sau cú phá.'},{id:'retestlowvolume', note:'Retest volume thấp hơn có thể củng cố breakout đã được xác nhận.'}],
+  lowvolumebreakout: [{id:'breakoutvolumeexpansion', note:'Low-volume breakout là non-confirmation, không tự đồng nghĩa false breakout.'}],
+  widespreadhighvolume: [{id:'narrowspreadhighvolume', note:'Cùng volume lớn nhưng Result khác nhau: wide spread = result lớn; narrow spread = effort lớn nhưng result nhỏ.'},{id:'volumeclimax', note:'Wide spread + high volume có thể là strength hoặc climax; context và phản ứng sau đó quyết định.'}],
+  narrowspreadhighvolume: [{id:'widespreadhighvolume', note:'Đây là cặp Effort vs Result quan trọng nhất của Level 08.'},{id:'volumeclimax', note:'Volume cao ở trend extreme cần đọc cùng spread, close và follow-through.'}],
+  volumeclimax: [{id:'widespreadhighvolume', note:'Volume spike không tự là exhaustion; nếu price result vẫn mạnh, có thể chỉ là participation xác nhận.'},{id:'narrowspreadhighvolume', note:'Climax thường đáng ngờ hơn khi effort rất lớn nhưng result bắt đầu kém đi.'}],
+
+  doubletop: [{id:'tripletop', note:'Double Top có hai lần test resistance; Triple Top có ba lần. Cả hai chỉ hoàn tất sau support break.'},{id:'headshoulderstop', note:'Head & Shoulders có đỉnh giữa cao hơn hai vai; Double Top có hai đỉnh tương đối ngang nhau.'}],
+  doublebottom: [{id:'triplebottom', note:'Double Bottom có hai lần test support; Triple Bottom có ba lần. Cả hai cần resistance breakout để xác nhận.'},{id:'inverseheadshoulders', note:'Inverse H&S có đáy giữa sâu nhất; Double Bottom có hai đáy tương đối ngang nhau.'}],
+  tripletop: [{id:'doubletop', note:'Đỉnh thứ ba bổ sung thêm một lần thất bại tại resistance nhưng pattern vẫn cần support break.'},{id:'headshoulderstop', note:'Triple Top có ba đỉnh tương đối ngang; H&S có head cao hơn shoulders.'}],
+  triplebottom: [{id:'doublebottom', note:'Đáy thứ ba bổ sung thêm một lần giữ support nhưng pattern vẫn cần resistance breakout.'},{id:'inverseheadshoulders', note:'Triple Bottom có ba đáy tương đối ngang; Inverse H&S có head sâu nhất.'}],
+  headshoulderstop: [{id:'tripletop', note:'Hai mẫu đều có ba đỉnh, nhưng H&S yêu cầu head cao hơn shoulders.'},{id:'doubletop', note:'Double Top không có head nổi bật; H&S có neckline nối hai reaction lows.'}],
+  inverseheadshoulders: [{id:'triplebottom', note:'Hai mẫu đều có ba đáy, nhưng Inverse H&S yêu cầu head sâu hơn shoulders.'},{id:'doublebottom', note:'Double Bottom không có head sâu ở giữa.'}],
+  symmetricaltriangle: [{id:'ascendingtriangle', note:'Symmetrical Triangle có cả lower highs và higher lows; Ascending Triangle có resistance tương đối ngang.'},{id:'descendingtriangle', note:'Symmetrical Triangle trung tính trước breakout; Descending Triangle có support ngang và lower highs.'}],
+  ascendingtriangle: [{id:'symmetricaltriangle', note:'Ascending Triangle giữ resistance ngang + higher lows; Symmetrical Triangle co cả hai biên.'},{id:'descendingtriangle', note:'Hai mẫu đối xứng về hướng pressure: higher lows vs lower highs.'}],
+  descendingtriangle: [{id:'ascendingtriangle', note:'Descending Triangle có support ngang + lower highs; Ascending Triangle có resistance ngang + higher lows.'},{id:'symmetricaltriangle', note:'Symmetrical Triangle co cả hai biên và không có flat boundary.'}],
+  rectangle: [{id:'symmetricaltriangle', note:'Rectangle có hai biên ngang; Symmetrical Triangle có hai trendline hội tụ.'}],
+  bullflag: [{id:'bullpennant', note:'Cùng cần flagpole tăng; Flag có channel nhỏ, Pennant có hai đường hội tụ.'},{id:'rectangle', note:'Flag là pause ngắn sau impulse; Rectangle có thể tồn tại lâu hơn và không nhất thiết có flagpole.'}],
+  bearflag: [{id:'bearpennant', note:'Cùng cần flagpole giảm; Flag có channel nhỏ, Pennant hội tụ.'}],
+  bullpennant: [{id:'bullflag', note:'Pennant hội tụ sau flagpole; Flag giống channel/rectangle nghiêng ngắn.'},{id:'symmetricaltriangle', note:'Pennant giống triangle nhỏ nhưng phải có flagpole và thường ngắn hạn hơn.'}],
+  bearpennant: [{id:'bearflag', note:'Pennant hội tụ sau flagpole; Flag là channel ngắn.'},{id:'symmetricaltriangle', note:'Pennant cần flagpole; Symmetrical Triangle độc lập không cần impulse pole.'}],
+  risingwedge: [{id:'fallingwedge', note:'Hai trendline cùng dốc lên và hội tụ; Falling Wedge cùng dốc xuống.'},{id:'ascendingtriangle', note:'Ascending Triangle có resistance ngang; Rising Wedge có cả hai đường cùng dốc lên.'}],
+  fallingwedge: [{id:'risingwedge', note:'Hai trendline cùng dốc xuống và hội tụ; Rising Wedge cùng dốc lên.'},{id:'descendingtriangle', note:'Descending Triangle có support ngang; Falling Wedge có cả hai đường dốc xuống.'}],
+  cupwithhandle: [{id:'roundingbottom', note:'Cup With Handle có thêm handle và breakout; Rounding Bottom không bắt buộc có handle.'}],
+  roundingbottom: [{id:'cupwithhandle', note:'Cup With Handle thường là cấu trúc U có handle ngắn phía trên trước breakout.'}],
+  broadeningtop: [{id:'symmetricaltriangle', note:'Broadening Top mở rộng biến động; Symmetrical Triangle co hẹp biến động.'}],
+
+  wyckoffaccumulation: [{id:'wyckoffdistribution',note:'Cùng là Trading Range nhưng accumulation hấp thụ supply sau decline; distribution hấp thụ demand sau advance.'},{id:'wyckoffreaccumulation',note:'Re-accumulation xảy ra trong một uptrend lớn; accumulation điển hình hình thành sau downtrend.'}],
+  wyckoffdistribution: [{id:'wyckoffaccumulation',note:'Distribution xuất hiện sau advance; accumulation sau decline.'},{id:'wyckoffredistribution',note:'Re-distribution là pause trong downtrend; distribution điển hình sau uptrend.'}],
+  wyckoffreaccumulation: [{id:'wyckoffredistribution',note:'Một mẫu nghiêng về continuation uptrend, mẫu kia continuation downtrend.'},{id:'wyckoffaccumulation',note:'Điểm phân biệt cốt lõi là prior trend trước Trading Range.'}],
+  wyckoffredistribution: [{id:'wyckoffreaccumulation',note:'Prior downtrend + continuation risk phân biệt re-distribution với re-accumulation.'},{id:'wyckoffdistribution',note:'Distribution classic theo sau uptrend; re-distribution theo sau downtrend.'}],
+  wyckoffspring: [{id:'wyckoffutad',note:'Spring phá support rồi quay lại range; UTAD phá resistance rồi quay lại range.'},{id:'wyckoffsow',note:'Spring recovery thể hiện rejection dưới support; SOW là weakness thực sự rời range xuống.'}],
+  wyckoffutad: [{id:'wyckoffspring',note:'Hai events đối xứng ở hai biên Trading Range.'},{id:'wyckoffsos',note:'UTAD thất bại trên resistance; SOS là demand expansion phá resistance thành công.'}],
+  wyckoffsos: [{id:'wyckoffsow',note:'SOS là strength rời range lên; SOW là weakness rời range xuống.'},{id:'wyckofflps',note:'LPS thường là pullback sau SOS với supply yếu hơn.'}],
+  wyckoffsow: [{id:'wyckoffsos',note:'Một event strength, một event weakness.'},{id:'wyckofflpsy',note:'LPSY thường là rally/retest yếu sau SOW.'}],
+  wyckofflps: [{id:'wyckofflpsy',note:'LPS là support test trong bullish structure; LPSY là supply test trong bearish structure.'},{id:'wyckoffsos',note:'SOS là impulse strength; LPS là pullback sau đó.'}],
+  wyckofflpsy: [{id:'wyckofflps',note:'Hai events đối xứng trong accumulation/distribution.'},{id:'wyckoffsow',note:'SOW là break weakness; LPSY là weak rally sau đó.'}],
+  wyckoffsc: [{id:'wyckoffbc',note:'Selling Climax xảy ra sau decline; Buying Climax xảy ra sau advance.'},{id:'volumeclimax',note:'SC là một ứng dụng climax cụ thể trong Wyckoff sequence; Volume Climax của Level 08 là khái niệm rộng hơn.'}],
+  wyckoffbc: [{id:'wyckoffsc',note:'BC là climax mua phía trên; SC là climax bán phía dưới.'},{id:'volumeclimax',note:'BC cần sequence/context Wyckoff chứ không chỉ một volume spike.'}],
+  wyckoffps: [{id:'wyckoffpsy',note:'PS là Preliminary Support sau decline; PSY là Preliminary Supply sau advance.'}],
+  wyckoffpsy: [{id:'wyckoffps',note:'Hai preliminary events đối xứng theo prior trend.'}],
+  wyckoffaccphasec: [{id:'wyckoffdistphasec',note:'Accumulation Phase C có thể Spring/Test; Distribution Phase C có thể UT/UTAD.'}],
+  wyckoffdistphasec: [{id:'wyckoffaccphasec',note:'Hai Phase C kiểm tra supply/demand ở hai phía đối lập của Trading Range.'}]
+};
+
+let state = { route:'/', hover:null, search:'', bias:'All', difficulty:'All', group:'All', upload:null, compressedUpload:null, symbol:'', timeframe:'Daily', analysis:null, analysisTab:'analysis', clientMode:'short', editing:false, editedClientText:'', settingsOpen:false, selectedCompare:null, currentHistoryId:null, loadedFromHistory:false, historyItems:loadHistoryItems(), historyShowPinned:false };
+
+function normalizeBias(b){ const s=String(b||'').toLowerCase(); if(s.includes('bull')) return 'Bullish'; if(s.includes('bear')) return 'Bearish'; if(s==='both') return 'Both'; return 'Neutral'; }
+function countFor(l){ if(l.n==='01') return 4; if(l.priceAction) return priceActionPatterns.length; if(l.chartPatterns) return chartPatterns.length; if(l.volumePrinciples) return volumePrinciples.length; if(l.wyckoff) return wyckoffLessons.length; return patterns.filter(p=>l.multi?p.candles>=4:p.candles===l.bars).length; }
+function levelPatterns(l){ if(l.priceAction) return priceActionPatterns; if(l.chartPatterns) return chartPatterns; if(l.volumePrinciples) return volumePrinciples; if(l.wyckoff) return wyckoffLessons; if(l.multi) return patterns.filter(p=>p.candles>=4); return patterns.filter(p=>p.candles===l.bars); }
+function getLearningItem(id){ return allLearningPatterns.find(p=>p.id===id); }
+function getHistoryItems(){ return state.historyItems||[]; }
+function loadHistoryItems(){
+  try{ const x=JSON.parse(localStorage.getItem(HISTORY_META_KEY)||'[]'); return Array.isArray(x)?x.slice(0,HISTORY_MAX):[]; }catch{return [];}
+}
+function saveHistoryItems(items){ state.historyItems=items.slice(0,HISTORY_MAX); try{localStorage.setItem(HISTORY_META_KEY,JSON.stringify(state.historyItems));}catch{} }
+function historyDB(){
+  return new Promise((resolve,reject)=>{ if(!window.indexedDB) return resolve(null); const req=indexedDB.open('chartlab_history_db',1); req.onupgradeneeded=()=>{const db=req.result;if(!db.objectStoreNames.contains('images')) db.createObjectStore('images');}; req.onsuccess=()=>resolve(req.result); req.onerror=()=>reject(req.error); });
+}
+async function putHistoryImage(id,dataUrl){try{const db=await historyDB();if(!db)return;const tx=db.transaction('images','readwrite');tx.objectStore('images').put(dataUrl,id);}catch{}}
+async function getHistoryImage(id){try{const db=await historyDB();if(!db)return '';return await new Promise(resolve=>{const tx=db.transaction('images','readonly');const r=tx.objectStore('images').get(id);r.onsuccess=()=>resolve(r.result||'');r.onerror=()=>resolve('');});}catch{return '';}}
+async function deleteHistoryImage(id){try{const db=await historyDB();if(!db)return;db.transaction('images','readwrite').objectStore('images').delete(id);}catch{}}
+function makeThumb(dataUrl,maxW=460,maxH=260,quality=.72){ return resizeDataUrl(dataUrl,maxW,maxH,quality); }
+function safeSnapshotAnalysis(a){ if(!a) return null; try{return JSON.parse(JSON.stringify(a));}catch{return null;} }
+function historySource(a){return a?._source==='live'?'AI Live':'Demo';}
+function biasFromAnalysis(a){return a?.advisorSnapshot?.bias||'Không đủ dữ liệu';}
+function historySummary(a){return a?.advisorSnapshot?.summary||a?.conclusion||'Chưa có tóm tắt.';}
+async function persistCurrentAnalysis(){
+  const a=state.analysis;if(!a||!state.upload)return;
+  const now=Date.now(); const id=state.currentHistoryId||`ana_${now}_${Math.random().toString(36).slice(2,7)}`;
+  let thumb=''; try{thumb=await makeThumb(state.upload,460,260,.72);}catch{}
+  const existing=getHistoryItems().find(x=>x.id===id);
+  const item={id,createdAt:existing?.createdAt||now,updatedAt:now,symbol:state.symbol||'—',timeframe:state.timeframe||'Daily',source:historySource(a),pinned:!!existing?.pinned,bias:biasFromAnalysis(a),quality:a?.qualityGate?.status||'Limited',summary:historySummary(a),thumbnail:thumb||existing?.thumbnail||'',analysis:safeSnapshotAnalysis(a),clientShort:String(a?.clientSummaryShort||''),clientDetailed:String(a?.clientSummaryDetailed||'')};
+  let items=getHistoryItems().filter(x=>x.id!==id);items.unshift(item);
+  if(items.length>HISTORY_MAX){ const pinned=items.filter(x=>x.pinned),others=items.filter(x=>!x.pinned); items=[...pinned,...others].sort((x,y)=>y.updatedAt-x.updatedAt).slice(0,HISTORY_MAX); }
+  saveHistoryItems(items); state.currentHistoryId=id; state.loadedFromHistory=false;
+  await putHistoryImage(id,state.compressedUpload||state.upload);
+}
