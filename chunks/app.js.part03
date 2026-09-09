@@ -1,0 +1,62 @@
+atic → Phase A–E → Events. Không ép mọi vùng đi ngang vào một schematic cố định; Spring và UTAD đều không bắt buộc.</p></div><div class="pa-principles"><article><b>01</b><span>3 Laws</span><p>Supply & Demand · Cause & Effect · Effort vs Result.</p></article><article><b>02</b><span>Schematics</span><p>Accumulation/Distribution và hai biến thể continuation: re-accumulation/re-distribution.</p></article><article><b>03</b><span>Phase A–E</span><p>Stopping → Building Cause → Testing → Dominance → Trend.</p></article><article><b>04</b><span>Events</span><p>PS/SC/AR/ST/Spring/SOS/LPS và PSY/BC/UTAD/SOW/LPSY.</p></article></div></section>`;
+  const filtered = filterPatterns(wyckoffLessons);
+  return pageWrap(`${breadcrumb(['Level 09','Wyckoff'])}${intro}<div class="filters pa-filters"><label class="search">${searchIcon()}<input id="pattern-search" value="${escAttr(state.library.query)}" placeholder="Tìm Spring, UTAD, SOS, Phase C..."></label><div class="filter-group" data-filter="bias">${['All','Bullish','Bearish','Neutral'].map(x=>`<button data-value="${x}" class="${state.library.bias===x?'selected':''}">${x==='All'?'Tất cả':x}</button>`).join('')}</div><div class="filter-group" data-filter="difficulty">${['All','Core','Intermediate','Advanced'].map(x=>`<button data-value="${x}" class="${state.library.difficulty===x?'selected':''}">${x==='All'?'Mọi cấp':x}</button>`).join('')}</div></div><div class="result-count">Hiển thị <b>${filtered.length}</b> / ${wyckoffLessons.length} bài Wyckoff</div>${patternGridOrEmpty(filtered,'wyckoff-grid')}<section class="pa-source-note"><span class="kicker">SCHEMATIC ≠ CHECKLIST CỨNG</span><h3>Spring có thể không xuất hiện. UTAD cũng có thể không xuất hiện.</h3><p>AI Analyzer chỉ được gọi tên phase/event khi screenshot đủ dài để thấy prior trend, trading range và price-volume response. Nếu thiếu context, kết quả phải là “Insufficient”.</p></section>`);
+}
+
+function listingPage(list,title,vi,eyebrow){
+  const filtered = filterPatterns(list);
+  return pageWrap(`<div class="listing-head"><div><span class="kicker">${eyebrow}</span><h1>${title}</h1><h2>${vi}</h2><p>${list.length} mẫu · hover để xem nhanh · click để học chi tiết</p></div><div class="listing-stat"><b>${list.length}</b><span>patterns</span></div></div>
+  <div class="filters"><label class="search">${searchIcon()}<input id="pattern-search" value="${escAttr(state.library.query)}" placeholder="Tìm Hammer, Doji, Harami..."></label>
+  <div class="filter-group" data-filter="bias">${['All','Bullish','Bearish','Neutral'].map(x=>`<button data-value="${x}" class="${state.library.bias===x?'selected':''}">${x==='All'?'Tất cả':x}</button>`).join('')}</div>
+  <div class="filter-group" data-filter="difficulty">${['All','Core','Intermediate','Advanced'].map(x=>`<button data-value="${x}" class="${state.library.difficulty===x?'selected':''}">${x==='All'?'Mọi cấp':x}</button>`).join('')}</div></div>
+  <div class="result-count">Hiển thị <b>${filtered.length}</b> mẫu hình</div>${patternGridOrEmpty(filtered)}`);
+}
+function filterPatterns(list){
+  const q=state.library.query.toLowerCase().trim();
+  return list.filter(p=>(!q || `${p.name} ${p.viName} ${p.talib||''} ${p.family||''}`.toLowerCase().includes(q)) && (state.library.bias==='All'||normalizeBias(p.bias)===state.library.bias) && (state.library.difficulty==='All'||p.difficulty===state.library.difficulty));
+}
+
+function patternGridOrEmpty(filtered, extraClass=''){
+  if(filtered.length) return `<div class="pattern-grid ${extraClass}">${filtered.map(patternCard).join('')}</div>`;
+  return `<div class="pattern-empty"><div>⌕</div><h3>Không tìm thấy mẫu hình phù hợp</h3><p>Thử đổi từ khóa hoặc bỏ bớt bộ lọc Bullish/Bearish/độ khó.</p><button class="secondary" id="reset-pattern-filters">Xóa bộ lọc</button></div>`;
+}
+function patternCard(p){
+  return `<article class="pattern-card" data-nav="/pattern/${p.id}" tabindex="0"><div class="card-top"><span class="difficulty ${p.difficulty.toLowerCase()}">${p.difficulty}</span><span class="verified">✓ Verified</span></div>${learningDiagram(p.id)}<div class="pattern-name"><span>${(p.barLabel||`${p.candles} ${p.candles===1?'CANDLE':'CANDLES'}`).toString().toUpperCase()} · ${normalizeBias(p.bias).toUpperCase()}</span><h3>${p.name}</h3><h4>${p.viName}</h4></div>
+  <div class="pattern-hover"><div class="hover-head"><div><b>${p.name}</b><span>${p.viName}</span></div><span>${p.barLabel||`${p.candles} nến`}</span></div>${learningDiagram(p.id,'compact')}<p>${truncate(p.formation,145)}</p><div class="hover-context"><small>CONTEXT</small><span>${p.context}</span></div><button data-nav="/pattern/${p.id}">Xem chi tiết ${arrow()}</button></div></article>`;
+}
+
+function patternDetailPage(id){
+  const p=allLearningPatterns.find(x=>x.id===id); if(!p) return notFoundPage();
+  const related=getRelatedPatterns(p);
+  const compares=(comparePairs[p.id]||[]).map(x=>({...x, pattern:allLearningPatterns.find(p=>p.id===x.id)})).filter(x=>x.pattern);
+  const sections=[
+    ['01','Hiểu trong 10 giây',`<p>${p.formation}</p>`],
+    ['02','Cách mẫu hình hình thành',formationFlow(p)],
+    ['03','Context điển hình',`<p>${p.context}</p><div class="context-note"><b>Pattern + Context &gt; Pattern đơn lẻ.</b><span>ChartLab không xem hình dạng nến là tín hiệu mua/bán độc lập.</span></div>`],
+    ['04','Xác nhận nên theo dõi',`<p>${p.confirmation}</p>`],
+    ['05',p.level?.includes('Level 09')?'Khi nào không nên kết luận?':'Khi nào mất hiệu lực?',`<p>${p.invalidation}</p>`]
+  ];
+  if(p.implementationNote) sections.push(['06','Implementation note',`<p>${p.implementationNote}</p>`]);
+  const sameLevel=p.level?.includes('Level 09')?wyckoffLessons:p.level?.includes('Level 08')?volumePrinciples:p.level?.includes('Level 07')?chartPatterns:p.level?.includes('Level 06')?priceActionPatterns:patterns.filter(x=>x.candles===p.candles);
+  const index=sameLevel.findIndex(x=>x.id===p.id), prev=sameLevel[index-1], next=sameLevel[index+1];
+  return pageWrap(`${breadcrumb(['Pattern Library',p.name])}<section class="detail-hero"><div><div class="detail-badges"><span class="difficulty ${p.difficulty.toLowerCase()}">${p.difficulty}</span><span>${p.barLabel||`${p.candles} ${p.candles===1?'Candle':'Candles'}`}</span><span>${p.signalType}</span></div><h1>${p.name}</h1><h2>${p.viName}</h2><p class="ten-second">${p.formation}</p><div class="detail-actions"><button class="secondary" data-nav="${p.level?.includes('Level 09')?'/level/9':p.level?.includes('Level 08')?'/level/8':p.level?.includes('Level 07')?'/level/7':p.level?.includes('Level 06')?'/level/6':'/library'}">← ${p.level?.includes('Level 09')?'Level 09':p.level?.includes('Level 08')?'Level 08':p.level?.includes('Level 07')?'Level 07':p.level?.includes('Level 06')?'Level 06':'Thư viện'}</button>${compares[0]?`<button class="primary" data-nav="/compare/${p.id}/${compares[0].pattern.id}">So sánh với ${compares[0].pattern.name} ${arrow()}</button>`:''}</div></div><div class="detail-diagram">${learningDiagram(p.id,'hero')}<span>SƠ ĐỒ MINH HỌA · ${p.bias==='Both'?'MỘT BIẾN THỂ':'SCHEMATIC'}</span></div></section>
+  <section class="detail-layout"><div class="detail-main">${sections.map(x=>detailSection(...x)).join('')}</div><aside class="detail-aside"><div class="quick-facts"><h3>Quick facts</h3>${p.talib?fact('TA-Lib',p.talib):fact('Family',p.family||'Pattern')}${fact('Thiên hướng',p.bias)}${fact('Loại',p.signalType)}${fact('Số nến',p.barLabel||String(p.candles))}${fact('Độ khó',p.difficulty)}${fact('Kiểm định','Verified',true)}</div><div class="source-box"><span>NGUỒN ĐỊNH NGHĨA</span><p>${escText(p.sourceLabel||'Official TA-Lib pattern recognition page.')}</p><a href="${p.source}" target="_blank" rel="noreferrer">Mở nguồn chính ↗</a>${p.secondarySource?`<a href="${p.secondarySource}" target="_blank" rel="noreferrer">Nguồn đối chiếu ↗</a>`:''}</div></aside></section>
+  ${compares.length?`<section class="compare-strip"><div><span class="kicker">DỄ NHẦM VỚI</span><h2>Nhìn giống nhau, nhưng context khác.</h2></div><div class="compare-strip-grid">${compares.map(x=>`<button data-nav="/compare/${p.id}/${x.pattern.id}"><div>${learningDiagram(x.pattern.id,'micro')}</div><span><b>${x.pattern.name}</b><small>${x.note}</small></span>${arrow()}</button>`).join('')}</div></section>`:''}
+  <section class="related"><div class="section-heading compact"><div><span class="kicker">RELATED PATTERNS</span><h2>Mẫu hình liên quan</h2></div></div><div class="pattern-grid small">${related.map(patternCard).join('')}</div></section>
+  <nav class="pattern-nav">${prev?`<button data-nav="/pattern/${prev.id}"><small>← MẪU TRƯỚC</small><b>${prev.name}</b></button>`:'<span></span>'}${next?`<button data-nav="/pattern/${next.id}" class="next"><small>MẪU TIẾP →</small><b>${next.name}</b></button>`:'<span></span>'}</nav>`);
+}
+function getRelatedPatterns(p){
+  const preferred=(comparePairs[p.id]||[]).map(x=>x.id);
+  const pool=p.level?.includes('Level 09')?wyckoffLessons:p.level?.includes('Level 08')?volumePrinciples:p.level?.includes('Level 07')?chartPatterns:p.level?.includes('Level 06')?priceActionPatterns:patterns;
+  return pool.filter(x=>x.id!==p.id && !preferred.includes(x.id) && (x.family===p.family || x.candles===p.candles || normalizeBias(x.bias)===normalizeBias(p.bias))).slice(0,4);
+}
+function formationFlow(p){
+  return `<div class="formation-flow"><article><span>01</span><b>Bối cảnh</b><p>${escText(p.context)}</p></article><i>${arrow()}</i><article><span>02</span><b>Diễn biến giá</b><p>${escText(p.formation)}</p></article><i>${arrow()}</i><article><span>03</span><b>Chờ xác nhận</b><p>${escText(p.confirmation)}</p></article></div>`;
+}
+function comparePage(idA,idB){
+  const a=allLearningPatterns.find(x=>x.id===idA), b=allLearningPatterns.find(x=>x.id===idB); if(!a||!b) return notFoundPage();
+  const note=(comparePairs[idA]||[]).find(x=>x.id===idB)?.note || (comparePairs[idB]||[]).find(x=>x.id===idA)?.note || 'So sánh hình học, context và confirmation để tránh nhận diện chỉ bằng hình dạng.';
+  return pageWrap(`${breadcrumb(['Pattern Library','Compare'])}<div class="compare-head"><span class="kicker">PATTERN COMPARE</span><h1>${a.name} <em>vs</em> ${b.name}</h1><p>${note}</p></div><div class="compare-grid">${compareColumn(a)}${compareColumn(b)}</div><div class="compare-verdict"><span>KEY DIFFERENCE</span><h2>Đừng hỏi “hình này giống mẫu nào?” trước khi hỏi “nó xuất hiện ở đâu trong cấu trúc giá?”.</h2><p>${note}</p></div><div class="compare-table"><div class="compare-row header"><b>Tiêu chí</b><b>${a.name}</b><b>${b.name}</b></div>${compareRow('Tên Việt',a.viName,b.viName)}${compareRow('Số nến',a.barLabel||String(a.candles),b.barLabel||String(b.candles))}${compareRow('Thiên hướng',a.bias,b.bias)}${compareRow('Context',a.context,b.context)}${compareRow('Xác nhận',a.confirmation,b.confirmation)}${compareRow('Mất hiệu lực',a.invalidation,b.invalidation)}</div><div class="compare-actions"><button class="secondary" data-nav="/pattern/${a.id}">← Học ${a.name}</button><button class="primary" data-nav="/pattern/${b.id}">Học ${b.name} ${arrow()}</button></div>`);
+}
+function compareColumn(p){return `<article class="compare-column"><div class="compare-title"><span>${(p.barLabel||`${p.candles} ${p.candles===1?'CANDLE':'CANDLES'}`).toString().toUpperCase()} · ${normalizeBias(p.bias).toUpperCase()}</span><h2>${p.name}</h2><h3>${p.viName}</h3></div><div class="compare-diagram">${learningDiagram(p.id,'hero')}</div><p>${p.formation}</p></article>`;}
+function compareRow(label,a,b){return `<div class="compare-row"><span>${label}</span><p>${escText(a)}</p><p>${
