@@ -6,7 +6,8 @@ compatibility_date = "2026-09-14"
 binding = "AI"
 
 [vars]
-WORKERS_AI_MODEL = "@cf/meta/llama-4-scout-17b-16e-instruct"
+VISION_MODEL = "@cf/meta/llama-4-scout-17b-16e-instruct"
+JSON_MODEL = "@cf/meta/llama-3.1-8b-instruct-fast"
 MAX_IMAGE_CHARS = "8000000"
 AI_TIMEOUT_MS = "60000"
 ALLOWED_ORIGINS = "https://phuongtuanchungkhoanagribank.github.io"
