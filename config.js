@@ -1,9 +1,7 @@
 // chartlab.phuongtuan runtime config
-// 1) Deploy frontend first with apiEndpoint="" -> Demo mode.
-// 2) Deploy Cloudflare Worker, then paste its /analyze URL here and push again.
-// Expected GitHub Pages URL: https://phuongtuanchungkhoanagribank.github.io/chartlab.phuongtuan/
-// Never place OPENAI_API_KEY or AI_ACCESS_CODE in this file.
+// AI Live runs through Cloudflare Workers AI (free-tier first).
+// The frontend never stores provider credentials.
 window.CHARTLAB_CONFIG = {
-  apiEndpoint: "",
+  apiEndpoint: "https://chartlab-phuongtuan-ai.tuanntp0407.workers.dev/analyze",
   allowDemoFallback: true
 };
