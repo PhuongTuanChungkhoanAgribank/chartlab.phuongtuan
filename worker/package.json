@@ -3,8 +3,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "wrangler dev",
-    "deploy": "wrangler deploy",
+    "prepare-rulebooks": "node prepare-rulebooks.mjs",
+    "dev": "npm run prepare-rulebooks && wrangler dev",
+    "deploy": "npm run prepare-rulebooks && wrangler deploy",
     "tail": "wrangler tail"
   },
   "devDependencies": {
