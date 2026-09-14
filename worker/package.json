@@ -3,6 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "postinstall": "node prepare-rulebooks.mjs",
     "prepare-rulebooks": "node prepare-rulebooks.mjs",
     "dev": "npm run prepare-rulebooks && wrangler dev",
     "deploy": "npm run prepare-rulebooks && wrangler deploy",
