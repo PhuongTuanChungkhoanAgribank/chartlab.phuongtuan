@@ -4,7 +4,9 @@ import { CHART_PATTERN_RULEBOOK } from "./chart-pattern-rulebook.js";
 import { VOLUME_RULEBOOK } from "./volume-rulebook.js";
 import { WYCKOFF_RULEBOOK } from "./wyckoff-rulebook.js";
 
-const DEFAULT_MODEL = "@cf/meta/llama-4-scout-17b-16e-instruct";
+const DEFAULT_VISION_MODEL = "@cf/meta/llama-4-scout-17b-16e-instruct";
+const DEFAULT_JSON_MODEL = "@cf/meta/llama-3.1-8b-instruct-fast";
+const ENGINE_VERSION = "cf-ai-v2-two-pass";
 const DEFAULT_MAX_DATA_URL_CHARS = 8_000_000;
 const DEFAULT_AI_TIMEOUT_MS = 60_000;
 
@@ -105,7 +107,15 @@ export default {
 
     const url = new URL(request.url);
     if (request.method === "GET" && url.pathname === "/health") {
-      return json({ ok: true, service: "chartlab-ai", provider: "cloudflare-workers-ai", model: env.WORKERS_AI_MODEL || DEFAULT_MODEL, freeTier: true }, 200, cors);
+      return json({
+        ok: true,
+        service: "chartlab-ai",
+        provider: "cloudflare-workers-ai",
+        engineVersion: ENGINE_VERSION,
+        visionModel: env.VISION_MODEL || DEFAULT_VISION_MODEL,
+        jsonModel: env.JSON_MODEL || DEFAULT_JSON_MODEL,
+        freeTier: true
+      }, 200, cors);
     }
 
     if (request.method !== "POST" || url.pathname !== "/analyze") {
@@ -146,22 +156,45 @@ export default {
       return json({ error: "Ảnh quá lớn. Hãy dùng ảnh nhỏ hơn hoặc để frontend nén ảnh trước khi gửi." }, 413, cors);
     }
 
-    const model = env.WORKERS_AI_MODEL || DEFAULT_MODEL;
-    const prompt = buildPrompt(symbol, timeframe);
+    const visionModel = env.VISION_MODEL || DEFAULT_VISION_MODEL;
+    const jsonModel = env.JSON_MODEL || DEFAULT_JSON_MODEL;
     const timeoutMs = positiveInt(env.AI_TIMEOUT_MS, DEFAULT_AI_TIMEOUT_MS);
 
-    let raw;
+    let visionRaw;
+    let vision;
     try {
-      raw = await withTimeout(
-        env.AI.run(model, {
+      visionRaw = await withTimeout(
+        env.AI.run(visionModel, {
           messages: [
-            { role: "system", content: SYSTEM_PROMPT },
-            { role: "user", content: prompt }
+            { role: "system", content: VISION_SYSTEM_PROMPT },
+            { role: "user", content: buildVisionPrompt(symbol, timeframe) }
           ],
           image: imageDataUrl,
-          guided_json: ANALYSIS_SCHEMA,
-          max_tokens: 2200,
-          temperature: 0.1
+          max_tokens: 1400,
+          temperature: 0
+        }),
+        timeoutMs
+      );
+      vision = parseVisionReport(extractWorkersAIText(visionRaw));
+    } catch (error) {
+      const mapped = mapWorkersAIError(error);
+      return json(mapped.body, mapped.status, cors);
+    }
+
+    let structuredRaw;
+    try {
+      structuredRaw = await withTimeout(
+        env.AI.run(jsonModel, {
+          messages: [
+            { role: "system", content: SYNTHESIS_SYSTEM_PROMPT },
+            { role: "user", content: buildSynthesisPrompt(symbol, timeframe, vision) }
+          ],
+          response_format: {
+            type: "json_schema",
+            json_schema: ANALYSIS_SCHEMA
+          },
+          max_tokens: 3000,
+          temperature: 0.05
         }),
         timeoutMs
       );
@@ -171,120 +204,125 @@ export default {
     }
 
     try {
-      const parsed = parseWorkersAIJson(raw);
-      const validIds = new Set(RULEBOOK.map(p => p.id));
-      const validPriceActionIds = new Set(PRICE_ACTION_RULEBOOK.map(p => p.id));
-      const validChartPatternIds = new Set(CHART_PATTERN_RULEBOOK.map(p => p.id));
-      const validVolumeIds = new Set(VOLUME_RULEBOOK.map(p => p.id));
-      const validWyckoffIds = new Set(WYCKOFF_RULEBOOK.map(p => p.id));
-      if (!validIds.has(parsed?.candlestick?.patternId)) parsed.candlestick.patternId = "";
-      if (!validPriceActionIds.has(parsed?.priceAction?.patternId)) parsed.priceAction.patternId = "";
-      if (!validChartPatternIds.has(parsed?.chartPattern?.patternId)) parsed.chartPattern.patternId = "";
-      if (!validVolumeIds.has(parsed?.volume?.patternId)) parsed.volume.patternId = "";
-      if (!validWyckoffIds.has(parsed?.wyckoff?.patternId)) parsed.wyckoff.patternId = "";
+      const parsedRaw = parseWorkersAIJson(structuredRaw);
+      const parsed = normalizeAnalysis(parsedRaw, symbol, timeframe);
+      applyVisionQuality(parsed, vision);
+      validatePatternIds(parsed);
       enforceQualityGate(parsed);
-      return json({ ok: true, result: parsed, provider: "cloudflare-workers-ai", model, usage: raw?.usage || null }, 200, cors);
+      return json({
+        ok: true,
+        result: parsed,
+        provider: "cloudflare-workers-ai",
+        engineVersion: ENGINE_VERSION,
+        models: { vision: visionModel, structured: jsonModel },
+        usage: {
+          vision: visionRaw?.usage || null,
+          structured: structuredRaw?.usage || null
+        }
+      }, 200, cors);
     } catch (error) {
       return json({ error: "AI trả kết quả không đọc được.", detail: String(error?.message || error) }, 502, cors);
     }
   }
 };
 
-function enforceQualityGate(parsed) {
-  const status = parsed?.analysisStatus?.status;
-  const q = parsed?.imageQuality || {};
-  const mustReject = status === "NeedsBetterImage" || q.grade === "Poor" || q.candlesticks === false;
-  if (mustReject) {
-    parsed.analysisStatus = {
-      status: "NeedsBetterImage",
-      message: parsed?.analysisStatus?.message || "Ảnh chưa đủ rõ để đưa ra nhận định kỹ thuật đáng tin cậy.",
-      missing: Array.isArray(parsed?.analysisStatus?.missing) ? parsed.analysisStatus.missing : []
-    };
-    for (const key of ["candlestick", "priceAction", "chartPattern", "volume", "wyckoff"]) {
-      if (parsed[key]) {
-        parsed[key].patternId = "";
-        parsed[key].confidence = "Insufficient";
-      }
-    }
-    for (const key of ["marketStructure", "keyLevels"]) {
-      if (parsed[key]) parsed[key].confidence = "Insufficient";
-    }
-    if (parsed.advisorView) {
-      parsed.advisorView.bias = "Insufficient";
-      parsed.advisorView.confidence = "Insufficient";
-      parsed.advisorView.headline = "Ảnh chưa đủ rõ để đưa ra góc nhìn kỹ thuật";
-      parsed.advisorView.watch = "Chụp lại chart với vùng nến rộng hơn và rõ trục giá.";
-      parsed.advisorView.confirmation = "Phân tích lại sau khi ảnh đạt quality gate.";
-      parsed.advisorView.invalidation = "Không áp dụng nhận định kỹ thuật từ ảnh hiện tại.";
-    }
-    parsed.conclusion = "Ảnh hiện tại chưa đủ rõ hoặc thiếu context để tạo nhận định kỹ thuật đáng tin cậy.";
-    parsed.clientShort = "Ảnh chart hiện tại chưa đủ rõ để mình đưa ra nhận định kỹ thuật đáng tin cậy. Anh/chị vui lòng gửi lại ảnh có vùng nến rộng hơn, nhìn rõ trục giá và khối lượng (nếu có), mình sẽ kiểm tra lại ngay.";
-    parsed.clientText = parsed.clientShort;
-  }
-  if (q.volume === false && parsed.volume) {
-    parsed.volume.patternId = "";
-    parsed.volume.confidence = "Insufficient";
-  }
-  if (q.enoughHistory === false) {
-    for (const key of ["chartPattern", "wyckoff"]) {
-      if (parsed[key]) {
-        parsed[key].patternId = "";
-        parsed[key].confidence = "Insufficient";
-      }
-    }
-  }
-}
+const VISION_SYSTEM_PROMPT = `Bạn là bộ đọc ảnh chart kỹ thuật. Nhiệm vụ ở bước này CHỈ là nhìn screenshot và ghi nhận dữ liệu nhìn thấy, chưa viết khuyến nghị.
 
-const SYSTEM_PROMPT = `Bạn là ChartLab Chart Analyzer, trợ lý đọc BIỂU ĐỒ kỹ thuật thuần chart.
+BẮT BUỘC trả đúng dạng text sau, mỗi cờ một dòng:
+QUALITY=GOOD hoặc QUALITY=USABLE hoặc QUALITY=POOR
+CANDLES=YES hoặc CANDLES=NO
+PRICE_AXIS=YES hoặc PRICE_AXIS=NO
+VOLUME=YES hoặc VOLUME=NO
+INDICATORS=YES hoặc INDICATORS=NO
+HISTORY=YES hoặc HISTORY=NO
+OBSERVATIONS:
+- ...
 
-NGUYÊN TẮC BẮT BUỘC:
-- Chỉ dùng những gì nhìn thấy trong screenshot và symbol/timeframe người dùng cung cấp.
-- Không nói về vĩ mô, tin tức, cơ bản doanh nghiệp, định giá hay catalyst ngoài chart.
-- Không bịa giá, support/resistance hoặc chỉ báo nếu nhãn/trục không đọc rõ.
-- Bước 1 luôn là QUALITY GATE: đánh giá ảnh có đủ để dùng cho tư vấn viên hay không.
-- analysisStatus = "Ready" chỉ khi candle geometry đọc rõ và chart đủ context; "Limited" khi vẫn phân tích được nhưng thiếu một phần như trục giá/volume; "NeedsBetterImage" khi ảnh mờ, crop quá sát, không đọc được nến hoặc thiếu context nghiêm trọng.
-- Khi analysisStatus = "NeedsBetterImage": không gọi tên pattern, mọi patternId để rỗng, confidence = "Insufficient", và bản gửi khách hàng chỉ nên đề nghị chụp lại ảnh rõ hơn.
-- Nếu dữ liệu không đủ, dùng confidence = "Insufficient" và nói rõ thiếu gì.
-- Pattern nến phải đặt trong context. Không viết "thấy Hammer = mua".
-- Price Action phải phân biệt compression, expansion, rejection và false breakout. Inside Bar/Outside Bar đọc theo full high-low range; Engulfing đọc theo real body.
-- Không gọi Fakey nếu chưa thấy rõ Inside Bar setup + false breakout. Không gọi Outside Key Reversal chỉ vì thấy Outside Bar.
-- Phân biệt candlestick pattern, price-action setup và classical chart pattern.
-- Classical chart pattern chỉ được gọi tên khi multi-swing geometry đủ rõ. Với reversal patterns, phải xét prior trend; với Double/Triple Top-Bottom và Head & Shoulders phải yêu cầu neckline/support-resistance break để gọi pattern hoàn tất.
-- Với Triangle/Rectangle, không đoán hướng breakout nếu source pattern là neutral. Flag/Pennant chỉ được gọi khi có prior sharp move/flagpole rõ.
-- Volume là mức độ participation/effort, không tự mang hướng bullish/bearish. Chỉ đọc volume khi panel volume đủ rõ.
-- Khi đánh giá trend: ưu tiên logic price move theo xu hướng đi cùng volume mở rộng, còn retracement đi với volume co lại. New high/new low trên volume suy giảm chỉ là non-confirmation/cảnh báo, không tự là reversal.
-- Breakout/breakdown có volume expansion được xem là xác nhận mạnh hơn; low-volume breakout là conviction thấp hơn chứ không tự đồng nghĩa false breakout.
-- Với Effort vs Result: high volume + wide price result có thể là participation mạnh; high volume + narrow result là cảnh báo absorption/opposition và phải đọc context + follow-through.
-- Không gọi Volume Climax chỉ vì thấy một volume spike. Cần trend extreme và phản ứng giá/follow-through phù hợp.
-- Wyckoff chỉ được gọi tên phase/schematic/event khi chart đủ dài và price-volume context đủ rõ; nếu không thì ghi chưa đủ dữ liệu. Spring và UTAD đều không bắt buộc; không ép mọi trading range vào schematic.
-- Bản gửi khách hàng phải ngắn, chuyên nghiệp, trung tính; không dùng ngôn ngữ đảm bảo lợi nhuận và không đưa lệnh mua/bán trực tiếp.
-- advisorView là snapshot dành cho tư vấn viên: Bias → Điểm cần theo dõi → Điều kiện xác nhận → Điều kiện làm nhận định suy yếu. Bias chỉ là góc nhìn kỹ thuật, KHÔNG phải khuyến nghị giao dịch.
-- clientShort viết 45–90 từ, ưu tiên 3 ý: trạng thái hiện tại, điều kiện tích cực hơn, điều kiện cần thận trọng. clientText viết 90–150 từ và có thể copy gửi khách hàng.
-- Kết luận nên theo cấu trúc: xu hướng/cấu trúc → vùng hoặc tín hiệu đáng chú ý → điều kiện xác nhận → điều kiện làm nhận định suy yếu.
-- Confidence là độ tự tin của NHẬN DIỆN từ ảnh, không phải xác suất thắng giao dịch.
+Quy tắc quality gate:
+- UI của TradingView, thanh công cụ, logo hoặc khoảng trắng KHÔNG phải lý do đánh ảnh POOR.
+- Nếu nhìn thấy rõ nhiều nến và hình học tổng thể của chart, CANDLES=YES.
+- Nếu chart có đủ nhiều swing/nến để nhận xét cấu trúc ngắn-trung hạn, HISTORY=YES.
+- Nếu trục giá bên phải nhìn thấy các mốc dù chữ hơi nhỏ, PRICE_AXIS=YES.
+- Nếu histogram volume nhìn thấy ở dưới, VOLUME=YES.
+- Nếu có MA/Bollinger/indicator nhìn thấy, INDICATORS=YES.
+- QUALITY=POOR chỉ khi vùng chart thực sự mờ, quá nhỏ, crop mất phần lớn nến hoặc không thể đọc cấu trúc.
+- QUALITY=USABLE khi phân tích được nhưng một số số liệu/nhãn không đủ nét.
+- QUALITY=GOOD khi nến, cấu trúc và các panel chính rõ.
 
-CANDLESTICK RULEBOOK CHARTLAB (nguồn production):
-${JSON.stringify(RULEBOOK)}
+Trong OBSERVATIONS hãy ghi cụ thể những gì nhìn thấy: xu hướng/cấu trúc, vị trí giá hiện tại so với swing gần nhất, vùng giá đọc được nếu rõ, hình dạng vài nến cuối, volume, MA/BB nếu có, breakout/rejection/compression nếu thực sự thấy. Không suy diễn vĩ mô hay cơ bản.`;
 
-PRICE ACTION RULEBOOK CHARTLAB (Level 06):
-${JSON.stringify(PRICE_ACTION_RULEBOOK)}
+const SYNTHESIS_SYSTEM_PROMPT = `Bạn là ChartLab Chart Analyzer. Bạn nhận báo cáo quan sát từ một model vision đã nhìn ảnh chart. Hãy biến các quan sát đó thành phân tích kỹ thuật thuần chart có cấu trúc JSON.
 
-CLASSICAL CHART PATTERN RULEBOOK CHARTLAB (Level 07):
-${JSON.stringify(CHART_PATTERN_RULEBOOK)}
+NGUYÊN TẮC:
+- Chỉ dùng dữ liệu trong VISION REPORT và symbol/timeframe người dùng cung cấp.
+- Không nói vĩ mô, tin tức, cơ bản, định giá hay catalyst.
+- Không bịa mức giá. Nếu không đọc được số, mô tả tương đối.
+- Không đưa lệnh mua/bán trực tiếp và không đảm bảo lợi nhuận.
+- Confidence là độ tự tin của nhận diện từ ảnh, không phải xác suất giá tăng/giảm.
+- Pattern nến phải đặt trong context; không coi một nến đơn lẻ là tín hiệu giao dịch.
+- Classical chart pattern chỉ gọi tên khi hình học multi-swing đủ rõ; reversal pattern cần prior trend và xác nhận cấu trúc.
+- Volume chỉ phân tích khi VOLUME=YES; volume spike không tự động là climax.
+- Wyckoff chỉ gọi khi đủ prior trend + trading range + price-volume context; Spring/UTAD không bắt buộc.
+- Mọi value/note phải là nhận xét CỤ THỂ VỀ CHART, tuyệt đối không được chép lại schema, hướng dẫn, comment code, dấu ngoặc, hoặc câu kiểu "0.0-1.0".
+- Nếu không có pattern rõ: value mô tả "Chưa có mẫu hình đủ rõ", note giải thích ngắn, confidence="Insufficient", patternId="".
+- clientShort 45–90 từ; clientText 90–150 từ, tiếng Việt, trung tính.
 
-PRICE & VOLUME RULEBOOK CHARTLAB (Level 08):
-${JSON.stringify(VOLUME_RULEBOOK)}
-
-WYCKOFF RULEBOOK CHARTLAB (Level 09):
-${JSON.stringify(WYCKOFF_RULEBOOK)}
+CATALOG ID HỢP LỆ (được sinh trực tiếp từ rulebook production):
+CANDLESTICK: ${compactCatalog(RULEBOOK)}
+PRICE_ACTION: ${compactCatalog(PRICE_ACTION_RULEBOOK)}
+CHART_PATTERN: ${compactCatalog(CHART_PATTERN_RULEBOOK)}
+PRICE_VOLUME: ${compactCatalog(VOLUME_RULEBOOK)}
+WYCKOFF: ${compactCatalog(WYCKOFF_RULEBOOK)}
 `;
 
-function buildPrompt(symbol, timeframe) {
-  return `Phân tích screenshot chart này cho ${symbol}, timeframe do người dùng chọn: ${timeframe}.
-Trả đúng JSON schema. Với candlestick.patternId chỉ dùng id có trong candlestick rulebook. Với priceAction.patternId chỉ dùng id có trong Price Action rulebook. Với chartPattern.patternId chỉ dùng id có trong Classical Chart Pattern rulebook. Với volume.patternId chỉ dùng id có trong Price & Volume rulebook và phải để chuỗi rỗng nếu imageQuality.volume = false hoặc không đủ bằng chứng. Với wyckoff.patternId chỉ dùng id có trong Wyckoff rulebook; nếu chart không đủ prior trend + trading range + price-volume context thì patternId phải để chuỗi rỗng và confidence = "Insufficient". Nếu không đủ bằng chứng hãy để chuỗi rỗng.
-Trong keyLevels, nếu đọc được mức giá thì nêu số; nếu không đọc rõ, mô tả tương đối như "đỉnh gần nhất" hoặc "vùng hỗ trợ gần nhất" thay vì đoán.
-Nếu ảnh chỉ đủ một phần, analysisStatus phải là "Limited" và liệt kê thiếu gì trong analysisStatus.missing. Nếu candle geometry không đủ rõ, dùng "NeedsBetterImage".
-advisorView phải súc tích, tránh thuật ngữ khó nếu không cần thiết. clientShort 45–90 từ; clientText 90–150 từ. Cả hai viết tiếng Việt và không chứa lệnh mua/bán trực tiếp.`;
+function buildVisionPrompt(symbol, timeframe) {
+  return `Hãy quan sát screenshot chart của ${symbol}, timeframe người dùng chọn là ${timeframe}. Tập trung vào vùng chart, không đánh rớt quality chỉ vì giao diện phần mềm xuất hiện trong ảnh.`;
+}
+
+function buildSynthesisPrompt(symbol, timeframe, vision) {
+  return `SYMBOL=${symbol}\nTIMEFRAME=${timeframe}\n\nVISION FLAGS:\nQUALITY=${vision.quality}\nCANDLES=${flagText(vision.candlesticks)}\nPRICE_AXIS=${flagText(vision.priceAxis)}\nVOLUME=${flagText(vision.volume)}\nINDICATORS=${flagText(vision.indicators)}\nHISTORY=${flagText(vision.enoughHistory)}\n\nVISION REPORT:\n${vision.observations}\n\nHãy trả đúng JSON schema đã yêu cầu. imageQuality phải phản ánh đúng VISION FLAGS. Nếu CANDLES=YES thì không được dùng NeedsBetterImage chỉ vì một vài nhãn nhỏ; dùng Limited khi thiếu một phần dữ liệu.`;
+}
+
+function parseVisionReport(text) {
+  const source = String(text || "").trim();
+  if (!source) throw new Error("Vision model không trả nội dung.");
+  const qualityRaw = readMarker(source, "QUALITY");
+  const quality = ["GOOD", "USABLE", "POOR"].includes(qualityRaw) ? qualityRaw : "USABLE";
+  const observationsMatch = source.match(/OBSERVATIONS\s*:\s*([\s\S]*)/i);
+  return {
+    quality,
+    candlesticks: readYesNo(source, "CANDLES"),
+    priceAxis: readYesNo(source, "PRICE_AXIS"),
+    volume: readYesNo(source, "VOLUME"),
+    indicators: readYesNo(source, "INDICATORS"),
+    enoughHistory: readYesNo(source, "HISTORY"),
+    observations: cleanText(observationsMatch?.[1] || source, "Không có mô tả chi tiết từ vision model.", 7000)
+  };
+}
+
+function readMarker(text, key) {
+  const m = text.match(new RegExp(`(?:^|\\n)\\s*${key}\\s*=\\s*([A-Z_]+)`, "i"));
+  return m ? m[1].toUpperCase() : "";
+}
+
+function readYesNo(text, key) {
+  const value = readMarker(text, key);
+  if (value === "YES") return true;
+  if (value === "NO") return false;
+  return null;
+}
+
+function flagText(value) {
+  return value === true ? "YES" : value === false ? "NO" : "UNKNOWN";
+}
+
+function extractWorkersAIText(response) {
+  const candidate = response?.response ?? response?.result ?? response;
+  if (typeof candidate === "string") return candidate;
+  if (candidate && typeof candidate === "object" && typeof candidate.response === "string") return candidate.response;
+  if (typeof response?.choices?.[0]?.message?.content === "string") return response.choices[0].message.content;
+  if (candidate && typeof candidate === "object") return JSON.stringify(candidate);
+  return "";
 }
 
 function parseWorkersAIJson(response) {
@@ -292,13 +330,213 @@ function parseWorkersAIJson(response) {
   if (candidate && typeof candidate === "object" && !Array.isArray(candidate)) {
     if (candidate.symbol || candidate.analysisStatus || candidate.advisorView) return candidate;
   }
-  let text = typeof candidate === "string" ? candidate : "";
-  if (!text && typeof response?.choices?.[0]?.message?.content === "string") {
-    text = response.choices[0].message.content;
-  }
+  let text = extractWorkersAIText(response).trim();
   if (!text) throw new Error("Workers AI không trả nội dung JSON.");
-  text = text.trim().replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "");
-  return JSON.parse(text);
+  text = text.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "");
+  try {
+    return JSON.parse(text);
+  } catch {
+    const extracted = extractBalancedJson(text);
+    if (!extracted) throw new Error("Không tìm thấy JSON object hoàn chỉnh trong phản hồi AI.");
+    return JSON.parse(extracted);
+  }
+}
+
+function extractBalancedJson(text) {
+  let start = -1;
+  let depth = 0;
+  let inString = false;
+  let escaped = false;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    if (start < 0) {
+      if (ch === "{") { start = i; depth = 1; }
+      continue;
+    }
+    if (inString) {
+      if (escaped) escaped = false;
+      else if (ch === "\\") escaped = true;
+      else if (ch === '"') inString = false;
+      continue;
+    }
+    if (ch === '"') inString = true;
+    else if (ch === "{") depth++;
+    else if (ch === "}") {
+      depth--;
+      if (depth === 0) return text.slice(start, i + 1);
+    }
+  }
+  return "";
+}
+
+function normalizeAnalysis(input, symbol, timeframe) {
+  const src = input && typeof input === "object" ? input : {};
+  return {
+    symbol: cleanText(src.symbol || symbol, symbol, 24).toUpperCase(),
+    timeframe: cleanText(src.timeframe || timeframe, timeframe, 24),
+    analysisStatus: {
+      status: enumValue(src?.analysisStatus?.status, ["Ready", "Limited", "NeedsBetterImage"], "Limited"),
+      message: cleanText(src?.analysisStatus?.message, "Ảnh đủ để phân tích ở mức giới hạn.", 500),
+      missing: stringArray(src?.analysisStatus?.missing, 8, 120)
+    },
+    imageQuality: {
+      grade: enumValue(src?.imageQuality?.grade, ["Good", "Usable", "Poor"], "Usable"),
+      note: cleanText(src?.imageQuality?.note, "Đánh giá dựa trên vùng chart nhìn thấy.", 500),
+      candlesticks: boolValue(src?.imageQuality?.candlesticks, false),
+      priceAxis: boolValue(src?.imageQuality?.priceAxis, false),
+      volume: boolValue(src?.imageQuality?.volume, false),
+      indicators: boolValue(src?.imageQuality?.indicators, false),
+      enoughHistory: boolValue(src?.imageQuality?.enoughHistory, false)
+    },
+    advisorView: {
+      bias: enumValue(src?.advisorView?.bias, ["Positive", "Neutral", "Cautious", "Insufficient"], "Neutral"),
+      confidence: enumValue(src?.advisorView?.confidence, CONFIDENCE, "Low"),
+      headline: cleanText(src?.advisorView?.headline, "Chưa có kết luận rõ", 500),
+      watch: cleanText(src?.advisorView?.watch, "Theo dõi phản ứng giá tại vùng gần nhất.", 700),
+      confirmation: cleanText(src?.advisorView?.confirmation, "Cần thêm xác nhận từ giá.", 700),
+      invalidation: cleanText(src?.advisorView?.invalidation, "Nhận định suy yếu nếu cấu trúc hiện tại bị phủ nhận.", 700)
+    },
+    marketStructure: normalizeBlock(src.marketStructure),
+    keyLevels: normalizeBlock(src.keyLevels),
+    candlestick: normalizeLinkedBlock(src.candlestick),
+    priceAction: normalizeLinkedBlock(src.priceAction),
+    chartPattern: normalizeLinkedBlock(src.chartPattern),
+    volume: normalizeLinkedBlock(src.volume),
+    wyckoff: normalizeLinkedBlock(src.wyckoff),
+    conclusion: cleanText(src.conclusion, "Chưa đủ dữ liệu để kết luận thêm.", 1200),
+    clientShort: cleanText(src.clientShort, "Chart hiện cần thêm xác nhận trước khi đưa ra nhận định rõ hơn.", 1200),
+    clientText: cleanText(src.clientText, "Chart hiện cần thêm xác nhận trước khi đưa ra nhận định rõ hơn. Ưu tiên theo dõi cấu trúc giá và phản ứng tại các vùng gần nhất thay vì suy diễn tín hiệu khi bằng chứng chưa đủ.", 2200),
+    warnings: stringArray(src.warnings, 10, 300)
+  };
+}
+
+function normalizeBlock(src) {
+  return {
+    value: cleanText(src?.value, "Chưa đủ dữ liệu", 1000),
+    note: cleanText(src?.note, "Chưa có xác nhận rõ từ chart.", 1200),
+    confidence: enumValue(src?.confidence, CONFIDENCE, "Insufficient")
+  };
+}
+
+function normalizeLinkedBlock(src) {
+  return {
+    value: cleanText(src?.value, "Chưa có mẫu hình đủ rõ", 1000),
+    note: cleanText(src?.note, "Chưa đủ bằng chứng để gắn mẫu hình cụ thể.", 1200),
+    confidence: enumValue(src?.confidence, CONFIDENCE, "Insufficient"),
+    patternId: sanitizePatternId(src?.patternId)
+  };
+}
+
+function cleanText(value, fallback, max = 1600) {
+  const text = String(value ?? "").replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, " ").trim();
+  if (!text) return fallback;
+  const metaGarbage = /(additionalproperties|json[_ ]?schema|patternid\s*[:=]|\/\/|0\.0\s*-\s*1\.0|insufficient nếu|properties\s*[:=]|required\s*[:=])/i;
+  if (metaGarbage.test(text)) return fallback;
+  return text.slice(0, max);
+}
+
+function stringArray(value, maxItems, maxLen) {
+  if (!Array.isArray(value)) return [];
+  return value.map(v => cleanText(v, "", maxLen)).filter(Boolean).slice(0, maxItems);
+}
+
+function enumValue(value, allowed, fallback) {
+  return allowed.includes(value) ? value : fallback;
+}
+
+function boolValue(value, fallback) {
+  if (value === true || value === false) return value;
+  if (String(value).toLowerCase() === "true") return true;
+  if (String(value).toLowerCase() === "false") return false;
+  return fallback;
+}
+
+function sanitizePatternId(value) {
+  return String(value || "").trim().toLowerCase().replace(/[^a-z0-9_-]/g, "").slice(0, 80);
+}
+
+function applyVisionQuality(parsed, vision) {
+  const q = parsed.imageQuality;
+  if (vision.candlesticks !== null) q.candlesticks = vision.candlesticks;
+  if (vision.priceAxis !== null) q.priceAxis = vision.priceAxis;
+  if (vision.volume !== null) q.volume = vision.volume;
+  if (vision.indicators !== null) q.indicators = vision.indicators;
+  if (vision.enoughHistory !== null) q.enoughHistory = vision.enoughHistory;
+  q.grade = vision.quality === "GOOD" ? "Good" : vision.quality === "POOR" ? "Poor" : "Usable";
+  q.note = cleanText(vision.observations, q.note, 500);
+
+  const missing = [];
+  if (q.candlesticks === false) missing.push("nến");
+  if (q.priceAxis === false) missing.push("trục giá");
+  if (q.volume === false) missing.push("khối lượng");
+  if (q.enoughHistory === false) missing.push("đủ lịch sử giá");
+
+  if (q.candlesticks === false || q.grade === "Poor") {
+    parsed.analysisStatus.status = "NeedsBetterImage";
+    parsed.analysisStatus.message = "Vùng chart chưa đủ rõ để đọc hình học nến đáng tin cậy.";
+  } else if (q.priceAxis === false || q.enoughHistory === false || q.grade === "Usable") {
+    parsed.analysisStatus.status = "Limited";
+    parsed.analysisStatus.message = "Ảnh đủ để phân tích nhưng còn một số giới hạn dữ liệu.";
+  } else {
+    parsed.analysisStatus.status = "Ready";
+    parsed.analysisStatus.message = "Ảnh đủ rõ để phân tích kỹ thuật từ những gì đang hiển thị.";
+  }
+  parsed.analysisStatus.missing = missing;
+}
+
+function validatePatternIds(parsed) {
+  const catalogs = {
+    candlestick: new Set(RULEBOOK.map(p => p.id)),
+    priceAction: new Set(PRICE_ACTION_RULEBOOK.map(p => p.id)),
+    chartPattern: new Set(CHART_PATTERN_RULEBOOK.map(p => p.id)),
+    volume: new Set(VOLUME_RULEBOOK.map(p => p.id)),
+    wyckoff: new Set(WYCKOFF_RULEBOOK.map(p => p.id))
+  };
+  for (const [key, ids] of Object.entries(catalogs)) {
+    if (!ids.has(parsed[key]?.patternId)) parsed[key].patternId = "";
+  }
+}
+
+function enforceQualityGate(parsed) {
+  const q = parsed.imageQuality || {};
+  const mustReject = parsed.analysisStatus.status === "NeedsBetterImage";
+  if (mustReject) {
+    for (const key of ["candlestick", "priceAction", "chartPattern", "volume", "wyckoff"]) {
+      parsed[key].patternId = "";
+      parsed[key].confidence = "Insufficient";
+    }
+    parsed.marketStructure.confidence = "Insufficient";
+    parsed.keyLevels.confidence = "Insufficient";
+    parsed.advisorView.bias = "Insufficient";
+    parsed.advisorView.confidence = "Insufficient";
+    parsed.advisorView.headline = "Ảnh chưa đủ rõ để đưa ra góc nhìn kỹ thuật";
+    parsed.advisorView.watch = "Chụp lại chart với vùng nến rộng hơn và rõ hơn.";
+    parsed.advisorView.confirmation = "Phân tích lại sau khi ảnh đạt quality gate.";
+    parsed.advisorView.invalidation = "Không áp dụng nhận định kỹ thuật từ ảnh hiện tại.";
+    parsed.conclusion = "Ảnh hiện tại chưa đủ rõ để tạo nhận định kỹ thuật đáng tin cậy.";
+    parsed.clientShort = "Ảnh chart hiện tại chưa đủ rõ để mình đưa ra nhận định kỹ thuật đáng tin cậy. Anh/chị vui lòng gửi lại ảnh có vùng nến rộng hơn và nhìn rõ cấu trúc giá, mình sẽ kiểm tra lại ngay.";
+    parsed.clientText = parsed.clientShort;
+  }
+  if (q.volume === false) {
+    parsed.volume.patternId = "";
+    parsed.volume.confidence = "Insufficient";
+    parsed.volume.value = "Không đủ dữ liệu volume";
+    parsed.volume.note = "Panel khối lượng không đủ rõ hoặc không xuất hiện trong ảnh.";
+  }
+  if (q.enoughHistory === false) {
+    for (const key of ["chartPattern", "wyckoff"]) {
+      parsed[key].patternId = "";
+      parsed[key].confidence = "Insufficient";
+    }
+  }
+}
+
+function compactCatalog(items) {
+  return items.map(item => {
+    const name = item.name || item.title || item.viName || item.id;
+    const vi = item.viName && item.viName !== name ? `/${item.viName}` : "";
+    return `${item.id}=${name}${vi}`;
+  }).join("; ");
 }
 
 function withTimeout(promise, timeoutMs) {
@@ -318,6 +556,9 @@ function mapWorkersAIError(error) {
   const lowered = message.toLowerCase();
   if (error?.code === "AI_TIMEOUT" || lowered.includes("timeout")) {
     return { status: 504, body: { error: "AI phản hồi quá lâu. Hãy thử lại.", code: "AI_TIMEOUT" } };
+  }
+  if (lowered.includes("json mode couldn't be met") || lowered.includes("json mode")) {
+    return { status: 502, body: { error: "AI chưa tạo được kết quả có cấu trúc. Hãy thử phân tích lại.", code: "JSON_MODE_FAILED" } };
   }
   if (lowered.includes("3036") || lowered.includes("daily free allocation") || lowered.includes("10,000 neurons")) {
     return { status: 429, body: { error: "Đã dùng hết quota AI miễn phí hôm nay. Hãy thử lại sau khi quota được làm mới.", code: "FREE_QUOTA_EXHAUSTED" } };
