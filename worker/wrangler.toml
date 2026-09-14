@@ -2,9 +2,11 @@ name = "chartlab-phuongtuan-ai"
 main = "worker.js"
 compatibility_date = "2026-09-14"
 
+[ai]
+binding = "AI"
+
 [vars]
-OPENAI_MODEL = "gpt-5.6-luna"
-IMAGE_DETAIL = "high"
+WORKERS_AI_MODEL = "@cf/meta/llama-4-scout-17b-16e-instruct"
 MAX_IMAGE_CHARS = "8000000"
-OPENAI_TIMEOUT_MS = "60000"
+AI_TIMEOUT_MS = "60000"
 ALLOWED_ORIGINS = "https://phuongtuanchungkhoanagribank.github.io"
