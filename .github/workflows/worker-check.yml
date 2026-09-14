@@ -1,0 +1,39 @@
+name: Check ChartLab AI Worker
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "worker/**"
+      - ".github/workflows/worker-check.yml"
+  pull_request:
+    paths:
+      - "worker/**"
+      - ".github/workflows/worker-check.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  check-worker:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: worker
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Restore rulebooks
+        run: node prepare-rulebooks.mjs
+      - name: Syntax check Worker
+        run: |
+          node --check worker.js
+          node --check rulebook.js
+          node --check price-action-rulebook.js
+          node --check chart-pattern-rulebook.js
+          node --check volume-rulebook.js
+          node --check wyckoff-rulebook.js
