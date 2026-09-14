@@ -4,9 +4,9 @@ import { CHART_PATTERN_RULEBOOK } from "./chart-pattern-rulebook.js";
 import { VOLUME_RULEBOOK } from "./volume-rulebook.js";
 import { WYCKOFF_RULEBOOK } from "./wyckoff-rulebook.js";
 
-const OPENAI_URL = "https://api.openai.com/v1/responses";
+const DEFAULT_MODEL = "@cf/meta/llama-4-scout-17b-16e-instruct";
 const DEFAULT_MAX_DATA_URL_CHARS = 8_000_000;
-const DEFAULT_OPENAI_TIMEOUT_MS = 60_000;
+const DEFAULT_AI_TIMEOUT_MS = 60_000;
 
 const CONFIDENCE = ["High", "Moderate", "Low", "Insufficient"];
 const ANALYSIS_SCHEMA = {
@@ -105,7 +105,7 @@ export default {
 
     const url = new URL(request.url);
     if (request.method === "GET" && url.pathname === "/health") {
-      return json({ ok: true, service: "chartlab-ai", model: env.OPENAI_MODEL || "gpt-5.6-luna", imageDetail: normalizeImageDetail(env.IMAGE_DETAIL || "high") }, 200, cors);
+      return json({ ok: true, service: "chartlab-ai", provider: "cloudflare-workers-ai", model: env.WORKERS_AI_MODEL || DEFAULT_MODEL, freeTier: true }, 200, cors);
     }
 
     if (request.method !== "POST" || url.pathname !== "/analyze") {
@@ -116,8 +116,8 @@ export default {
       return json({ error: "Origin not allowed" }, 403, cors);
     }
 
-    if (!env.OPENAI_API_KEY) {
-      return json({ error: "Backend chưa có OPENAI_API_KEY." }, 503, cors);
+    if (!env.AI) {
+      return json({ error: "Backend chưa có Workers AI binding.", code: "AI_BINDING_MISSING" }, 503, cors);
     }
 
     if (env.AI_ACCESS_CODE) {
@@ -146,70 +146,32 @@ export default {
       return json({ error: "Ảnh quá lớn. Hãy dùng ảnh nhỏ hơn hoặc để frontend nén ảnh trước khi gửi." }, 413, cors);
     }
 
-    const model = env.OPENAI_MODEL || "gpt-5.6-luna";
+    const model = env.WORKERS_AI_MODEL || DEFAULT_MODEL;
     const prompt = buildPrompt(symbol, timeframe);
+    const timeoutMs = positiveInt(env.AI_TIMEOUT_MS, DEFAULT_AI_TIMEOUT_MS);
 
-    const payload = {
-      model,
-      input: [
-        {
-          role: "system",
-          content: [
-            { type: "input_text", text: SYSTEM_PROMPT }
-          ]
-        },
-        {
-          role: "user",
-          content: [
-            { type: "input_text", text: prompt },
-            { type: "input_image", image_url: imageDataUrl, detail: normalizeImageDetail(env.IMAGE_DETAIL || "high") }
-          ]
-        }
-      ],
-      max_output_tokens: 2800,
-      store: false,
-      text: {
-        format: {
-          type: "json_schema",
-          name: "chartlab_chart_analysis",
-          schema: ANALYSIS_SCHEMA,
-          strict: true
-        }
-      }
-    };
-
-    let apiResponse;
-    const controller = new AbortController();
-    const timeoutMs = positiveInt(env.OPENAI_TIMEOUT_MS, DEFAULT_OPENAI_TIMEOUT_MS);
-    const timeout = setTimeout(() => controller.abort(), timeoutMs);
+    let raw;
     try {
-      apiResponse = await fetch(OPENAI_URL, {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${env.OPENAI_API_KEY}`,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(payload),
-        signal: controller.signal
-      });
+      raw = await withTimeout(
+        env.AI.run(model, {
+          messages: [
+            { role: "system", content: SYSTEM_PROMPT },
+            { role: "user", content: prompt }
+          ],
+          image: imageDataUrl,
+          guided_json: ANALYSIS_SCHEMA,
+          max_tokens: 2200,
+          temperature: 0.1
+        }),
+        timeoutMs
+      );
     } catch (error) {
-      if (error?.name === "AbortError") {
-        return json({ error: "AI provider phản hồi quá lâu. Hãy thử lại.", code: "UPSTREAM_TIMEOUT" }, 504, cors);
-      }
-      return json({ error: "Không kết nối được AI provider.", detail: String(error?.message || error) }, 502, cors);
-    } finally {
-      clearTimeout(timeout);
-    }
-
-    const raw = await apiResponse.json().catch(() => null);
-    if (!apiResponse.ok) {
-      const detail = raw?.error?.message || `OpenAI API error ${apiResponse.status}`;
-      return json({ error: "AI provider trả lỗi.", detail }, 502, cors);
+      const mapped = mapWorkersAIError(error);
+      return json(mapped.body, mapped.status, cors);
     }
 
     try {
-      const text = extractOutputText(raw);
-      const parsed = JSON.parse(text);
+      const parsed = parseWorkersAIJson(raw);
       const validIds = new Set(RULEBOOK.map(p => p.id));
       const validPriceActionIds = new Set(PRICE_ACTION_RULEBOOK.map(p => p.id));
       const validChartPatternIds = new Set(CHART_PATTERN_RULEBOOK.map(p => p.id));
@@ -221,7 +183,7 @@ export default {
       if (!validVolumeIds.has(parsed?.volume?.patternId)) parsed.volume.patternId = "";
       if (!validWyckoffIds.has(parsed?.wyckoff?.patternId)) parsed.wyckoff.patternId = "";
       enforceQualityGate(parsed);
-      return json({ ok: true, result: parsed, model }, 200, cors);
+      return json({ ok: true, result: parsed, provider: "cloudflare-workers-ai", model, usage: raw?.usage || null }, 200, cors);
     } catch (error) {
       return json({ error: "AI trả kết quả không đọc được.", detail: String(error?.message || error) }, 502, cors);
     }
@@ -271,11 +233,6 @@ function enforceQualityGate(parsed) {
       }
     }
   }
-}
-
-function normalizeImageDetail(value) {
-  const v = String(value || "high").toLowerCase();
-  return ["low", "high", "original", "auto"].includes(v) ? v : "high";
 }
 
 const SYSTEM_PROMPT = `Bạn là ChartLab Chart Analyzer, trợ lý đọc BIỂU ĐỒ kỹ thuật thuần chart.
@@ -330,16 +287,48 @@ Nếu ảnh chỉ đủ một phần, analysisStatus phải là "Limited" và li
 advisorView phải súc tích, tránh thuật ngữ khó nếu không cần thiết. clientShort 45–90 từ; clientText 90–150 từ. Cả hai viết tiếng Việt và không chứa lệnh mua/bán trực tiếp.`;
 }
 
-function extractOutputText(response) {
-  if (typeof response?.output_text === "string" && response.output_text) return response.output_text;
-  for (const item of response?.output || []) {
-    if (item?.type !== "message") continue;
-    for (const content of item?.content || []) {
-      if (content?.type === "refusal") throw new Error(content.refusal || "Model refusal");
-      if (content?.type === "output_text" && content.text) return content.text;
-    }
+function parseWorkersAIJson(response) {
+  const candidate = response?.response ?? response?.result ?? response;
+  if (candidate && typeof candidate === "object" && !Array.isArray(candidate)) {
+    if (candidate.symbol || candidate.analysisStatus || candidate.advisorView) return candidate;
   }
-  throw new Error("No output_text found");
+  let text = typeof candidate === "string" ? candidate : "";
+  if (!text && typeof response?.choices?.[0]?.message?.content === "string") {
+    text = response.choices[0].message.content;
+  }
+  if (!text) throw new Error("Workers AI không trả nội dung JSON.");
+  text = text.trim().replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "");
+  return JSON.parse(text);
+}
+
+function withTimeout(promise, timeoutMs) {
+  let timer;
+  const timeout = new Promise((_, reject) => {
+    timer = setTimeout(() => {
+      const error = new Error("Workers AI timeout");
+      error.code = "AI_TIMEOUT";
+      reject(error);
+    }, timeoutMs);
+  });
+  return Promise.race([promise, timeout]).finally(() => clearTimeout(timer));
+}
+
+function mapWorkersAIError(error) {
+  const message = String(error?.message || error || "Workers AI error");
+  const lowered = message.toLowerCase();
+  if (error?.code === "AI_TIMEOUT" || lowered.includes("timeout")) {
+    return { status: 504, body: { error: "AI phản hồi quá lâu. Hãy thử lại.", code: "AI_TIMEOUT" } };
+  }
+  if (lowered.includes("3036") || lowered.includes("daily free allocation") || lowered.includes("10,000 neurons")) {
+    return { status: 429, body: { error: "Đã dùng hết quota AI miễn phí hôm nay. Hãy thử lại sau khi quota được làm mới.", code: "FREE_QUOTA_EXHAUSTED" } };
+  }
+  if (lowered.includes("3040") || lowered.includes("out of capacity")) {
+    return { status: 503, body: { error: "Workers AI đang hết năng lực tạm thời. Hãy thử lại sau ít phút.", code: "AI_CAPACITY" } };
+  }
+  if (lowered.includes("5035") || lowered.includes("paid plan")) {
+    return { status: 503, body: { error: "Model hiện yêu cầu gói trả phí. ChartLab chưa bật chế độ trả phí.", code: "PAID_MODEL_REQUIRED" } };
+  }
+  return { status: 502, body: { error: "Workers AI trả lỗi.", detail: message, code: "AI_PROVIDER_ERROR" } };
 }
 
 function sanitize(value, max) {
