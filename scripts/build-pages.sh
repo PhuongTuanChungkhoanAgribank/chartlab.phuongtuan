@@ -6,7 +6,7 @@ cd "$ROOT_DIR"
 
 rm -rf _site
 mkdir -p _site/data
-cp index.html config.js manifest.webmanifest icon.svg .nojekyll _site/
+cp index.html config.js manifest.webmanifest icon.svg .nojekyll lesson-v2.js lesson-v2.css _site/
 
 restore() {
   local bundle="$1" out="$2"
@@ -40,6 +40,7 @@ EOF
 sha256sum -c /tmp/chartlab-sha256.txt
 
 node --check _site/app.js
+node --check _site/lesson-v2.js
 node --check _site/data/patterns.js
 node --check _site/data/price-action.js
 node --check _site/data/chart-patterns.js
