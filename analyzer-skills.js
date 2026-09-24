@@ -9,8 +9,8 @@
     {id:'levels', label:'Hỗ trợ & kháng cự', icon:'◉', hint:'Vùng giá quan trọng · phản ứng · phá vỡ'},
     {id:'pattern', label:'Mẫu hình kỹ thuật', icon:'◇', hint:'Nến · hành vi giá · mẫu hình giá'},
     {id:'volume', label:'Giá & khối lượng', icon:'▦', hint:'Xác nhận · phân kỳ · nỗ lực/kết quả'},
-    {id:'wyckoff', label:'Wyckoff', icon:'W', hint:'Trading range · phase · event nếu đủ dữ liệu'},
-    {id:'breakout', label:'Kiểm tra Breakout', icon:'↗', hint:'Mức phá vỡ · khối lượng · retest · thất bại'}
+    {id:'wyckoff', label:'Wyckoff', icon:'W', hint:'Vùng đi ngang · giai đoạn · sự kiện nếu đủ dữ liệu'},
+    {id:'breakout', label:'Kiểm tra Breakout', icon:'↗', hint:'Mức phá vỡ · khối lượng · kiểm định lại · thất bại'}
   ];
   const QUICK_REQUESTS = [
     'Tập trung vào diễn biến 10–20 nến gần nhất.',
@@ -28,13 +28,13 @@
     let html = previousAnalyzerPage();
     const current = skillById(state.analyzer.skill);
     const skills = `<section class="analyzer-skill-box">
-      <div class="skill-box-head"><div><span>KỸ NĂNG PHÂN TÍCH</span><h3>Bồ muốn hệ thống tập trung vào phần nào?</h3></div><small>Mỗi lần nên chọn 1 mục tiêu chính để giảm phân tích lan man.</small></div>
+      <div class="skill-box-head"><div><span>KỸ NĂNG PHÂN TÍCH</span><h3>Bạn muốn hệ thống tập trung vào phần nào?</h3></div><small>Mỗi lần nên chọn 1 mục tiêu chính để giảm phân tích lan man.</small></div>
       <div class="skill-grid">${SKILLS.map(s=>`<button type="button" data-analysis-skill="${s.id}" class="skill-card ${current.id===s.id?'active':''}"><i>${s.icon}</i><span><b>${s.label}</b><small>${s.hint}</small></span></button>`).join('')}</div>
       <label class="analysis-request"><span>Yêu cầu bổ sung <small>· không bắt buộc</small></span><textarea id="analysis-custom-request" rows="2" maxlength="300" placeholder="Ví dụ: tập trung vùng hỗ trợ gần nhất, bỏ qua chỉ báo...">${escText(state.analyzer.customRequest||'')}</textarea></label>
       <div class="request-chips">${QUICK_REQUESTS.map((x,i)=>`<button type="button" data-request-chip="${i}">${escText(x)}</button>`).join('')}</div>
     </section>`;
     html = html.replace('<div class="chart-photo-tips">', skills + '<div class="chart-photo-tips">');
-    html = html.replace(/Phân tích chart\s*([^<]*)<\/button>/, `Phân tích · ${escText(current.label)} $1</button>`);
+    html = html.replace(/(<button class="primary full" id="analyze-button"[^>]*>)[\s\S]*?(<\/button>)/, `$1Phân tích · ${escText(current.label)} ${arrow()}$2`);
     return html;
   };
 
