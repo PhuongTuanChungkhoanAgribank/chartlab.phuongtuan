@@ -32,6 +32,8 @@ jobs:
       - name: Syntax check Worker
         run: |
           node --check worker.js
+          node --check worker-v2_1.js
+          node --check worker-v2_2.js
           node --check rulebook.js
           node --check price-action-rulebook.js
           node --check chart-pattern-rulebook.js
