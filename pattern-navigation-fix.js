@@ -60,7 +60,20 @@
   function handle(ev){
     const btn=isDetailTrigger(ev.target);
     if(!btn) return;
-    const route=routeFromElement(btn);
+
+    // Hammer is the only pattern currently using a custom lesson overlay.
+    // Route it explicitly so the preview does not depend on legacy metadata.
+    let node=btn;
+    let hammer=false;
+    for(let i=0;i<9 && node;i++,node=node.parentElement){
+      const txt=(node.textContent||'');
+      if(txt.includes('Hammer') && txt.includes('Cây Búa')){
+        hammer=true;
+        break;
+      }
+    }
+
+    const route=hammer ? '/pattern/hammer' : routeFromElement(btn);
     if(!route) return;
     ev.preventDefault();
     ev.stopPropagation();
