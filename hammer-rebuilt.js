@@ -104,12 +104,12 @@
 
             <article class="lesson-block analyzer-rule-block">
               <span class="lesson-index">07</span>
-              <div><span class="kicker">QUY TẮC CHO ANALYZER</span><h2>AI chỉ được gọi tên Hammer khi đủ bằng chứng.</h2>
+              <div><span class="kicker">ĐIỀU KIỆN ĐỂ NHẬN DIỆN</span><h2>Khi nào có thể xác định đây là Hammer?</h2>
                 <div class="analyzer-rules">
                   <div><b>A</b><span><strong>Hình dạng</strong><p>Thân nhỏ, bóng dưới dài và bóng trên rất ngắn.</p></span></div>
                   <div><b>B</b><span><strong>Xu hướng trước đó</strong><p>Muốn gọi là Hammer theo nghĩa đảo chiều tăng phải nhìn thấy nhịp giảm trước đó.</p></span></div>
                   <div><b>C</b><span><strong>Vị trí</strong><p>Nếu ở giữa vùng đi ngang hoặc ảnh bị cắt quá sát, phải hạ độ tin cậy.</p></span></div>
-                  <div><b>D</b><span><strong>Xác nhận</strong><p>Không biến một Hammer đơn lẻ thành khuyến nghị giao dịch.</p></span></div>
+                  <div><b>D</b><span><strong>Xác nhận</strong><p>Một Hammer đơn lẻ chưa đủ để kết luận xu hướng đã đảo chiều; cần theo dõi phản ứng của các nến sau.</p></span></div>
                 </div>
               </div>
             </article>
