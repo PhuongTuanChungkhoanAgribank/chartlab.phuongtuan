@@ -11,10 +11,10 @@
     if(!p) return original(id);
 
     const identify = [
-      ['01','Thân nến','Nhỏ, nằm gần phía trên biên độ của cây nến.'],
-      ['02','Bóng dưới','Dài và nổi bật so với thân nến.'],
+      ['01','Thân nến','Thân nến là khoảng từ giá mở cửa đến giá đóng cửa. Với Hammer, thân nến nhỏ và nằm gần phía trên của toàn bộ biên độ nến.'],
+      ['02','Bóng dưới','Dài và nổi bật; cách mô tả kinh điển thường là dài khoảng ít nhất 2 lần chiều cao thân nến.'],
       ['03','Bóng trên','Rất ngắn hoặc gần như không có.'],
-      ['04','Bối cảnh','Phải xuất hiện sau một nhịp giảm rõ để diễn giải như Hammer.']
+      ['04','Vị trí trên biểu đồ','Phải xuất hiện sau một nhịp giảm rõ. Hình dạng và vị trí của nến trên biểu đồ quan trọng hơn màu xanh hay đỏ của thân nến.']
     ];
 
     const contexts = [
@@ -40,10 +40,10 @@
     return pageWrap(`${breadcrumb(['Level 02','Nến đơn','Hammer'])}
       <section class="detail-hero hammer-v3-hero">
         <div>
-          <div class="lesson-version">BÀI HỌC MẪU · CỐT LÕI</div>
+          <div class="lesson-version">BÀI HỌC MẪU · KIẾN THỨC CỐT LÕI</div>
           <div class="detail-badges"><span class="difficulty core">Cốt lõi</span><span>1 nến</span><span>Có thể báo hiệu đảo chiều tăng</span></div>
           <h1>Hammer</h1><h2>Cây Búa</h2>
-          <p class="hammer-v3-lead"><b>Nhận diện trong 10 giây:</b> thân nhỏ ở gần phía trên biên độ, bóng dưới dài, bóng trên rất ngắn. Chỉ có ý nghĩa như một dấu hiệu đảo chiều tăng khi xuất hiện sau một nhịp giảm.</p>
+          <p class="hammer-v3-lead"><b>Nhận diện trong 10 giây:</b> thân nến nhỏ nằm gần phía trên toàn bộ biên độ; bóng dưới dài, thường được mô tả khoảng ít nhất <b>2 lần</b> chiều cao thân nến; bóng trên rất ngắn hoặc gần như không có. Hammer chỉ có ý nghĩa như một dấu hiệu đảo chiều tăng khi xuất hiện sau một nhịp giảm rõ.</p>
           <div class="hammer-v3-summary">
             <span><b>Loại</b>Nến đơn</span>
             <span><b>Bối cảnh</b>Sau nhịp giảm</span>
@@ -60,7 +60,7 @@
           <article class="lesson-block">
             <span class="lesson-index">01</span><div><span class="kicker">CÁCH NHẬN DIỆN</span><h2>Nhìn 4 yếu tố, không cần học thuộc một loạt tỷ lệ cứng.</h2>
             <div class="hammer-v3-identify">${identify.map(x=>`<div><span>${x[0]}</span><b>${x[1]}</b><p>${x[2]}</p></div>`).join('')}</div>
-            <p class="lesson-caveat">Tỷ lệ chỉ mang tính mô tả. Khi đọc chart thật, hãy so cây nến với các nến gần đó thay vì áp một con số tuyệt đối cho mọi thị trường.</p></div>
+            <p class="lesson-caveat"><b>Màu thân nến không phải tiêu chí chính.</b> Hammer có thể xanh hoặc đỏ. Khi đọc biểu đồ, hãy ưu tiên <b>hình dạng cây nến, vị trí của nó trong xu hướng và phản ứng giá sau đó</b>. Tỷ lệ “2 lần” là cách mô tả dễ nhớ, không phải một ngưỡng máy móc áp dụng cho mọi thị trường.</p></div>
           </article>
 
           <article class="lesson-block">
@@ -76,7 +76,7 @@
           <article class="lesson-block context-first-block">
             <span class="lesson-index">03</span><div><span class="kicker">BỐI CẢNH BẮT BUỘC</span><h2>Cùng một hình dạng, đặt ở vị trí khác nhau sẽ mang ý nghĩa khác.</h2>
             <div class="hammer-v3-contexts">${contexts.map(x=>`<div class="${x[0]==='TỐT'?'good':x[0]==='CHƯA ĐỦ'?'wait':'bad'}"><span>${x[0]}</span><b>${x[1]}</b><p>${x[2]}</p></div>`).join('')}</div>
-            <div class="context-note strong"><b>Hammer và Hanging Man</b><span>Hai mẫu có hình dạng gần như giống nhau. Điểm phân biệt quan trọng nhất là xu hướng trước đó.</span></div></div>
+            <div class="context-note strong"><b>Hammer và Hanging Man</b><span>Hai mẫu có hình dạng gần như giống nhau. Đây là ví dụ rõ nhất cho nguyên tắc: <b>“Bối cảnh là một phần của mẫu hình.”</b> Hammer xuất hiện sau nhịp giảm; Hanging Man xuất hiện sau nhịp tăng.</span></div></div>
           </article>
 
           <article class="lesson-block">
@@ -113,9 +113,9 @@
         </div>
 
         <aside class="hammer-v2-aside">
-          <div class="quick-facts"><h3>Thông tin nhanh</h3>${fact('Tên','Hammer — Cây Búa')}${fact('Loại','Nến đơn')}${fact('Bối cảnh','Sau nhịp giảm')}${fact('Ý nghĩa','Từ chối vùng giá thấp')}${fact('Xác nhận','Cần theo dõi nến sau')}${fact('Trạng thái','Bài mẫu đã chốt',true)}</div>
+          <div class="quick-facts"><h3>Thông tin nhanh</h3>${fact('Tên quốc tế','Hammer — Cây Búa')}${fact('Nhóm hình dạng','Dạng nến có bóng dưới dài (Umbrella line)')}${fact('Bối cảnh cần có','Xuất hiện sau nhịp giảm')}${fact('Hình dạng chính','Thân nhỏ · bóng dưới dài · bóng trên rất ngắn')}${fact('Hàm ý','Có thể báo hiệu đảo chiều tăng')}${fact('Xác nhận','Cần theo dõi phản ứng của các nến sau')}${fact('Trạng thái bài học','Bài mẫu đã chốt',true)}</div>
           <div class="source-box"><span>NGUỒN THAM KHẢO</span><p>ChartLab dùng CandleCharts/Steve Nison cho cách diễn giải theo bối cảnh và TA-Lib cho ranh giới nhận diện hình dạng.</p><a href="${window.CHARTLAB_LESSON_V2?.sources?.candlecharts || '#'}" target="_blank" rel="noreferrer">CandleCharts ↗</a><a href="${window.CHARTLAB_LESSON_V2?.sources?.talibHammer || '#'}" target="_blank" rel="noreferrer">TA-Lib CDLHAMMER ↗</a></div>
-          <div class="aside-warning"><span>DỄ NHẦM</span><h3>Hanging Man</h3><p>Hình dạng gần như giống nhau. Hammer xuất hiện sau nhịp giảm; Hanging Man xuất hiện sau nhịp tăng.</p><button class="secondary" data-nav="/compare/hammer/hangingman">So sánh 2 mẫu</button></div>
+          <div class="aside-warning"><span>DỄ NHẦM</span><h3>Hanging Man — Người Treo Cổ</h3><p>Hình dạng gần như giống Hammer. Điểm khác nằm ở vị trí trên biểu đồ: <b>Hammer xuất hiện sau nhịp giảm, còn Hanging Man xuất hiện sau nhịp tăng.</b> Đây là ví dụ rõ nhất cho nguyên tắc <b>“Bối cảnh là một phần của mẫu hình.”</b></p><button class="secondary" data-nav="/compare/hammer/hangingman">So sánh Hammer và Hanging Man</button></div>
         </aside>
       </section>
     `);
