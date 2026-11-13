@@ -22,9 +22,20 @@
     const href=el.getAttribute?.('href') || el.closest?.('a[href]')?.getAttribute('href');
     if(href && href.includes('#/')) return href.split('#')[1];
 
-    const scope=el.closest?.('.pattern-preview,.pattern-popover,.pattern-card,.card,[role="dialog"]') || el.parentElement;
-    const id=patternIdFromText(scope?.textContent || el.textContent || '');
-    return id ? '/pattern/'+id : null;
+    // Walk upward because the hover preview does not use a stable public class.
+    let node=el;
+    for(let i=0;i<9 && node;i++,node=node.parentElement){
+      const id=patternIdFromText(node.textContent||'');
+      if(id) return '/pattern/'+id;
+    }
+
+    // Fallback: the source card is usually still :hover when pointerdown fires.
+    const hovered=[...document.querySelectorAll(':hover')].reverse();
+    for(const h of hovered){
+      const id=patternIdFromText(h.textContent||'');
+      if(id) return '/pattern/'+id;
+    }
+    return null;
   }
 
   function navigate(route){
