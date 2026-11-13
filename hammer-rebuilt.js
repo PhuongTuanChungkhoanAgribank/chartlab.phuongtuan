@@ -16,12 +16,12 @@
         <section class="detail-hero hammer-v3-hero">
           <div>
             <div class="lesson-version">BÀI HỌC MẪU · KIẾN THỨC CỐT LÕI</div>
-            <div class="detail-badges"><span class="difficulty core">Cốt lõi</span><span>1 nến</span><span>Có thể báo hiệu đảo chiều tăng</span></div>
+            <div class="detail-badges"><span class="difficulty core">Cốt lõi</span><span>Nến đơn</span><span>Có thể báo hiệu đảo chiều tăng</span></div>
             <h1>Hammer</h1>
             <h2>Cây Búa</h2>
             <p class="hammer-v3-lead"><b>Nhận diện trong 10 giây:</b> thân nến nhỏ nằm gần phía trên toàn bộ biên độ; bóng dưới dài, thường được mô tả khoảng ít nhất <b>2 lần</b> chiều cao thân nến; bóng trên rất ngắn hoặc gần như không có. Hammer chỉ có ý nghĩa như một dấu hiệu đảo chiều tăng khi xuất hiện sau một nhịp giảm rõ.</p>
             <div class="hammer-v3-summary">
-              <span><b>Loại</b>Nến đơn</span>
+              <span><b>Loại mẫu</b>Nến đơn</span>
               <span><b>Bối cảnh</b>Sau nhịp giảm</span>
               <span><b>Ý nghĩa</b>Giá thấp bị từ chối</span>
               <span><b>Trạng thái</b>Cần xác nhận</span>
@@ -123,12 +123,14 @@
           </div>
 
           <aside class="hammer-v2-aside">
-            <div class="quick-facts"><h3>Thông tin nhanh</h3>
-              <div><span>Tên quốc tế</span><b>Hammer — Cây Búa</b></div>
-              <div><span>Nhóm hình dạng</span><b>Dạng nến có bóng dưới dài</b></div>
-              <div><span>Bối cảnh cần có</span><b>Sau nhịp giảm</b></div>
-              <div><span>Hàm ý</span><b>Có thể báo hiệu đảo chiều tăng</b></div>
-              <div><span>Xác nhận</span><b>Cần theo dõi nến sau</b></div>
+            <div class="quick-facts quick-facts-table">
+              <h3>Thông tin nhanh</h3>
+              <div class="qf-row"><span>Tên mẫu hình</span><b>Hammer — Cây Búa</b></div>
+              <div class="qf-row"><span>Loại mẫu</span><b>Nến đơn</b></div>
+              <div class="qf-row"><span>Hình dạng chính</span><b>Thân nhỏ, bóng dưới dài</b></div>
+              <div class="qf-row"><span>Bối cảnh cần có</span><b>Sau một nhịp giảm rõ</b></div>
+              <div class="qf-row"><span>Hàm ý</span><b>Có thể báo hiệu đảo chiều tăng</b></div>
+              <div class="qf-row"><span>Xác nhận</span><b>Cần theo dõi phản ứng của các nến sau</b></div>
             </div>
             <div class="aside-warning"><span>DỄ NHẦM</span><h3>Hanging Man — Người Treo Cổ</h3><p>Hình dạng gần như giống Hammer. Điểm khác nằm ở vị trí trên biểu đồ: Hammer xuất hiện sau nhịp giảm, còn Hanging Man xuất hiện sau nhịp tăng.</p><button class="secondary" data-nav="/compare/hammer/hangingman">So sánh Hammer và Hanging Man</button></div>
           </aside>
