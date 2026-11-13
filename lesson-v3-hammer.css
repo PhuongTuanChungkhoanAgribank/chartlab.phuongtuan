@@ -1,0 +1,26 @@
+/* Hammer v3 — final lesson template */
+.hammer-v3-hero{margin-bottom:1.35rem}
+.hammer-v3-lead{font-size:1.02rem!important;line-height:1.7!important;max-width:780px}
+.hammer-v3-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.65rem;margin:1.1rem 0}
+.hammer-v3-summary span{display:flex;flex-direction:column;gap:.28rem;padding:.8rem .9rem;border:1px solid #263650;border-radius:12px;background:#0e1a2b;color:#dfe7f2;font-size:.84rem}
+.hammer-v3-summary b{font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;color:#f7a21f}
+.hammer-v3-identify{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.7rem;margin-top:.9rem}
+.hammer-v3-identify>div{display:grid;grid-template-columns:34px 1fr;gap:.2rem .7rem;padding:1rem;border:1px solid #203049;border-radius:13px;background:#101d31}
+.hammer-v3-identify span{grid-row:1/3;display:flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:9px;background:#172740;color:#f7a21f;font-size:.7rem;font-weight:800}
+.hammer-v3-identify b{font-size:.9rem}.hammer-v3-identify p{margin:.2rem 0 0!important;color:#8f9fb6!important;font-size:.82rem!important;line-height:1.5!important}
+.hammer-v3-contexts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.7rem;margin-top:.9rem}
+.hammer-v3-contexts>div{padding:1rem;border:1px solid #21314a;border-radius:13px;background:#101d31}
+.hammer-v3-contexts span{display:inline-flex;margin-bottom:.55rem;font-size:.66rem;font-weight:850;letter-spacing:.1em}
+.hammer-v3-contexts b{display:block;margin-bottom:.35rem;font-size:.9rem}.hammer-v3-contexts p{margin:0!important;color:#8f9fb6!important;font-size:.82rem!important;line-height:1.55!important}
+.hammer-v3-contexts .good{border-color:rgba(33,188,121,.35)}.hammer-v3-contexts .good span{color:#4bd397}
+.hammer-v3-contexts .wait{border-color:rgba(247,162,31,.35)}.hammer-v3-contexts .wait span{color:#f7a21f}
+.hammer-v3-contexts .bad{border-color:rgba(216,74,88,.35)}.hammer-v3-contexts .bad span{color:#ef7e89}
+.hammer-v3-practice-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.75rem;margin-top:1rem}
+.hammer-v3-practice-grid>div{padding:1rem;border-radius:14px;border:1px solid #21314a;background:#101d31}
+.hammer-v3-practice-grid span{display:block;margin-bottom:.55rem;color:#dfe7f2;font-size:.76rem;font-weight:800}
+.hammer-v3-practice-grid b{display:block;color:#f4f6f9;font-size:.88rem;line-height:1.5;margin-bottom:.45rem}
+.hammer-v3-practice-grid p{margin:0!important;color:#8f9fb6!important;font-size:.81rem!important;line-height:1.55!important}
+.hammer-v3-practice-grid .good{border-top:3px solid #21bc79}.hammer-v3-practice-grid .wait{border-top:3px solid #f7a21f}.hammer-v3-practice-grid .fail{border-top:3px solid #d84a58}
+.hammer-v3-note{margin-top:.8rem!important;font-size:.8rem!important;font-style:italic}
+@media(max-width:900px){.hammer-v3-summary,.hammer-v3-contexts,.hammer-v3-practice-grid{grid-template-columns:1fr 1fr}.hammer-v3-summary span:last-child{grid-column:span 2}}
+@media(max-width:620px){.hammer-v3-summary,.hammer-v3-identify,.hammer-v3-contexts,.hammer-v3-practice-grid{grid-template-columns:1fr}.hammer-v3-summary span:last-child{grid-column:auto}}
