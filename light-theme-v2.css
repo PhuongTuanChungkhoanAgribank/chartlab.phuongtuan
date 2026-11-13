@@ -377,3 +377,47 @@ td,th{border-color:var(--cl-border)!important}
 .preview-panel p,.preview-panel small,.preview-panel span{
   color:#dbeafe!important;
 }
+
+
+/* Dark preview contrast fix v2.2 */
+.live-preview,
+.preview-panel,
+.pattern-preview,
+.pattern-popover{
+  background:#172033!important;
+  color:#f8fafc!important;
+}
+.live-preview h1,.live-preview h2,.live-preview h3,
+.preview-panel h1,.preview-panel h2,.preview-panel h3,
+.pattern-preview h1,.pattern-preview h2,.pattern-preview h3,
+.pattern-popover h1,.pattern-popover h2,.pattern-popover h3{
+  color:#ffffff!important;
+  opacity:1!important;
+  text-shadow:0 1px 0 rgba(0,0,0,.08);
+}
+.live-preview .title,.live-preview .pattern-name,
+.preview-panel .title,.preview-panel .pattern-name,
+.pattern-preview .title,.pattern-preview .pattern-name,
+.pattern-popover .title,.pattern-popover .pattern-name{
+  color:#ffffff!important;
+  opacity:1!important;
+}
+.live-preview .subtitle,.live-preview .pattern-vi,
+.preview-panel .subtitle,.preview-panel .pattern-vi,
+.pattern-preview .subtitle,.pattern-preview .pattern-vi,
+.pattern-popover .subtitle,.pattern-popover .pattern-vi{
+  color:#cbd5e1!important;
+  opacity:1!important;
+}
+.live-preview p,.preview-panel p,
+.pattern-preview p,.pattern-popover p{
+  color:#cbd5e1!important;
+  opacity:1!important;
+}
+.live-preview small,.live-preview .eyebrow,.live-preview .kicker,
+.preview-panel small,.preview-panel .eyebrow,.preview-panel .kicker,
+.pattern-preview small,.pattern-preview .eyebrow,.pattern-preview .kicker,
+.pattern-popover small,.pattern-popover .eyebrow,.pattern-popover .kicker{
+  color:#93c5fd!important;
+  opacity:1!important;
+}
