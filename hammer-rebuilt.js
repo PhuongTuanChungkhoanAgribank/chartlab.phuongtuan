@@ -22,7 +22,7 @@
             <p class="hammer-v3-lead"><b>Nhận diện trong 10 giây:</b> thân nến nhỏ nằm gần phía trên toàn bộ biên độ; bóng dưới dài, thường được mô tả khoảng ít nhất <b>2 lần</b> chiều cao thân nến; bóng trên rất ngắn hoặc gần như không có. Hammer chỉ có ý nghĩa như một dấu hiệu đảo chiều tăng khi xuất hiện sau một nhịp giảm rõ.</p>
             <div class="hammer-v3-summary">
               <span><b>Loại mẫu</b>Nến đơn</span>
-              <span><b>Bối cảnh</b>Sau nhịp giảm</span>
+              <span><b>Bối cảnh</b>Sau một nhịp giảm mạnh</span>
               <span><b>Ý nghĩa</b>Giá thấp bị từ chối</span>
               <span><b>Trạng thái</b>Cần xác nhận</span>
             </div>
@@ -51,13 +51,13 @@
 
             <article class="lesson-block">
               <span class="lesson-index">02</span>
-              <div><span class="kicker">CÂU CHUYỆN CUNG — CẦU</span><h2>Giá thấp bị thử nhưng không được thị trường chấp nhận.</h2>
+              <div><span class="kicker">CÂU CHUYỆN CUNG — CẦU</span><h2>Lực bán suy yếu, lực mua bắt đầu giành lại quyền kiểm soát.</h2>
                 <div class="story-flow">
-                  <div><b>1 · Bên bán ép giá</b><p>Trong phiên, giá bị đẩy xuống thấp và tạo bóng dưới dài.</p></div><i>→</i>
-                  <div><b>2 · Bên mua phản ứng</b><p>Lực mua xuất hiện ở vùng thấp và kéo giá trở lại.</p></div><i>→</i>
-                  <div><b>3 · Đóng cửa hồi lên</b><p>Giá đóng cửa trở lại gần phía trên biên độ, cho thấy bên bán không giữ được toàn bộ lợi thế.</p></div>
+                  <div><b>1 · Lực bán chiếm ưu thế</b><p>Đầu phiên, bên bán đẩy giá xuống sâu và tạo bóng dưới dài.</p></div><i>→</i>
+                  <div><b>2 · Lực cầu bắt đáy xuất hiện</b><p>Bên mua vào mạnh ở vùng giá thấp và kéo giá trở lại.</p></div><i>→</i>
+                  <div><b>3 · Đóng cửa gần vùng cao</b><p>Giá hồi lên gần mức cao trong phiên, cho thấy lực bán suy yếu và bên mua dần lấy lại thế chủ động.</p></div>
                 </div>
-                <p class="lesson-caveat">Hammer cho thấy cán cân mua — bán đã thay đổi trong chính cây nến đó, nhưng chưa chứng minh xu hướng đã đảo chiều.</p>
+                <p class="lesson-caveat">Hammer cho thấy cán cân cung — cầu đã chuyển biến tích cực hơn trong phiên, nhưng vẫn cần các nến sau xác nhận.</p>
               </div>
             </article>
 
@@ -65,7 +65,7 @@
               <span class="lesson-index">03</span>
               <div><span class="kicker">BỐI CẢNH BẮT BUỘC</span><h2>Cùng hình dạng nhưng khác vị trí sẽ mang ý nghĩa khác.</h2>
                 <div class="hammer-v3-contexts">
-                  <div class="good"><span>PHÙ HỢP</span><b>Sau một nhịp giảm rõ</b><p>Đây là bối cảnh phù hợp để diễn giải như Hammer. Nếu gần vùng hỗ trợ thì giá trị quan sát tăng thêm.</p></div>
+                  <div class="good"><span>PHÙ HỢP</span><b>Sau một nhịp giảm mạnh</b><p>Đây là bối cảnh phù hợp để diễn giải như Hammer. Nếu gần vùng hỗ trợ thì giá trị quan sát tăng thêm.</p></div>
                   <div class="wait"><span>CHƯA ĐỦ</span><b>Giữa vùng đi ngang</b><p>Có thể giống Hammer về hình dạng nhưng chưa đủ bối cảnh để nói về đảo chiều tăng.</p></div>
                   <div class="bad"><span>SAI BỐI CẢNH</span><b>Sau một nhịp tăng</b><p>Cùng hình dạng này phù hợp với Hanging Man hơn.</p></div>
                 </div>
@@ -102,15 +102,8 @@
               </div>
             </article>
 
-            <article class="lesson-block talib-boundary-block">
-              <span class="lesson-index">07</span>
-              <div><span class="kicker">RANH GIỚI TA-LIB</span><h2>TA-Lib hỗ trợ nhận diện hình dạng; ChartLab phải kiểm tra bối cảnh.</h2>
-                <p>TA-Lib CDLHAMMER tập trung vào hình dạng tương đối của thân và bóng nến. Việc xác định xu hướng trước đó, vị trí trong cấu trúc giá và phản ứng xác nhận vẫn cần được đọc riêng.</p>
-              </div>
-            </article>
-
             <article class="lesson-block analyzer-rule-block">
-              <span class="lesson-index">08</span>
+              <span class="lesson-index">07</span>
               <div><span class="kicker">QUY TẮC CHO ANALYZER</span><h2>AI chỉ được gọi tên Hammer khi đủ bằng chứng.</h2>
                 <div class="analyzer-rules">
                   <div><b>A</b><span><strong>Hình dạng</strong><p>Thân nhỏ, bóng dưới dài và bóng trên rất ngắn.</p></span></div>
@@ -128,7 +121,7 @@
               <div class="qf-row"><span>Tên mẫu hình</span><b>Hammer — Cây Búa</b></div>
               <div class="qf-row"><span>Loại mẫu</span><b>Nến đơn</b></div>
               <div class="qf-row"><span>Hình dạng chính</span><b>Thân nhỏ, bóng dưới dài</b></div>
-              <div class="qf-row"><span>Bối cảnh cần có</span><b>Sau một nhịp giảm rõ</b></div>
+              <div class="qf-row"><span>Bối cảnh cần có</span><b>Sau một nhịp giảm mạnh</b></div>
               <div class="qf-row"><span>Hàm ý</span><b>Có thể báo hiệu đảo chiều tăng</b></div>
               <div class="qf-row"><span>Xác nhận</span><b>Cần theo dõi phản ứng của các nến sau</b></div>
             </div>
