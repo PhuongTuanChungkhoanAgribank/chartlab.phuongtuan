@@ -313,3 +313,67 @@ td,th{border-color:var(--cl-border)!important}
   body{background-image:none!important}
   .detail-hero,.lesson-block,.analyzer-skill-box{box-shadow:none!important}
 }
+
+
+/* Contrast pass v2.1 — improve readability on bright UI */
+:root{
+  --cl-text:#0f172a;
+  --cl-text-2:#334155;
+  --cl-text-3:#64748b;
+}
+
+/* Force legacy light-grey text to readable values */
+.hero-copy p,.hero p,.hero-subtitle,.lead,.subtitle,
+.section-copy,.section-description,.intro-copy,
+.level-card p,.pattern-card p,.method-card p,
+.detail-hero p,.quick-facts,.quick-facts span,
+.lesson-block p,.lesson-block li,.source-box p,
+.anatomy-caption,.anatomy-v2-card p,.reading-steps p,
+.formula-note,.lesson-source-strip p,
+.skill-card small,.skill-box-head small,
+.analysis-meta-strip span,.analysis-request span,
+.history-card p,.result-card p,.client-ready p{
+  color:var(--cl-text-2)!important;
+  opacity:1!important;
+}
+
+/* Hero title: keep hierarchy but do not wash out */
+.hero h1,.hero-title,.hero-copy h1{
+  color:var(--cl-text)!important;
+}
+.hero h1 .muted,.hero-title .muted,
+.hero h1 span:not(.accent):not(.highlight),
+.hero-title span:not(.accent):not(.highlight){
+  color:#94a3b8!important;
+}
+.hero-copy p,.hero-subtitle{
+  color:#475569!important;
+}
+
+/* Generic legacy muted classes */
+.muted,.text-muted,.subtle,.secondary-text,.meta,.caption{
+  color:#64748b!important;
+  opacity:1!important;
+}
+
+/* Level / stat labels */
+.stat-label,.stats small,.level-card small,.pattern-card small{
+  color:#64748b!important;
+}
+
+/* Pattern preview dark panel stays dark, but copy becomes brighter */
+.pattern-preview,.pattern-popover,.live-preview,.preview-panel{
+  color:#f8fafc!important;
+}
+.pattern-preview h1,.pattern-preview h2,.pattern-preview h3,
+.pattern-popover h1,.pattern-popover h2,.pattern-popover h3,
+.live-preview h1,.live-preview h2,.live-preview h3,
+.preview-panel h1,.preview-panel h2,.preview-panel h3{
+  color:#f8fafc!important;
+}
+.pattern-preview p,.pattern-preview small,.pattern-preview span,
+.pattern-popover p,.pattern-popover small,.pattern-popover span,
+.live-preview p,.live-preview small,.live-preview span,
+.preview-panel p,.preview-panel small,.preview-panel span{
+  color:#dbeafe!important;
+}
