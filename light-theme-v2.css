@@ -1,0 +1,315 @@
+/* chartlab.phuongtuan — Light UI v2
+ * Bright learning-first theme.
+ * Bullish candle: purple. Bearish candle: red.
+ */
+
+:root{
+  --cl-bg:#f8fafc;
+  --cl-bg-soft:#f5f3ff;
+  --cl-surface:#ffffff;
+  --cl-surface-2:#f8fafc;
+  --cl-border:#e2e8f0;
+  --cl-border-strong:#cbd5e1;
+  --cl-text:#111827;
+  --cl-text-2:#475569;
+  --cl-text-3:#7c8aa0;
+  --cl-purple:#7c3aed;
+  --cl-purple-2:#8b5cf6;
+  --cl-purple-soft:#f3e8ff;
+  --cl-red:#ef4444;
+  --cl-red-soft:#fef2f2;
+  --cl-yellow:#f59e0b;
+  --cl-yellow-soft:#fffbeb;
+  --cl-shadow:0 12px 32px rgba(15,23,42,.07);
+  --cl-shadow-hover:0 18px 42px rgba(76,29,149,.12);
+}
+
+html{background:var(--cl-bg)!important;color-scheme:light!important}
+body,#app{
+  background:var(--cl-bg)!important;
+  color:var(--cl-text)!important;
+}
+body{
+  background-image:
+    radial-gradient(circle at 12% 4%,rgba(124,58,237,.07),transparent 28rem),
+    radial-gradient(circle at 92% 9%,rgba(245,158,11,.07),transparent 24rem)!important;
+}
+
+/* Global text */
+h1,h2,h3,h4,h5,h6,strong,b{color:var(--cl-text)!important}
+p,li,small,label{color:var(--cl-text-2)}
+a{color:var(--cl-purple)}
+.kicker,.eyebrow,.section-label,.lesson-version{color:var(--cl-purple)!important}
+
+/* Header / navigation */
+header,.site-header,.topbar,.navbar,nav{
+  background:rgba(255,255,255,.92)!important;
+  border-color:var(--cl-border)!important;
+  color:var(--cl-text)!important;
+}
+header,.site-header,.topbar{
+  box-shadow:0 1px 0 rgba(148,163,184,.18);
+  backdrop-filter:blur(16px);
+}
+nav a,nav button,.site-header a,.site-header button{color:var(--cl-text-2)!important}
+nav a:hover,nav button:hover,.site-header a:hover,.site-header button:hover{color:var(--cl-purple)!important}
+
+/* Generic surfaces */
+.card,.level-card,.pattern-card,.method-card,.history-card,
+.detail-hero,.detail-diagram,.quick-facts,.source-box,.aside-warning,
+.lesson-block,.reading-panel,.formula-panel,.lesson-source-strip,
+.anatomy-v2-card,.geometry-grid>div,.story-flow>div,.confirmation-scale>div,
+.boundary-grid>div,.analyzer-rules>div,.hammer-v3-identify>div,
+.hammer-v3-contexts>div,.hammer-v3-practice-grid>div,
+.analyzer-skill-box,.skill-card,.analysis-meta-strip,
+.analysis-meta-strip span,.context-split>div,.context-note,
+.upload-zone,.upload-panel,.output-panel,.analyzer-panel,
+.result-card,.client-ready,.rule-box{
+  background:var(--cl-surface)!important;
+  border-color:var(--cl-border)!important;
+  color:var(--cl-text)!important;
+  box-shadow:none;
+}
+
+.card:hover,.level-card:hover,.pattern-card:hover,.method-card:hover,
+.anatomy-v2-card:hover,.skill-card:hover{
+  border-color:#c4b5fd!important;
+  box-shadow:var(--cl-shadow-hover)!important;
+  transform:translateY(-2px);
+}
+
+/* Secondary surfaces */
+.reading-steps article,.formula-chip code,.lesson-caveat,
+.analyzer-rules>div,.analysis-request textarea,.request-chips button,
+.analysis-meta-strip span,.skill-card{
+  background:var(--cl-surface-2)!important;
+  border-color:var(--cl-border)!important;
+}
+.anatomy-v2-card p,.reading-steps p,.formula-note,.lesson-source-strip p,
+.lesson-block>div>p,.geometry-grid p,.context-note span,.story-flow p,
+.confirmation-scale p,.boundary-grid ul,.analyzer-rules p,.aside-warning p,
+.hammer-v3-identify p,.hammer-v3-contexts p,.hammer-v3-practice-grid p,
+.skill-card small,.skill-box-head>small,.analysis-meta-strip span{
+  color:var(--cl-text-2)!important;
+}
+
+/* Buttons */
+button,.button,.btn{
+  transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease,background .18s ease;
+}
+.primary,.btn-primary,button.primary{
+  background:linear-gradient(135deg,var(--cl-purple),var(--cl-purple-2))!important;
+  color:#fff!important;
+  border-color:var(--cl-purple)!important;
+  box-shadow:0 8px 20px rgba(124,58,237,.18)!important;
+}
+.primary:hover,.btn-primary:hover,button.primary:hover{
+  transform:translateY(-1px);
+  box-shadow:0 12px 26px rgba(124,58,237,.24)!important;
+}
+.secondary,.btn-secondary,button.secondary{
+  background:#fff!important;
+  color:var(--cl-text)!important;
+  border-color:var(--cl-border-strong)!important;
+}
+.secondary:hover,.btn-secondary:hover,button.secondary:hover{
+  color:var(--cl-purple)!important;
+  border-color:#a78bfa!important;
+  background:#faf7ff!important;
+}
+
+/* Yellow is reserved for highlights, not the main theme */
+.lesson-version,.difficulty.core,.client-skill-tag{
+  background:var(--cl-yellow-soft)!important;
+  color:#b45309!important;
+  border-color:#fcd34d!important;
+}
+.lesson-index,.analyzer-rules>div>b,.anatomy-v2-card>span,
+.reading-steps article>b{
+  background:var(--cl-purple-soft)!important;
+  color:var(--cl-purple)!important;
+}
+
+/* Lesson blocks */
+.context-note{
+  border-left-color:var(--cl-purple)!important;
+  background:#faf7ff!important;
+}
+.context-note.strong{
+  border-left-color:var(--cl-purple)!important;
+  background:var(--cl-purple-soft)!important;
+}
+.good-context,.hammer-v3-contexts .good{
+  background:var(--cl-purple-soft)!important;
+  border-color:#ddd6fe!important;
+}
+.good-context b,.hammer-v3-contexts .good span{color:var(--cl-purple)!important}
+.bad-context,.hammer-v3-contexts .bad{
+  background:var(--cl-red-soft)!important;
+  border-color:#fecaca!important;
+}
+.bad-context b,.hammer-v3-contexts .bad span{color:var(--cl-red)!important}
+.hammer-v3-contexts .wait{
+  background:var(--cl-yellow-soft)!important;
+  border-color:#fde68a!important;
+}
+.hammer-v3-contexts .wait span{color:#b45309!important}
+.talib-boundary-block,.analyzer-rule-block{
+  background:linear-gradient(180deg,#ffffff,#faf7ff)!important;
+}
+.aside-warning{
+  background:linear-gradient(180deg,#fff,#fff7ed)!important;
+}
+.source-box{
+  background:linear-gradient(180deg,#fff,#fafafa)!important;
+}
+.source-links a{
+  background:#fff!important;
+  color:var(--cl-text-2)!important;
+  border-color:var(--cl-border)!important;
+}
+.source-links a:hover{color:var(--cl-purple)!important;border-color:#a78bfa!important}
+
+/* Diagram / chart area: brightest part of the page */
+.detail-diagram,.anatomy-v2-visual,.hammer-v2-diagram,
+.pattern-visual,.chart-preview,.chart-canvas,.chart-stage{
+  background:#fff!important;
+  border-color:var(--cl-border)!important;
+}
+.detail-diagram,.hammer-v2-diagram{
+  box-shadow:inset 0 0 0 1px rgba(226,232,240,.4),var(--cl-shadow)!important;
+}
+.hammer-v3-hero .hammer-v2-diagram:hover{
+  border-color:#c4b5fd!important;
+  background:#faf7ff!important;
+  box-shadow:var(--cl-shadow-hover)!important;
+}
+.hammer-v3-hero .hammer-v2-diagram svg{
+  filter:drop-shadow(0 10px 20px rgba(124,58,237,.08))!important;
+}
+.hammer-v3-hero .hammer-v2-diagram:hover svg{
+  filter:drop-shadow(0 14px 28px rgba(124,58,237,.18))!important;
+}
+
+/* Bullish candle = purple. Bearish candle = red. */
+svg .bullish,svg .bull,svg .candle-up,svg .up-candle,
+svg [data-direction="up"],svg [data-side="bullish"]{
+  stroke:var(--cl-purple)!important;
+  fill:var(--cl-purple)!important;
+}
+svg .bearish,svg .bear,svg .candle-down,svg .down-candle,
+svg [data-direction="down"],svg [data-side="bearish"]{
+  stroke:var(--cl-red)!important;
+  fill:var(--cl-red)!important;
+}
+svg [stroke="#4bd397"],svg [stroke="#21bc79"],svg [stroke="#3ed697"],
+svg [stroke="#43d99c"],svg [stroke="#22c55e"],svg [stroke="#10b981"]{
+  stroke:var(--cl-purple)!important;
+}
+svg [fill="#4bd397"],svg [fill="#21bc79"],svg [fill="#3ed697"],
+svg [fill="#43d99c"],svg [fill="#22c55e"],svg [fill="#10b981"]{
+  fill:var(--cl-purple)!important;
+}
+svg [stroke="#ef7e89"],svg [stroke="#d84a58"],svg [stroke="#ef4444"],
+svg [stroke="#dc2626"]{stroke:var(--cl-red)!important}
+svg [fill="#ef7e89"],svg [fill="#d84a58"],svg [fill="#ef4444"],
+svg [fill="#dc2626"]{fill:var(--cl-red)!important}
+
+/* Chart grid / guide lines */
+svg .grid,svg .grid-line,svg [data-role="grid"]{
+  stroke:#e5e7eb!important;
+}
+
+/* Pattern library preview */
+.pattern-card,.pattern-preview,.pattern-popover{
+  background:#fff!important;
+  color:var(--cl-text)!important;
+  border-color:var(--cl-border)!important;
+}
+.pattern-preview,.pattern-popover{
+  box-shadow:0 20px 50px rgba(15,23,42,.14)!important;
+}
+.pattern-card:hover{
+  border-color:#a78bfa!important;
+}
+.pattern-card.active,.pattern-card.selected{
+  border-color:var(--cl-purple)!important;
+  box-shadow:0 0 0 3px rgba(124,58,237,.10),var(--cl-shadow)!important;
+}
+
+/* Analyzer */
+.analyzer-skill-box{
+  background:linear-gradient(180deg,#fff,#faf7ff)!important;
+  box-shadow:var(--cl-shadow)!important;
+}
+.skill-box-head>div>span{color:var(--cl-purple)!important}
+.skill-card{color:var(--cl-text)!important}
+.skill-card i{
+  background:var(--cl-purple-soft)!important;
+  color:var(--cl-purple)!important;
+}
+.skill-card.active{
+  border-color:var(--cl-purple)!important;
+  background:var(--cl-purple-soft)!important;
+  box-shadow:inset 0 0 0 1px rgba(124,58,237,.08)!important;
+}
+.analysis-request>span{color:var(--cl-text)!important}
+.analysis-request>span small{color:var(--cl-text-3)!important}
+.analysis-request textarea{
+  color:var(--cl-text)!important;
+  background:#fff!important;
+}
+.analysis-request textarea:focus{
+  border-color:var(--cl-purple)!important;
+  box-shadow:0 0 0 3px rgba(124,58,237,.10)!important;
+}
+.request-chips button{
+  color:var(--cl-text-2)!important;
+  background:#fff!important;
+}
+.request-chips button:hover{
+  color:var(--cl-purple)!important;
+  border-color:#a78bfa!important;
+}
+.analysis-meta-strip{background:#f8fafc!important}
+.analysis-meta-strip b{color:var(--cl-purple)!important}
+
+/* Confidence / state labels */
+.high,.confidence-high,[data-confidence="high"]{
+  color:#6d28d9!important;
+  background:#f3e8ff!important;
+  border-color:#ddd6fe!important;
+}
+.low,.confidence-low,[data-confidence="low"]{
+  color:#b45309!important;
+  background:#fffbeb!important;
+  border-color:#fde68a!important;
+}
+.insufficient,[data-confidence="insufficient"]{
+  color:#64748b!important;
+  background:#f1f5f9!important;
+  border-color:#cbd5e1!important;
+}
+
+/* Inputs */
+input,select,textarea{
+  background:#fff!important;
+  color:var(--cl-text)!important;
+  border-color:var(--cl-border-strong)!important;
+}
+input::placeholder,textarea::placeholder{color:#94a3b8!important}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--cl-purple)!important}
+
+/* Tables */
+table{background:#fff!important;color:var(--cl-text)!important}
+th{background:#f8fafc!important;color:var(--cl-text)!important}
+td,th{border-color:var(--cl-border)!important}
+
+/* Scrollbar */
+*{scrollbar-color:#c4b5fd #f1f5f9}
+
+/* Mobile */
+@media(max-width:760px){
+  body{background-image:none!important}
+  .detail-hero,.lesson-block,.analyzer-skill-box{box-shadow:none!important}
+}
