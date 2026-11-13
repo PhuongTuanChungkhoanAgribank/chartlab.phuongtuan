@@ -44,6 +44,7 @@ node --check _site/lesson-v2.js
 node --check _site/lesson-v2-single-candle.js
 node --check _site/lesson-v2-vi.js
 node --check _site/analyzer-skills.js
+node --check _site/lesson-v3-hammer.js
 node --check _site/analyzer-clipboard.js
 node --check _site/data/patterns.js
 node --check _site/data/price-action.js
@@ -53,5 +54,6 @@ node --check _site/data/wyckoff.js
 
 test -s _site/lesson-v2.css
 test -s _site/analyzer-skills.css
+test -s _site/lesson-v3-hammer.css
 
 echo "Built ChartLab static artifact in $ROOT_DIR/_site/"
