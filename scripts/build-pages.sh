@@ -6,7 +6,7 @@ cd "$ROOT_DIR"
 
 rm -rf _site
 mkdir -p _site/data
-cp index.html config.js manifest.webmanifest icon.svg .nojekyll lesson-v2.js lesson-v2.css lesson-v2-single-candle.js lesson-v2-vi.js analyzer-skills.js analyzer-skills.css analyzer-clipboard.js _site/
+cp index.html config.js manifest.webmanifest icon.svg .nojekyll lesson-v2.js lesson-v2.css lesson-v2-single-candle.js lesson-v2-vi.js analyzer-skills.js analyzer-skills.css analyzer-clipboard.js lesson-v3-hammer.js lesson-v3-hammer.css _site/
 
 restore() {
   local bundle="$1" out="$2"
