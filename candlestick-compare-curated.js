@@ -74,6 +74,7 @@
       ]
     }
   ];
+  window.CHARTLAB_CURATED_COMPARE_DEFS=PAIRS;
 
   function findByName(name){ return (window.CHARTLAB_PATTERNS||window.patterns||[]).find(p=>p.name===name); }
   function pairRoute(a,b){ return '#/compare/'+a.id+'/'+b.id; }
