@@ -264,6 +264,22 @@
     ['Source','Nguồn'],
     ['glossary','thuật ngữ'],
     ['function','hàm nhận diện'],
+    ['trend extreme','vùng cực trị của xu hướng'],
+    ['directional move','chuyển động gần như một chiều'],
+    ['directional conviction','mức độ kiểm soát theo một hướng'],
+    ['directional','có hướng rõ ràng'],
+    ['bullish or bearish','tăng giá hoặc giảm giá'],
+    ['bullish/bearish','tăng giá/giảm giá'],
+    ['bullish','tăng giá'],
+    ['bearish','giảm giá'],
+    ['price rejection','sự từ chối giá'],
+    ['rejection line','nến từ chối giá'],
+    ['prior trend','xu hướng trước đó'],
+    ['prior decline','nhịp giảm trước đó'],
+    ['prior advance','nhịp tăng trước đó'],
+    ['trading range','vùng đi ngang'],
+    ['at trend extreme','tại vùng cực trị của xu hướng'],
+    ['any; stronger at key levels','có thể xuất hiện ở nhiều vị trí; đáng chú ý hơn tại vùng giá quan trọng'],
     ['Chart Analyzer','Bộ phân tích biểu đồ'],
     ['Analyzer','Bộ phân tích biểu đồ']
   ];
@@ -307,8 +323,17 @@
 
   function run(){ translateNode(document.getElementById('app')); }
 
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',run,{once:true});
-  else run();
+  function runBurst(){
+    run();
+    setTimeout(run,0);
+    setTimeout(run,80);
+    setTimeout(run,250);
+  }
+
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',runBurst,{once:true});
+  else runBurst();
+  window.addEventListener('load',runBurst);
+  window.addEventListener('hashchange',runBurst);
 
   const app=document.getElementById('app');
   if(app){
