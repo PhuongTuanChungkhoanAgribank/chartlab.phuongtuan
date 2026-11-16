@@ -630,7 +630,55 @@
       ]
     }  };
 
-  function profileFor(p){ return lessonProfiles[p.name] || null; }
+  function synthesizedProfile(p,note){
+    if(!note) return null;
+    const direction=(p.bias||'').toLowerCase();
+    const signal=(p.signalType||'').toLowerCase();
+    const directional=direction.includes('bull')?'tăng':direction.includes('bear')?'giảm':'phù hợp với bối cảnh';
+    const confirm=p.confirmation || 'Theo dõi phản ứng của các nến sau và cấu trúc giá gần nhất.';
+    const invalid=p.invalidation || 'Nếu giá đi ngược hoàn toàn với cách diễn giải ban đầu, luận điểm từ mẫu hình không còn giá trị.';
+    return {
+      identifyTitle:note.focus,
+      identify:[
+        ['Cấu trúc cốt lõi',p.formation],
+        ['Số nến & quan hệ',`${patternGroup(p)}; đọc mối quan hệ Open–High–Low–Close giữa các nến thay vì chỉ đếm màu.`],
+        ['Bối cảnh',`${contextVi(p.context)}.`],
+        ['Điểm dễ nhầm',note.wrong]
+      ],
+      storyTitle:note.story,
+      story:[
+        ['1 · Trạng thái trước mẫu',`Mẫu chỉ có ý nghĩa khi đặt trong bối cảnh: ${contextVi(p.context)}.`],
+        ['2 · Chuyển biến trong mẫu',note.focus],
+        ['3 · Điều thị trường cần chứng minh',confirm]
+      ],
+      caveat:`${note.boundary} Pattern recognized không đồng nghĩa trade recommendation.`,
+      context:[
+        ['good','PHÙ HỢP',contextVi(p.context),`Đây là vị trí phù hợp để diễn giải ${p.name} theo đúng catalog ChartLab.`],
+        ['wait','CHƯA ĐỦ','Chỉ thấy hình dạng',`Nếu screenshot thiếu prior trend, key level hoặc phần nến trước đó, chỉ nên ghi nhận candidate pattern và hạ confidence.`],
+        ['bad','DỄ ĐỌC SAI','Sai điều kiện phân biệt',note.wrong]
+      ],
+      confirmation:[
+        ['CHƯA ĐỦ',`Mẫu đã hình thành nhưng chưa có diễn biến sau mẫu đủ rõ.`],
+        ['TỐT HƠN',confirm],
+        ['MẠNH HƠN',`Follow-through ${directional} đồng thời phá/giữ được vùng cấu trúc quan trọng gần mẫu.`]
+      ],
+      invalidation:invalid,
+      practice:[
+        ['good','Ví dụ A · Đúng cấu trúc',`${note.focus}`,`Đặt đúng tại ${contextVi(p.context).toLowerCase()} và có confirmation phù hợp thì giá trị quan sát cao hơn.`],
+        ['wait','Ví dụ B · Candidate',`Hình học giống ${p.name} nhưng ảnh bị crop sát hoặc thiếu prior trend.`,'AI chỉ nên báo candidate/low confidence, không tự bù context.'],
+        ['fail','Ví dụ C · Luận điểm sai',invalid,'Khi điều kiện này xảy ra, không tiếp tục dùng pattern làm bằng chứng cho thesis ban đầu.']
+      ],
+      analyzer:[
+        ['A','Geometry',p.formation],
+        ['B','Context',`Phải nhìn thấy hoặc suy ra hợp lý từ chart: ${contextVi(p.context)}.`],
+        ['C','TA-Lib boundary',note.boundary],
+        ['D','Output policy','Confidence là độ tin cậy nhận diện geometry + context, không phải xác suất giá sẽ đi đúng hướng.']
+      ]
+    };
+  }
+  function profileFor(p){
+    return lessonProfiles[p.name] || synthesizedProfile(p,(window.CHARTLAB_CURATED_LESSON_NOTES||{})[p.name]);
+  }
   function identifyHtml(p){
     const x=profileFor(p);
     if(!x) return `<div class="hammer-v3-identify">
