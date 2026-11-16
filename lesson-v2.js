@@ -38,73 +38,106 @@ window.CHARTLAB_LESSON_V2 = {
 
   try {
     if (typeof levels !== 'undefined' && levels[0]) {
-      levels[0].desc = 'OHLC · Range · Body · Shadows · Close Location · Relative Size · Context';
+      levels[0].desc = 'Giá mở cửa · Giá cao nhất · Giá thấp nhất · Giá đóng cửa · Thân nến · Bóng nến · Bối cảnh';
     }
   } catch (_) {}
 
   // --- Level 01 override ---------------------------------------------------
   anatomyPage = function anatomyPageV2(){
-    const concepts = [
-      ['01','OHLC','Bốn mốc giá','Open là điểm bắt đầu; High/Low là hai cực trị; Close là nơi thị trường chốt lại quyền kiểm soát trong kỳ.'],
-      ['02','Range','Biên độ nến','Range = High − Low. Đây là toàn bộ quãng giá đã được giao dịch trong một cây nến.'],
-      ['03','Real Body','Thân nến','Body = |Close − Open|. Body càng lớn so với Range, giá càng giữ được phần lớn chuyển động tới lúc đóng cửa.'],
-      ['04','Upper Shadow','Bóng trên','High − max(Open, Close). Bóng trên dài cho thấy giá cao hơn đã được thử nhưng không được giữ lại.'],
-      ['05','Lower Shadow','Bóng dưới','min(Open, Close) − Low. Bóng dưới dài cho thấy vùng giá thấp đã bị từ chối trong phiên.'],
-      ['06','Body / Range','Tỷ lệ thân / biên độ','Giúp phân biệt nến có directional conviction với nến nhiều giằng co. Luôn so tương đối, không dùng một ngưỡng tuyệt đối cho mọi thị trường.'],
-      ['07','Close Location','Vị trí Close','Hỏi Close nằm gần High, giữa Range hay gần Low. Vị trí đóng cửa thường quan trọng hơn chỉ nhìn màu xanh/đỏ.'],
-      ['08','Relative Size + Context','Kích thước tương đối + bối cảnh','So nến hiện tại với các nến gần đây và hỏi nó xuất hiện ở đâu trong trend, hỗ trợ/kháng cự hay trading range.']
-    ];
-
-    const readSteps = [
-      ['01','Xác định biên độ','Đánh dấu High và Low trước. Range cho biết thị trường đã đi xa đến mức nào trong kỳ.'],
-      ['02','Đọc hành trình','So Body với hai Shadow để xem giá đã đi đâu và phần nào của chuyển động bị từ chối.'],
-      ['03','Đọc điểm kết thúc','Xem Close nằm ở đâu trong Range. Close gần High khác hoàn toàn Close gần Low dù hai nến có cùng độ dài bóng.'],
-      ['04','Đặt vào bối cảnh','So với các nến trước và vị trí trên chart. Một hình dạng chỉ có ý nghĩa khi context phù hợp.']
-    ];
-
-    return pageWrap(`${breadcrumb(['Level 01','Candlestick Anatomy'])}
+    return pageWrap(`${breadcrumb(['Cấp độ 01','Cấu tạo nến'])}
       <section class="level-hero lesson-v2-hero">
         <div>
-          <div class="lesson-version">LESSON v2.0 · FOUNDATION</div>
-          <span class="kicker">LEVEL 01</span>
-          <h1>Candlestick Anatomy</h1>
+          <div class="lesson-version">BÀI HỌC NỀN TẢNG</div>
+          <span class="kicker">CẤP ĐỘ 01</span>
+          <h1>Cấu tạo nến</h1>
           <h2>Đọc một cây nến như một phiên đấu giá thu nhỏ.</h2>
-          <p>Đừng bắt đầu bằng tên mẫu hình. Bắt đầu bằng bốn câu hỏi: giá đã đi bao xa, bị từ chối ở đâu, đóng cửa ở đâu và cây nến đó có gì khác so với bối cảnh xung quanh.</p>
+          <p>Mục tiêu của cấp độ này là hiểu cây nến đã đi đâu, vùng giá nào bị từ chối, giá đóng cửa nằm ở đâu và cây nến đó có ý nghĩa gì khi đặt cạnh các nến trước.</p>
         </div>
-        <div class="anatomy-v2-visual">${candlestickAnatomy()}<div class="anatomy-caption">High → Low là toàn bộ hành trình. Open → Close là phần chuyển động được giữ lại.</div></div>
+        <div class="anatomy-v2-visual">${candlestickAnatomy()}<div class="anatomy-caption">Từ giá cao nhất đến giá thấp nhất là toàn bộ biên độ. Từ giá mở cửa đến giá đóng cửa là phần chuyển động được giữ lại.</div></div>
       </section>
 
-      <section class="lesson-v2-section">
-        <div class="section-heading compact"><div><span class="kicker">8 KHÁI NIỆM NỀN</span><h2>Từ OHLC đến Context</h2></div><p>Level 01 mới không chỉ học tên bộ phận của nến; mục tiêu là biến hình dạng thành thông tin có thể kiểm tra.</p></div>
-        <div class="anatomy-v2-grid">${concepts.map(x=>`<article class="anatomy-v2-card"><span>${x[0]}</span><h3>${x[1]}</h3><h4>${x[2]}</h4><p>${x[3]}</p></article>`).join('')}</div>
-      </section>
+      <section class="hammer-v2-layout">
+        <div class="hammer-v2-main">
+          <article class="lesson-block">
+            <span class="lesson-index">01</span>
+            <div><span class="kicker">BỐN MỨC GIÁ CƠ BẢN</span><h2>Giá mở cửa, cao nhất, thấp nhất và đóng cửa.</h2>
+              <div class="hammer-v3-identify">
+                <div><span>01</span><b>Giá mở cửa</b><p>Mức giá bắt đầu của cây nến trong khoảng thời gian đang quan sát.</p></div>
+                <div><span>02</span><b>Giá cao nhất</b><p>Mức giá cao nhất thị trường đã giao dịch trong cây nến.</p></div>
+                <div><span>03</span><b>Giá thấp nhất</b><p>Mức giá thấp nhất thị trường đã giao dịch trong cây nến.</p></div>
+                <div><span>04</span><b>Giá đóng cửa</b><p>Mức giá kết thúc cây nến; đây là vị trí rất quan trọng để đánh giá bên mua hay bên bán giữ được lợi thế đến cuối kỳ.</p></div>
+              </div>
+            </div>
+          </article>
 
-      <section class="lesson-v2-section two-col-reading">
-        <div class="reading-panel">
-          <span class="kicker">QUY TRÌNH ĐỌC 20 GIÂY</span>
-          <h2>Range → Journey → Close → Context</h2>
-          <div class="reading-steps">${readSteps.map(x=>`<article><b>${x[0]}</b><div><h3>${x[1]}</h3><p>${x[2]}</p></div></article>`).join('')}</div>
+          <article class="lesson-block">
+            <span class="lesson-index">02</span>
+            <div><span class="kicker">THÂN NẾN VÀ BÓNG NẾN</span><h2>Phân biệt phần giá giữ được và phần giá bị từ chối.</h2>
+              <div class="geometry-grid">
+                <div><b>Thân nến</b><p>Là khoảng từ giá mở cửa đến giá đóng cửa. Thân càng lớn so với toàn bộ biên độ, chuyển động theo một hướng càng rõ.</p></div>
+                <div><b>Bóng trên</b><p>Là phần từ đỉnh thân nến lên giá cao nhất. Bóng trên dài cho thấy vùng giá cao từng được thử nhưng không được giữ lại.</p></div>
+                <div><b>Bóng dưới</b><p>Là phần từ đáy thân nến xuống giá thấp nhất. Bóng dưới dài cho thấy vùng giá thấp từng bị ép xuống nhưng sau đó được kéo trở lại.</p></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="lesson-block">
+            <span class="lesson-index">03</span>
+            <div><span class="kicker">BIÊN ĐỘ VÀ VỊ TRÍ ĐÓNG CỬA</span><h2>Không chỉ nhìn màu nến; hãy nhìn giá đóng cửa nằm ở đâu.</h2>
+              <div class="context-split">
+                <div class="good-context"><b>Đóng cửa gần vùng cao</b><p>Bên mua giữ được phần lớn thành quả trong cây nến.</p></div>
+                <div class="bad-context"><b>Đóng cửa gần vùng thấp</b><p>Bên bán giữ được phần lớn lợi thế trong cây nến.</p></div>
+              </div>
+              <div class="context-note"><b>Cách tính để tham khảo</b><span>Biên độ = Giá cao nhất − Giá thấp nhất. Thân nến = |Giá đóng cửa − Giá mở cửa|. Các tỷ lệ chỉ dùng để mô tả tương đối, không phải ngưỡng cố định cho mọi thị trường.</span></div>
+            </div>
+          </article>
+
+          <article class="lesson-block context-first-block">
+            <span class="lesson-index">04</span>
+            <div><span class="kicker">CÂU CHUYỆN CUNG — CẦU VÀ BỐI CẢNH</span><h2>Cùng một hình dạng nhưng đặt ở vị trí khác có thể mang ý nghĩa khác.</h2>
+              <div class="story-flow">
+                <div><b>1 · Nhìn hành trình giá</b><p>Giá đã được đẩy lên hay ép xuống trong phiên?</p></div><i>→</i>
+                <div><b>2 · Nhìn vùng bị từ chối</b><p>Bóng nến cho biết vùng giá nào đã được thử nhưng không giữ được.</p></div><i>→</i>
+                <div><b>3 · Đặt vào xu hướng</b><p>So với các nến trước, vùng hỗ trợ, vùng kháng cự và vị trí hiện tại trên biểu đồ.</p></div>
+              </div>
+              <p class="lesson-caveat">Hình dạng chỉ là dữ liệu ban đầu. Bối cảnh mới quyết định cách diễn giải.</p>
+            </div>
+          </article>
+
+          <article class="lesson-block">
+            <span class="lesson-index">05</span>
+            <div><span class="kicker">XÁC NHẬN VÀ KHI CÁCH ĐỌC SAI</span><h2>Đừng kết luận chỉ từ một cây nến.</h2>
+              <div class="confirmation-scale">
+                <div><span>CHƯA ĐỦ</span><p>Cây nến xuất hiện nhưng các nến sau vẫn đi ngang hoặc không cho thêm thông tin.</p></div>
+                <div><span>TỐT HƠN</span><p>Các nến sau tiếp tục theo hướng phù hợp với cách diễn giải ban đầu.</p></div>
+                <div><span>SAI LUẬN ĐIỂM</span><p>Giá đi ngược rõ ràng, phá vùng quan trọng và làm mất ý nghĩa mà ta gán cho cây nến trước đó.</p></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="lesson-block analyzer-rule-block">
+            <span class="lesson-index">06</span>
+            <div><span class="kicker">QUY TRÌNH ĐỌC CHO NGƯỜI HỌC VÀ AI</span><h2>Luôn đi theo cùng một thứ tự.</h2>
+              <div class="analyzer-rules">
+                <div><b>A</b><span><strong>Nhìn hình dạng</strong><p>Thân nến nằm đâu, bóng trên và bóng dưới dài hay ngắn.</p></span></div>
+                <div><b>B</b><span><strong>Nhìn xu hướng trước đó</strong><p>Giá đang tăng, giảm hay đi ngang trước khi cây nến xuất hiện.</p></span></div>
+                <div><b>C</b><span><strong>Nhìn vị trí</strong><p>Cây nến nằm ở hỗ trợ, kháng cự, vùng cực trị hay giữa vùng đi ngang.</p></span></div>
+                <div><b>D</b><span><strong>Chờ xác nhận</strong><p>Nếu ảnh biểu đồ bị cắt quá sát hoặc thiếu dữ liệu, phải hạ độ tin cậy và không suy đoán cho đủ.</p></span></div>
+              </div>
+            </div>
+          </article>
         </div>
-        <aside class="formula-panel">
-          <span class="kicker">CÔNG THỨC CẦN NHỚ</span>
-          <div class="formula-chip"><b>Range</b><code>High − Low</code></div>
-          <div class="formula-chip"><b>Real Body</b><code>|Close − Open|</code></div>
-          <div class="formula-chip"><b>Upper Shadow</b><code>High − max(O,C)</code></div>
-          <div class="formula-chip"><b>Lower Shadow</b><code>min(O,C) − Low</code></div>
-          <div class="formula-chip"><b>Close Location</b><code>(Close − Low) / Range</code></div>
-          <p class="formula-note">Các tỷ lệ là công cụ mô tả. Không biến chúng thành “ngưỡng thần kỳ”; nhiều pattern chuyên nghiệp dùng tiêu chuẩn tương đối so với các nến trước.</p>
+
+        <aside class="hammer-v2-aside">
+          <div class="quick-facts quick-facts-table">
+            <h3>Thông tin nhanh</h3>
+            <div class="qf-row"><span>Mục tiêu</span><b>Hiểu cấu tạo và cách đọc một cây nến</b></div>
+            <div class="qf-row"><span>Trọng tâm</span><b>Thân nến · Bóng nến · Biên độ · Vị trí đóng cửa</b></div>
+            <div class="qf-row"><span>Nguyên tắc</span><b>Luôn đọc cùng xu hướng và vùng giá</b></div>
+            <div class="qf-row"><span>Số phần</span><b>6 phần thống nhất</b></div>
+          </div>
+          <div class="source-box"><span>NGUỒN THAM KHẢO</span><p>Nội dung nền được đối chiếu với tài liệu CMT và phương pháp đọc nến theo bối cảnh của CandleCharts.</p><a href="${window.CHARTLAB_LESSON_V2.sources.cmtProgram}" target="_blank" rel="noreferrer">Tài liệu chương trình CMT ↗</a><a href="${window.CHARTLAB_LESSON_V2.sources.nisonContext}" target="_blank" rel="noreferrer">CandleCharts — đọc theo bối cảnh ↗</a></div>
         </aside>
-      </section>
-
-      <section class="rule-box lesson-v2-rule">
-        <span>NGUYÊN TẮC CHARTLAB #01</span>
-        <h3>Hình dạng là dữ liệu. Context mới tạo ra ý nghĩa.</h3>
-        <p>Một bóng dưới dài không tự động bullish; một thân đỏ không tự động bearish. Trước khi gọi tên pattern, hãy đọc vị trí Close, xu hướng trước đó, vùng giá đang giao dịch và phản ứng tiếp theo.</p>
-      </section>
-
-      <section class="lesson-source-strip">
-        <div><span class="kicker">METHODOLOGY</span><h3>Level 01 là nền cho toàn bộ Pattern Engine.</h3><p>CMT nhấn mạnh việc đọc real body, shadows và ý nghĩa của candlestick trong bối cảnh trend; CandleCharts nhấn mạnh “context before conclusions”.</p></div>
-        <div class="source-links"><a href="${window.CHARTLAB_LESSON_V2.sources.cmtProgram}" target="_blank" rel="noreferrer">CMT Program Guide ↗</a><a href="${window.CHARTLAB_LESSON_V2.sources.nisonContext}" target="_blank" rel="noreferrer">CandleCharts — Context ↗</a></div>
       </section>
     `);
   };
