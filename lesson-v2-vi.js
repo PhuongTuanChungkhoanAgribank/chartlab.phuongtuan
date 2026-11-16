@@ -273,9 +273,20 @@
 
   function translateText(text){
     let out=text;
+    const protectedNames=[];
+    const patternNames=(window.CHARTLAB_PATTERNS||window.patterns||[])
+      .map(p=>p&&p.name).filter(Boolean).sort((a,b)=>b.length-a.length);
+    patternNames.forEach((name,i)=>{
+      if(out.includes(name)){
+        const token=`__CHARTLAB_PATTERN_NAME_${i}__`;
+        protectedNames.push([token,name]);
+        out=out.split(name).join(token);
+      }
+    });
     for(const [from,to] of replacements){
       if(out.includes(from)) out=out.split(from).join(to);
     }
+    protectedNames.forEach(([token,name])=>{ out=out.split(token).join(name); });
     return out;
   }
 
