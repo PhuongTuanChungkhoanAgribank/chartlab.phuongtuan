@@ -138,7 +138,7 @@
       identifyTitle:'Open và Close gần như trùng nhau — trọng tâm là sự do dự, không phải tự động tăng hay giảm.',
       identify:[
         ['Thân nến','Rất nhỏ vì Open và Close gần nhau; có thể gần như chỉ còn một đường ngang.'],
-        ['Bóng nến','Bóng trên và dưới có thể ngắn hoặc dài; biến thể bóng nến tạo ra Dragonfly, Gravestone, Long-Legged Doji...'],
+        ['Bóng nến','Bóng trên và dưới có thể ngắn hoặc dài; biến thể bóng nến tạo ra Dragonfly, Gravestone, Long Legged Doji...'],
         ['Màu nến','Không quan trọng vì chênh lệch Open–Close rất nhỏ.'],
         ['Vị trí','Ý nghĩa phụ thuộc mạnh vào xu hướng trước đó, vùng giá và các nến xung quanh.']
       ],
@@ -168,7 +168,7 @@
       analyzer:[
         ['A','Hình dạng','Open và Close phải đủ gần nhau tương đối với kích thước/range gần đây; không dùng một tỷ lệ cứng cho mọi mã.'],
         ['B','Bối cảnh','AI phải mô tả Doji là neutral/indecision trước, sau đó mới giải thích bias theo trend và vị trí.'],
-        ['C','Biến thể','Nếu geometry phù hợp Dragonfly/Gravestone/Long-Legged Doji thì ưu tiên tên biến thể cụ thể.'],
+        ['C','Biến thể','Nếu geometry phù hợp Dragonfly/Gravestone/Long Legged Doji thì ưu tiên tên biến thể cụ thể.'],
         ['D','Xác nhận','Không biến Doji thành khuyến nghị; cần breakout/follow-through và cấu trúc giá sau đó.']
       ]
     }
@@ -249,7 +249,7 @@
         ['D','Xác nhận','Không kết luận đảo chiều nếu thiếu bearish follow-through.']
       ]
     },
-    'Long-Legged Doji': {
+    'Long Legged Doji': {
       identifyTitle:'Open và Close gần nhau nhưng cả bóng trên lẫn bóng dưới đều dài — dấu hiệu giằng co mạnh.',
       identify:[
         ['Thân nến','Open và Close gần như trùng nhau.'],
@@ -263,11 +263,11 @@
         ['2 · Bên bán kéo xuống','Giá cũng bị ép xuống sâu về phía đối diện.'],
         ['3 · Trở lại gần Open','Close quay gần điểm mở cửa, phản ánh sự bất định lớn hơn Doji thông thường.']
       ],
-      caveat:'Long-Legged Doji thể hiện sự lưỡng lự với biên độ lớn. Nó đặc biệt đáng chú ý sau một xu hướng mạnh, nhưng không có hướng dự báo cố định.',
+      caveat:'Long Legged Doji thể hiện sự lưỡng lự với biên độ lớn. Nó đặc biệt đáng chú ý sau một xu hướng mạnh, nhưng không có hướng dự báo cố định.',
       context:[
         ['good','PHÙ HỢP','Sau xu hướng kéo dài hoặc tại vùng cực trị','Sự bất định tăng mạnh sau một trend rõ có thể báo hiệu giai đoạn chuyển trạng thái.'],
         ['wait','CHƯA ĐỦ','Trong thị trường vốn đã biến động mạnh và sideway','Range lớn có thể chỉ là nhiễu, không nhất thiết là tín hiệu mới.'],
-        ['bad','SAI CÁCH ĐỌC','Ép thành bullish hoặc bearish ngay','Long-Legged Doji là mẫu trung tính trước khi xét context và breakout.']
+        ['bad','SAI CÁCH ĐỌC','Ép thành bullish hoặc bearish ngay','Long Legged Doji là mẫu trung tính trước khi xét context và breakout.']
       ],
       confirmation:[
         ['CHƯA ĐỦ','Giá tiếp tục dao động bên trong range của Doji.'],
@@ -276,7 +276,7 @@
       ],
       invalidation:'Không có hướng vô hiệu cố định. Luận điểm chỉ sai khi giá phá ngược với hướng diễn giải theo bối cảnh đã chọn.',
       practice:[
-        ['good','Ví dụ A · Chuyển trạng thái','Sau nhịp tăng dài, Long-Legged Doji xuất hiện rồi giá phá xuống.','Sự giằng co được xác nhận theo hướng suy yếu.'],
+        ['good','Ví dụ A · Chuyển trạng thái','Sau nhịp tăng dài, Long Legged Doji xuất hiện rồi giá phá xuống.','Sự giằng co được xác nhận theo hướng suy yếu.'],
         ['wait','Ví dụ B · Chưa đủ','Doji xuất hiện nhưng giá vẫn nằm trong range.','Tiếp tục coi là trung tính.'],
         ['fail','Ví dụ C · Diễn giải sai','Gọi bearish nhưng giá phá lên mạnh và tạo đỉnh mới.','Bias bearish sai; bản thân mẫu vẫn chỉ phản ánh bất định.']
       ],
@@ -472,7 +472,7 @@
       ],
       analyzer:[
         ['A','Hình dạng','Body nhỏ, cả upper và lower shadow đều dài tương đối.'],
-        ['B','Phân biệt','Nếu Open≈Close, có thể ưu tiên Long-Legged Doji/Rickshaw Man tùy vị trí body.'],
+        ['B','Phân biệt','Nếu Open≈Close, có thể ưu tiên Long Legged Doji/Rickshaw Man tùy vị trí body.'],
         ['C','Bối cảnh','Sau expansion/key level mới tăng giá trị.'],
         ['D','Xác nhận','Không gán hướng trước khi có breakout/follow-through.']
       ]
@@ -624,7 +624,7 @@
       ],
       analyzer:[
         ['A','Hình dạng','Thân cực nhỏ gần giữa range, shadows hai phía dài.'],
-        ['B','Phân biệt','Nếu body lệch xa khỏi giữa range, có thể là Long-Legged Doji khác biến thể.'],
+        ['B','Phân biệt','Nếu body lệch xa khỏi giữa range, có thể là Long Legged Doji khác biến thể.'],
         ['C','Bối cảnh','Trend extreme/high volatility tăng giá trị diễn giải.'],
         ['D','Xác nhận','Không gán bullish/bearish trước breakout/follow-through.']
       ]
@@ -669,10 +669,10 @@
         ['fail','Ví dụ C · Luận điểm sai',invalid,'Khi điều kiện này xảy ra, không tiếp tục dùng pattern làm bằng chứng cho thesis ban đầu.']
       ],
       analyzer:[
-        ['A','Geometry',p.formation],
-        ['B','Context',`Phải nhìn thấy hoặc suy ra hợp lý từ chart: ${contextVi(p.context)}.`],
-        ['C','TA-Lib boundary',note.boundary],
-        ['D','Output policy','Confidence là độ tin cậy nhận diện geometry + context, không phải xác suất giá sẽ đi đúng hướng.']
+        ['A','Hình dạng',p.formation],
+        ['B','Bối cảnh',`Phải nhìn thấy hoặc suy ra hợp lý từ biểu đồ: ${contextVi(p.context)}.`],
+        ['C','Giới hạn nhận diện tự động',note.boundary],
+        ['D','Nguyên tắc đầu ra','Độ tin cậy là mức chắc chắn khi nhận diện hình dạng + bối cảnh, không phải xác suất giá sẽ đi đúng hướng.']
       ]
     };
   }
