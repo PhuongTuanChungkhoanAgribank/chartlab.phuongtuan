@@ -421,3 +421,95 @@ td,th{border-color:var(--cl-border)!important}
   color:#93c5fd!important;
   opacity:1!important;
 }
+
+
+/* ChartLab v2.1 — pastel learning cards across all candlestick lessons */
+.hammer-v3-summary span{
+  background:#faf7ff!important;
+  border:1px solid #e9d5ff!important;
+  color:#172033!important;
+  box-shadow:0 8px 22px rgba(124,58,237,.06)!important;
+}
+.hammer-v3-summary span:nth-child(1){
+  background:#f6f0ff!important;
+  border-color:#ddd6fe!important;
+}
+.hammer-v3-summary span:nth-child(2){
+  background:#eef4ff!important;
+  border-color:#c7d7fe!important;
+}
+.hammer-v3-summary span:nth-child(3){
+  background:#fff7e8!important;
+  border-color:#fde3ad!important;
+}
+.hammer-v3-summary span:nth-child(4){
+  background:#fff0f7!important;
+  border-color:#fbcfe8!important;
+}
+.hammer-v3-summary b{
+  color:#7c3aed!important;
+}
+.hammer-v3-summary span:nth-child(2) b{color:#2563eb!important}
+.hammer-v3-summary span:nth-child(3) b{color:#b45309!important}
+.hammer-v3-summary span:nth-child(4) b{color:#be185d!important}
+
+.hammer-v3-identify>div,
+.geometry-grid>div,
+.confirmation-scale>div,
+.analyzer-rules>div{
+  background:#ffffff!important;
+  border-color:#e2e8f0!important;
+  box-shadow:0 8px 20px rgba(15,23,42,.035)!important;
+}
+.hammer-v3-identify>div:nth-child(4n+1),
+.geometry-grid>div:nth-child(4n+1),
+.analyzer-rules>div:nth-child(4n+1){background:#f8f5ff!important;border-color:#e9d5ff!important}
+.hammer-v3-identify>div:nth-child(4n+2),
+.geometry-grid>div:nth-child(4n+2),
+.analyzer-rules>div:nth-child(4n+2){background:#f2f7ff!important;border-color:#dbeafe!important}
+.hammer-v3-identify>div:nth-child(4n+3),
+.geometry-grid>div:nth-child(4n+3),
+.analyzer-rules>div:nth-child(4n+3){background:#fff9ed!important;border-color:#fde7b0!important}
+.hammer-v3-identify>div:nth-child(4n+4),
+.geometry-grid>div:nth-child(4n+4),
+.analyzer-rules>div:nth-child(4n+4){background:#fff4f8!important;border-color:#fbcfe8!important}
+
+.hammer-v3-identify span,
+.analyzer-rules>div>b{
+  background:#ede9fe!important;
+  color:#6d28d9!important;
+  border:1px solid #ddd6fe!important;
+}
+.hammer-v3-identify>div:nth-child(4n+2) span,
+.analyzer-rules>div:nth-child(4n+2)>b{background:#dbeafe!important;color:#1d4ed8!important;border-color:#bfdbfe!important}
+.hammer-v3-identify>div:nth-child(4n+3) span,
+.analyzer-rules>div:nth-child(4n+3)>b{background:#fef3c7!important;color:#a16207!important;border-color:#fde68a!important}
+.hammer-v3-identify>div:nth-child(4n+4) span,
+.analyzer-rules>div:nth-child(4n+4)>b{background:#fce7f3!important;color:#be185d!important;border-color:#fbcfe8!important}
+
+.confirmation-scale>div:nth-child(1){background:#f8fafc!important;border-color:#e2e8f0!important}
+.confirmation-scale>div:nth-child(2){background:#fff9ed!important;border-color:#fde68a!important}
+.confirmation-scale>div:nth-child(3){background:#f3e8ff!important;border-color:#ddd6fe!important}
+
+.hammer-v3-contexts .good,
+.hammer-v3-practice-grid .good{background:#f3e8ff!important;border-color:#ddd6fe!important}
+.hammer-v3-contexts .wait,
+.hammer-v3-practice-grid .wait{background:#fff9ed!important;border-color:#fde68a!important}
+.hammer-v3-contexts .bad,
+.hammer-v3-practice-grid .fail{background:#fff1f2!important;border-color:#fecdd3!important}
+
+.hammer-v3-contexts>div,
+.hammer-v3-practice-grid>div{
+  color:#172033!important;
+  box-shadow:0 8px 20px rgba(15,23,42,.035)!important;
+}
+.hammer-v3-practice-grid span,
+.hammer-v3-practice-grid b,
+.hammer-v3-contexts b{
+  color:#172033!important;
+}
+.hammer-v3-identify p,
+.hammer-v3-contexts p,
+.hammer-v3-practice-grid p{
+  color:#475569!important;
+}
