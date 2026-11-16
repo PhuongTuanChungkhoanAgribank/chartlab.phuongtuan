@@ -706,7 +706,7 @@
   function confirmationHtml(p){
     const x=profileFor(p);
     if(!x) return '';
-    return `<article class="lesson-block"><span class="lesson-index">04</span><div><span class="kicker">XÁC NHẬN</span><h2>Đợi thị trường xác nhận ý nghĩa của mẫu hình.</h2><div class="confirmation-scale">${x.confirmation.map(v=>`<div><span>${v[0]}</span><p>${v[1]}</p></div>`).join('')}</div></div></article>`;
+    return `<article class="lesson-block"><span class="lesson-index">04</span><div><span class="kicker">XÁC NHẬN VÀ KHI LUẬN ĐIỂM SAI</span><h2>Đợi thị trường xác nhận ý nghĩa của mẫu hình.</h2><div class="confirmation-scale">${x.confirmation.map(v=>`<div><span>${v[0]}</span><p>${v[1]}</p></div>`).join('')}</div><div class="context-note strong"><b>Khi luận điểm sai</b><span>${x.invalidation || invalidationText(p)}</span></div></div></article>`;
   }
   function practiceHtml(p){
     const x=profileFor(p);
@@ -890,22 +890,15 @@
           </article>
 
           ${confirmationHtml(p)}
-          <article class="lesson-block">
-            <span class="lesson-index">${profileFor(p)?'05':'04'}</span>
-            <div><span class="kicker">KHI NÀO LUẬN ĐIỂM SAI</span>
-              <p>${profileFor(p)?.invalidation || invalidationText(p)}</p>
-            </div>
-          </article>
-
           <article class="lesson-block hammer-v3-practice">
-            <span class="lesson-index">${profileFor(p)?'06':'05'}</span>
+            <span class="lesson-index">05</span>
             <div><span class="kicker">NHÌN TRÊN BIỂU ĐỒ THẬT</span><h2>Ba tình huống cần phân biệt.</h2>
               ${practiceHtml(p)}
             </div>
           </article>
 
           <article class="lesson-block analyzer-rule-block">
-            <span class="lesson-index">${profileFor(p)?'07':'06'}</span>
+            <span class="lesson-index">06</span>
             <div><span class="kicker">ĐIỀU KIỆN ĐỂ NHẬN DIỆN</span><h2>Khi nào có thể xác định đây là ${p.name}?</h2>
               ${analyzerHtml(p)}
             </div>
