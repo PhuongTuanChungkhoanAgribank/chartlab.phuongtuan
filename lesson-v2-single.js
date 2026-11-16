@@ -109,7 +109,7 @@
   });
 
   try {
-    if(typeof levels!=='undefined' && levels[1]) levels[1].desc='Geometry · Prior Trend · Location · Confirmation · Failure';
+    if(typeof levels!=='undefined' && levels[1]) levels[1].desc='Hình dạng · Xu hướng trước đó · Vị trí · Xác nhận · Khi luận điểm sai';
   } catch(_) {}
 
   // Level 02 introduction: teaches the rules before the learner opens individual cards.
@@ -119,22 +119,22 @@
     const list=patterns.filter(p=>p.candles===1);
     const filtered=filterPatterns(list);
     const families=[
-      ['Lower-shadow umbrella','Hammer ↔ Hanging Man','Gần cùng geometry. Downtrend tạo Hammer; uptrend tạo Hanging Man.'],
-      ['Upper-shadow rejection','Inverted Hammer ↔ Shooting Star','Gần cùng geometry. Downtrend tạo Inverted Hammer; uptrend tạo Shooting Star.'],
-      ['Indecision','Doji · Spinning Top · High Wave','Body co nhỏ hoặc hai phía đều bị từ chối; không tự mang một hướng giao dịch cố định.'],
-      ['Conviction','Marubozu · Long Line · Belt Hold','Body chiếm ưu thế trong Range; cần đọc hướng Close và vị trí trong trend.']
+      ['Nhóm bóng dưới dài','Hammer ↔ Hanging Man','Gần cùng hình dạng. Sau nhịp giảm là Hammer; sau nhịp tăng là Hanging Man.'],
+      ['Nhóm bóng trên dài','Inverted Hammer ↔ Shooting Star','Gần cùng hình dạng. Sau nhịp giảm là Inverted Hammer; sau nhịp tăng là Shooting Star.'],
+      ['Nhóm lưỡng lự','Doji · Spinning Top · High Wave','Thân nến nhỏ hoặc hai phía đều bị từ chối; không tự mang một hướng giao dịch cố định.'],
+      ['Nhóm động lượng rõ','Marubozu · Long Line · Belt Hold','Thân nến chiếm phần lớn biên độ; cần đọc vị trí đóng cửa và vị trí trong xu hướng.']
     ];
     return pageWrap(`${breadcrumb(['Level 02','Single Candle'])}
       <section class="single-candle-intro">
-        <div><div class="lesson-version">LESSON v2.0 · SINGLE CANDLE</div><span class="kicker">LEVEL 02</span><h1>Single Candle</h1><h2>Đừng học 17 cái tên. Học 4 câu hỏi.</h2><p>Một mẫu hình 1 nến chỉ đáng gọi tên khi <b>geometry</b> phù hợp, <b>prior trend</b> đủ rõ, <b>location</b> có ý nghĩa và phản ứng sau đó cho biết rejection/conviction có được duy trì hay không.</p></div>
-        <div class="single-candle-checklist"><article><b>01</b><span>Geometry</span><p>Body nằm đâu? Shadow dài bên nào? Tỷ lệ so với Range?</p></article><article><b>02</b><span>Prior trend</span><p>Trước nến này là advance, decline hay trading range?</p></article><article><b>03</b><span>Location</span><p>Pattern nằm ở support/resistance, extreme hay giữa range?</p></article><article><b>04</b><span>Confirmation</span><p>Nến sau xác nhận, phủ nhận hay chưa cho thêm thông tin?</p></article></div>
+        <div><div class="lesson-version">BÀI HỌC · NẾN ĐƠN</div><span class="kicker">CẤP ĐỘ 02</span><h1>Nến đơn</h1><h2>Đừng học 17 cái tên. Học 4 câu hỏi.</h2><p>Một mẫu hình nến đơn chỉ đáng gọi tên khi <b>hình dạng</b> phù hợp, <b>xu hướng trước đó</b> đủ rõ, <b>vị trí</b> có ý nghĩa và phản ứng sau đó cho biết sự từ chối giá hoặc động lượng có được duy trì hay không.</p></div>
+        <div class="single-candle-checklist"><article><b>01</b><span>Hình dạng</span><p>Thân nến nằm đâu? Bóng nến dài bên nào? Tỷ lệ so với toàn bộ biên độ?</p></article><article><b>02</b><span>Xu hướng trước đó</span><p>Trước nến này là nhịp tăng, nhịp giảm hay vùng đi ngang?</p></article><article><b>03</b><span>Vị trí</span><p>Mẫu hình nằm ở hỗ trợ, kháng cự, vùng cực trị hay giữa vùng đi ngang?</p></article><article><b>04</b><span>Xác nhận</span><p>Nến sau xác nhận, phủ nhận hay chưa cho thêm thông tin?</p></article></div>
       </section>
 
-      <section class="lesson-v2-section"><div class="section-heading compact"><div><span class="kicker">FAMILY MAP</span><h2>Nhóm theo hành vi, không học thuộc rời rạc</h2></div><p>4 bài đầu đã được nâng lên v2 và trở thành reference family cho toàn bộ Level 02.</p></div><div class="family-map">${families.map((x,i)=>`<article class="family-card ${i<2?'upgraded':''}"><span>${i<2?'v2 READY':'NEXT'}</span><h3>${x[0]}</h3><h4>${x[1]}</h4><p>${x[2]}</p>${i===0?'<div><button data-nav="/pattern/hammer">Hammer</button><button data-nav="/pattern/hangingman">Hanging Man</button></div>':i===1?'<div><button data-nav="/pattern/invertedhammer">Inverted Hammer</button><button data-nav="/pattern/shootingstar">Shooting Star</button></div>':''}</article>`).join('')}</div></section>
+      <section class="lesson-v2-section"><div class="section-heading compact"><div><span class="kicker">BẢN ĐỒ NHÓM</span><h2>Nhóm theo hành vi, không học thuộc rời rạc</h2></div><p>4 bài đầu đã được nâng lên v2 và trở thành nhóm mẫu chuẩn cho toàn bộ Level 02.</p></div><div class="family-map">${families.map((x,i)=>`<article class="family-card ${i<2?'upgraded':''}"><span>${i<2?'ĐÃ CẬP NHẬT':'TIẾP THEO'}</span><h3>${x[0]}</h3><h4>${x[1]}</h4><p>${x[2]}</p>${i===0?'<div><button data-nav="/pattern/hammer">Hammer</button><button data-nav="/pattern/hangingman">Hanging Man</button></div>':i===1?'<div><button data-nav="/pattern/invertedhammer">Inverted Hammer</button><button data-nav="/pattern/shootingstar">Shooting Star</button></div>':''}</article>`).join('')}</div></section>
 
-      <section class="rule-box lesson-v2-rule"><span>NGUYÊN TẮC CHARTLAB #02</span><h3>Prior trend là một phần của tên pattern.</h3><p>Không thấy prior trend thì hạ cấp kết luận về “shape/rejection line”. Đặc biệt: Hammer ≠ Hanging Man chỉ vì màu nến; Inverted Hammer ≠ Shooting Star chỉ vì upper shadow dài.</p></section>
+      <section class="rule-box lesson-v2-rule"><span>NGUYÊN TẮC CHARTLAB #02</span><h3>Xu hướng trước đó là một phần của tên mẫu hình.</h3><p>Không thấy xu hướng trước đó thì chỉ nên mô tả hình dạng hoặc vùng giá bị từ chối. Đặc biệt: Hammer ≠ Hanging Man chỉ vì màu nến; Inverted Hammer ≠ Shooting Star chỉ vì bóng trên dài.</p></section>
 
-      <div class="listing-head single-list-head"><div><span class="kicker">${list.length} SINGLE-CANDLE PATTERNS</span><h2>Thư viện Level 02</h2><p>4 reference lessons đã nâng lên v2; các family còn lại sẽ được audit tiếp theo cùng framework.</p></div><div class="listing-stat"><b>4</b><span>v2 ready</span></div></div>
+      <div class="listing-head single-list-head"><div><span class="kicker">${list.length} MẪU HÌNH NẾN ĐƠN</span><h2>Thư viện Cấp độ 02</h2><p>Các bài học nến đơn được chuẩn hóa cùng một cấu trúc và cùng nguyên tắc đọc theo bối cảnh.</p></div><div class="listing-stat"><b>17</b><span>mẫu đã chuẩn hóa</span></div></div>
       <div class="filters"><label class="search">${searchIcon()}<input id="pattern-search" value="${escAttr(state.library.query)}" placeholder="Tìm Hammer, Doji, Marubozu..."></label><div class="filter-group" data-filter="bias">${['All','Bullish','Bearish','Neutral'].map(x=>`<button data-value="${x}" class="${state.library.bias===x?'selected':''}">${x==='All'?'Tất cả':x}</button>`).join('')}</div><div class="filter-group" data-filter="difficulty">${['All','Core','Intermediate','Advanced'].map(x=>`<button data-value="${x}" class="${state.library.difficulty===x?'selected':''}">${x==='All'?'Mọi cấp':x}</button>`).join('')}</div></div><div class="result-count">Hiển thị <b>${filtered.length}</b> / ${list.length} mẫu hình</div>${patternGridOrEmpty(filtered)}
     `);
   };
