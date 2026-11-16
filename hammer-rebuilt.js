@@ -85,14 +85,14 @@
             </article>
 
             <article class="lesson-block">
-              <span class="lesson-index">05</span>
-              <div><span class="kicker">KHI NÀO LUẬN ĐIỂM SAI</span><h2>Thứ bị vô hiệu là kỳ vọng đảo chiều.</h2>
-                <p>Nếu giá nhanh chóng phá đáy Hammer và tiếp tục tạo đáy thấp hơn, phản ứng từ chối giá thấp đã không tạo được diễn biến tiếp nối như kỳ vọng. Khi đó không nên tiếp tục dùng Hammer làm bằng chứng tăng.</p>
+              <span class="lesson-index">04</span>
+              <div><span class="kicker">KHI NÀO LUẬN ĐIỂM SAI</span>
+                <p>Nếu giá nhanh chóng phá xuống dưới đáy Hammer và tiếp tục tạo đáy thấp hơn, tín hiệu từ Hammer không còn giá trị. Khi đó không nên tiếp tục xem Hammer là bằng chứng cho khả năng đảo chiều tăng.</p>
               </div>
             </article>
 
             <article class="lesson-block hammer-v3-practice">
-              <span class="lesson-index">06</span>
+              <span class="lesson-index">05</span>
               <div><span class="kicker">NHÌN TRÊN BIỂU ĐỒ THẬT</span><h2>Ba tình huống phải phân biệt được.</h2>
                 <div class="hammer-v3-practice-grid">
                   <div class="good"><span>Ví dụ A · Đúng bối cảnh</span><b>Giá giảm nhiều phiên → xuất hiện bóng dưới dài → đóng cửa trở lại gần phần trên biên độ.</b><p>Có thể ghi nhận Hammer, nhưng vẫn cần theo dõi nến sau.</p></div>
@@ -103,7 +103,7 @@
             </article>
 
             <article class="lesson-block analyzer-rule-block">
-              <span class="lesson-index">07</span>
+              <span class="lesson-index">06</span>
               <div><span class="kicker">ĐIỀU KIỆN ĐỂ NHẬN DIỆN</span><h2>Khi nào có thể xác định đây là Hammer?</h2>
                 <div class="analyzer-rules">
                   <div><b>A</b><span><strong>Hình dạng</strong><p>Thân nhỏ, bóng dưới dài và bóng trên rất ngắn.</p></span></div>
