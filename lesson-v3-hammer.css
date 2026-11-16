@@ -235,3 +235,31 @@
     padding-bottom:4px;
   }
 }
+
+/* Standard candlestick lesson — shared Hammer form */
+.candle-standard-hero .hammer-v3-summary span{
+  min-height:86px;
+}
+.candle-standard-hero .hammer-v3-summary span:not(:first-child){
+  justify-content:flex-start;
+}
+.candle-standard-hero .detail-diagram .candle-diagram{
+  width:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.candle-standard-hero .detail-diagram .candle-diagram svg{
+  width:100%!important;
+  max-width:320px!important;
+  max-height:260px!important;
+}
+.candle-standard-hero .detail-badges{
+  flex-wrap:wrap;
+}
+.candle-standard-hero .hammer-v3-lead{
+  max-width:820px;
+}
+@media(max-width:900px){
+  .candle-standard-hero .hammer-v3-summary span{min-height:auto}
+}
