@@ -11,7 +11,20 @@
   function content(){
     return `
       <main id="main-content" class="hammer-rebuilt">
-        <div class="breadcrumb"><button class="link-button" data-nav="/level/2">Cấp độ 02</button><span>›</span><span>Nến đơn</span><span>›</span><b>Hammer — Cây Búa</b></div>
+        <div class="lesson-topnav">
+          <button class="lesson-back-home" data-nav="/">← Quay về Học</button>
+          <div class="breadcrumb">
+            <button class="link-button" data-nav="/">Trang chủ</button>
+            <span>›</span>
+            <button class="link-button" data-nav="/">Học</button>
+            <span>›</span>
+            <button class="link-button" data-nav="/level/2">Cấp độ 02</button>
+            <span>›</span>
+            <span>Nến đơn</span>
+            <span>›</span>
+            <b>Hammer — Cây Búa</b>
+          </div>
+        </div>
 
         <section class="detail-hero hammer-v3-hero">
           <div>
