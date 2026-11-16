@@ -88,19 +88,13 @@
 
             <article class="lesson-block">
               <span class="lesson-index">04</span>
-              <div><span class="kicker">XÁC NHẬN</span><h2>Đợi thị trường chứng minh lực mua có tiếp tục hay không.</h2>
+              <div><span class="kicker">XÁC NHẬN VÀ KHI LUẬN ĐIỂM SAI</span><h2>Đợi thị trường chứng minh lực mua có tiếp tục hay không.</h2>
                 <div class="confirmation-scale">
                   <div><span>CHƯA ĐỦ</span><p>Hammer xuất hiện nhưng nến sau tiếp tục lưỡng lự hoặc quay xuống.</p></div>
                   <div><span>TỐT HƠN</span><p>Các nến sau giữ được vùng thân Hammer và có phản ứng tăng tiếp nối.</p></div>
                   <div><span>MẠNH HƠN</span><p>Giá vượt đỉnh Hammer và duy trì được phía trên, đặc biệt nếu bối cảnh hỗ trợ rõ.</p></div>
                 </div>
-              </div>
-            </article>
-
-            <article class="lesson-block">
-              <span class="lesson-index">04</span>
-              <div><span class="kicker">KHI NÀO LUẬN ĐIỂM SAI</span>
-                <p>Nếu giá nhanh chóng phá xuống dưới đáy Hammer và tiếp tục tạo đáy thấp hơn, tín hiệu từ Hammer không còn giá trị. Khi đó không nên tiếp tục xem Hammer là bằng chứng cho khả năng đảo chiều tăng.</p>
+                <div class="context-note strong"><b>Khi luận điểm sai</b><span>Nếu giá nhanh chóng phá xuống dưới đáy Hammer và tiếp tục tạo đáy thấp hơn, không nên tiếp tục xem Hammer là bằng chứng cho khả năng đảo chiều tăng.</span></div>
               </div>
             </article>
 
