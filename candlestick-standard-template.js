@@ -800,7 +800,13 @@
     const entries=(comparePairs[p.id]||[])
       .map(x=>({...x,pattern:patterns.find(q=>q.id===x.id)}))
       .filter(x=>x.pattern);
-    return entries[0] || null;
+    if(entries[0]) return entries[0];
+    const defs=window.CHARTLAB_CURATED_COMPARE_DEFS||[];
+    const d=defs.find(x=>Array.isArray(x.names)&&x.names.includes(p.name));
+    if(!d) return null;
+    const otherName=d.names.find(n=>n!==p.name);
+    const other=patterns.find(q=>q.name===otherName);
+    return other?{id:other.id,pattern:other,note:d.key||d.title||'Hai mẫu dễ nhầm; cần so geometry và context.'}:null;
   }
 
   function navHtml(level,p){
