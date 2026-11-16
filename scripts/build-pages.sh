@@ -6,7 +6,7 @@ cd "$ROOT_DIR"
 
 rm -rf _site
 mkdir -p _site/data
-cp index.html config.js manifest.webmanifest icon.svg .nojekyll lesson-v2.js lesson-v2.css lesson-v2-single-candle.js lesson-v2-vi.js analyzer-skills.js analyzer-skills.css analyzer-clipboard.js lesson-v3-hammer.css pattern-navigation-fix.js preview-contrast-fix.js candlestick-curated-notes.js candlestick-standard-template.js hammer-rebuilt.js compare-hammer-v2.js library-vi-labels.js light-theme-v2.css _site/
+cp index.html config.js manifest.webmanifest icon.svg .nojekyll lesson-v2.js lesson-v2.css lesson-v2-single-candle.js lesson-v2-vi.js analyzer-skills.js analyzer-skills.css analyzer-clipboard.js lesson-v3-hammer.css pattern-navigation-fix.js preview-contrast-fix.js candlestick-curated-notes.js candlestick-compare-curated.js candlestick-standard-template.js hammer-rebuilt.js compare-hammer-v2.js library-vi-labels.js candlestick-qa.js light-theme-v2.css _site/
 
 restore() {
   local bundle="$1" out="$2"
@@ -47,11 +47,13 @@ node --check _site/analyzer-skills.js
 node --check _site/analyzer-clipboard.js
 node --check _site/pattern-navigation-fix.js
 node --check _site/candlestick-curated-notes.js
+node --check _site/candlestick-compare-curated.js
 node --check _site/candlestick-standard-template.js
 node --check _site/preview-contrast-fix.js
 node --check _site/hammer-rebuilt.js
 node --check _site/compare-hammer-v2.js
 node --check _site/library-vi-labels.js
+node --check _site/candlestick-qa.js
 node --check _site/data/patterns.js
 node --check _site/data/price-action.js
 node --check _site/data/chart-patterns.js
