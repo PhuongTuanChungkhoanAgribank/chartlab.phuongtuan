@@ -172,7 +172,197 @@
         ['D','Xác nhận','Không biến Doji thành khuyến nghị; cần breakout/follow-through và cấu trúc giá sau đó.']
       ]
     }
-  };
+,
+    'Dragonfly Doji': {
+      identifyTitle:'Open và Close gần vùng cao, bóng dưới dài — một biến thể Doji cho thấy giá thấp bị từ chối.',
+      identify:[
+        ['Thân nến','Open và Close gần như trùng nhau, nằm gần phía trên của toàn bộ range.'],
+        ['Bóng dưới','Dài và nổi bật; ghi lại việc giá từng bị đẩy xuống sâu trong phiên.'],
+        ['Bóng trên','Rất ngắn hoặc gần như không có.'],
+        ['Bối cảnh','Sau nhịp giảm có thể mang sắc thái tích cực hơn; sau nhịp tăng có thể chỉ phản ánh biến động mạnh và cần đọc thận trọng.']
+      ],
+      storyTitle:'Giá bị đẩy xuống thấp nhưng bên mua kéo trở lại gần điểm mở cửa — phe bán không giữ được vùng thấp.',
+      story:[
+        ['1 · Giá bị ép xuống','Lực bán đẩy giá xuống sâu trong phiên.'],
+        ['2 · Lực cầu hấp thụ','Bên mua phản ứng mạnh tại vùng thấp và kéo giá hồi lên.'],
+        ['3 · Close gần Open','Phiên kết thúc gần điểm mở cửa, cho thấy vùng thấp bị từ chối nhưng chưa đủ để kết luận đảo chiều.']
+      ],
+      caveat:'Dragonfly Doji mang thông tin về rejection ở vùng thấp. Sắc thái bullish chỉ hợp lý hơn khi nó xuất hiện sau một nhịp giảm hoặc tại hỗ trợ.',
+      context:[
+        ['good','PHÙ HỢP','Sau nhịp giảm hoặc tại hỗ trợ','Vùng thấp bị từ chối trong bối cảnh bán quá mức có thể là dấu hiệu đáng chú ý.'],
+        ['wait','CHƯA ĐỦ','Giữa vùng sideway','Dragonfly Doji có thể chỉ phản ánh dao động nội phiên, không nhất thiết tạo bias rõ.'],
+        ['bad','SAI CÁCH ĐỌC','Mặc định bullish ở mọi vị trí','Hình dạng không tự tạo tín hiệu mua; cần prior trend và follow-through.']
+      ],
+      confirmation:[
+        ['CHƯA ĐỦ','Giá tiếp tục đi ngang và không vượt vùng cao của Dragonfly Doji.'],
+        ['TỐT HƠN','Nến sau tăng và giữ trên phần thân/đỉnh của mẫu.'],
+        ['MẠNH HƠN','Giá vượt High và hình thành cấu trúc phục hồi rõ tại hỗ trợ.']
+      ],
+      invalidation:'Nếu sau bối cảnh bullish, giá phá Low của Dragonfly Doji và tiếp tục tạo đáy thấp hơn, luận điểm từ chối vùng thấp đã thất bại.',
+      practice:[
+        ['good','Ví dụ A · Đáng chú ý','Sau nhịp giảm mạnh, Dragonfly Doji xuất hiện tại hỗ trợ rồi giá bật lên.','Có thể xem đây là rejection vùng thấp được xác nhận.'],
+        ['wait','Ví dụ B · Trung tính','Dragonfly Doji nằm giữa vùng tích lũy và giá tiếp tục đi ngang.','Không nên gán bias tăng chỉ từ hình dạng.'],
+        ['fail','Ví dụ C · Thất bại','Sau mẫu, giá phá Low và tiếp tục giảm.','Rejection không tạo được follow-through.']
+      ],
+      analyzer:[
+        ['A','Hình dạng','Open và Close gần nhau ở phần trên range, lower shadow dài, upper shadow rất ngắn.'],
+        ['B','Bối cảnh','AI phải ưu tiên mô tả “lower-price rejection” trước khi gán bullish bias.'],
+        ['C','Phân biệt','Nếu thân không đủ nhỏ, có thể gần Hammer/Hanging Man hơn là Doji.'],
+        ['D','Xác nhận','Sau downtrend, chỉ nâng confidence bullish khi có follow-through tăng hoặc phản ứng tại hỗ trợ.']
+      ]
+    },
+    'Gravestone Doji': {
+      identifyTitle:'Open và Close gần vùng thấp, bóng trên dài — một biến thể Doji cho thấy giá cao bị từ chối.',
+      identify:[
+        ['Thân nến','Open và Close gần như trùng nhau, nằm gần phía dưới của range.'],
+        ['Bóng trên','Dài và nổi bật; giá từng được đẩy lên cao nhưng không giữ được.'],
+        ['Bóng dưới','Rất ngắn hoặc gần như không có.'],
+        ['Bối cảnh','Sau nhịp tăng hoặc tại kháng cự, rejection vùng cao đáng chú ý hơn.']
+      ],
+      storyTitle:'Bên mua đẩy giá lên nhưng bị bên bán kéo trở lại gần điểm mở cửa — vùng giá cao không được chấp nhận.',
+      story:[
+        ['1 · Giá bật lên mạnh','Bên mua đẩy giá lên trong phiên.'],
+        ['2 · Lực bán phản công','Cung xuất hiện ở vùng cao và kéo giá lùi xuống.'],
+        ['3 · Close gần Open','Phiên kết thúc gần vùng thấp, cho thấy bên mua không giữ được thành quả.']
+      ],
+      caveat:'Gravestone Doji thường được chú ý hơn ở đỉnh hoặc tại kháng cự, nhưng vẫn cần nến sau xác nhận lực bán tiếp diễn.',
+      context:[
+        ['good','PHÙ HỢP','Sau nhịp tăng hoặc tại kháng cự','Upper-price rejection trong bối cảnh này có thể cảnh báo đà tăng suy yếu.'],
+        ['wait','CHƯA ĐỦ','Giữa vùng sideway','Chỉ phản ánh rejection nội phiên, chưa đủ để kết luận bearish reversal.'],
+        ['bad','SAI CÁCH ĐỌC','Mặc định bearish ở mọi vị trí','Sau nhịp giảm, cùng hình dạng có thể chỉ là lưỡng lự và cần đọc khác.']
+      ],
+      confirmation:[
+        ['CHƯA ĐỦ','Giá vẫn giữ trên vùng thân/đỉnh cũ và không có follow-through giảm.'],
+        ['TỐT HƠN','Nến sau giảm và phá vùng thấp của Gravestone Doji.'],
+        ['MẠNH HƠN','Giá phá Low, thất bại khi retest vùng đỉnh và bắt đầu tạo cấu trúc giảm.']
+      ],
+      invalidation:'Nếu giá vượt rõ High của Gravestone Doji và tiếp tục tạo đỉnh mới, luận điểm rejection vùng cao theo hướng bearish không còn hiệu lực.',
+      practice:[
+        ['good','Ví dụ A · Đáng chú ý','Sau nhịp tăng, Gravestone Doji xuất hiện tại kháng cự rồi giá giảm.','Rejection vùng cao được xác nhận tốt hơn.'],
+        ['wait','Ví dụ B · Trung tính','Mẫu xuất hiện giữa sideway và giá tiếp tục dao động.','Không nên tự động gọi đảo chiều giảm.'],
+        ['fail','Ví dụ C · Thất bại','Giá vượt High của mẫu và tiếp tục tăng.','Luận điểm bearish thất bại.']
+      ],
+      analyzer:[
+        ['A','Hình dạng','Open và Close gần nhau ở phần dưới range, upper shadow dài, lower shadow rất ngắn.'],
+        ['B','Bối cảnh','Sau uptrend/kháng cự mới có cơ sở mạnh hơn để diễn giải bearish.'],
+        ['C','Phân biệt','Nếu body lớn hơn rõ, có thể gần Shooting Star hơn Doji.'],
+        ['D','Xác nhận','Không kết luận đảo chiều nếu thiếu bearish follow-through.']
+      ]
+    },
+    'Long-Legged Doji': {
+      identifyTitle:'Open và Close gần nhau nhưng cả bóng trên lẫn bóng dưới đều dài — dấu hiệu giằng co mạnh.',
+      identify:[
+        ['Thân nến','Open và Close gần như trùng nhau.'],
+        ['Bóng trên','Dài, cho thấy giá từng được đẩy lên cao đáng kể.'],
+        ['Bóng dưới','Dài, cho thấy giá cũng từng bị ép xuống sâu.'],
+        ['Ý nghĩa hình học','Range lớn nhưng kết thúc gần điểm bắt đầu: cả hai phe đều thử chiếm ưu thế nhưng không giữ được.']
+      ],
+      storyTitle:'Một phiên giằng co mạnh: cả bên mua lẫn bên bán đều có lúc kiểm soát, nhưng cuối cùng không bên nào thắng rõ.',
+      story:[
+        ['1 · Bên mua đẩy giá lên','Giá được kéo lên đáng kể trong phiên.'],
+        ['2 · Bên bán kéo xuống','Giá cũng bị ép xuống sâu về phía đối diện.'],
+        ['3 · Trở lại gần Open','Close quay gần điểm mở cửa, phản ánh sự bất định lớn hơn Doji thông thường.']
+      ],
+      caveat:'Long-Legged Doji thể hiện sự lưỡng lự với biên độ lớn. Nó đặc biệt đáng chú ý sau một xu hướng mạnh, nhưng không có hướng dự báo cố định.',
+      context:[
+        ['good','PHÙ HỢP','Sau xu hướng kéo dài hoặc tại vùng cực trị','Sự bất định tăng mạnh sau một trend rõ có thể báo hiệu giai đoạn chuyển trạng thái.'],
+        ['wait','CHƯA ĐỦ','Trong thị trường vốn đã biến động mạnh và sideway','Range lớn có thể chỉ là nhiễu, không nhất thiết là tín hiệu mới.'],
+        ['bad','SAI CÁCH ĐỌC','Ép thành bullish hoặc bearish ngay','Long-Legged Doji là mẫu trung tính trước khi xét context và breakout.']
+      ],
+      confirmation:[
+        ['CHƯA ĐỦ','Giá tiếp tục dao động bên trong range của Doji.'],
+        ['TỐT HƠN','Giá phá khỏi range theo một hướng rõ.'],
+        ['MẠNH HƠN','Breakout đi cùng thay đổi cấu trúc giá tại vùng cực trị hoặc hỗ trợ/kháng cự.']
+      ],
+      invalidation:'Không có hướng vô hiệu cố định. Luận điểm chỉ sai khi giá phá ngược với hướng diễn giải theo bối cảnh đã chọn.',
+      practice:[
+        ['good','Ví dụ A · Chuyển trạng thái','Sau nhịp tăng dài, Long-Legged Doji xuất hiện rồi giá phá xuống.','Sự giằng co được xác nhận theo hướng suy yếu.'],
+        ['wait','Ví dụ B · Chưa đủ','Doji xuất hiện nhưng giá vẫn nằm trong range.','Tiếp tục coi là trung tính.'],
+        ['fail','Ví dụ C · Diễn giải sai','Gọi bearish nhưng giá phá lên mạnh và tạo đỉnh mới.','Bias bearish sai; bản thân mẫu vẫn chỉ phản ánh bất định.']
+      ],
+      analyzer:[
+        ['A','Hình dạng','Open-Close rất gần nhau, đồng thời cả upper và lower shadow đều dài tương đối.'],
+        ['B','Bối cảnh','AI phải mô tả “high indecision / wide-range balance” trước khi đưa bias.'],
+        ['C','So sánh','Nếu chỉ một phía shadow dài rõ, ưu tiên Dragonfly hoặc Gravestone Doji.'],
+        ['D','Xác nhận','Cần breakout khỏi range và context hỗ trợ để diễn giải hướng.']
+      ]
+    },
+    'Spinning Top': {
+      identifyTitle:'Thân nhỏ nhưng không nhỏ đến mức Doji; cả hai bóng thường hiện diện và thể hiện giằng co.',
+      identify:[
+        ['Thân nến','Nhỏ so với toàn bộ range nhưng Open và Close vẫn cách nhau rõ hơn Doji.'],
+        ['Bóng trên','Có bóng trên, cho thấy bên mua từng đẩy giá cao hơn.'],
+        ['Bóng dưới','Có bóng dưới, cho thấy bên bán từng ép giá thấp hơn.'],
+        ['Điểm phân biệt','Doji nhấn mạnh Open≈Close; Spinning Top có thân nhỏ nhưng vẫn hữu hình.']
+      ],
+      storyTitle:'Hai bên đều tạo được chuyển động trong phiên nhưng không bên nào giữ ưu thế rõ đến lúc đóng cửa.',
+      story:[
+        ['1 · Mua và bán cùng hoạt động','Giá di chuyển cả lên lẫn xuống trong phiên.'],
+        ['2 · Không phe nào áp đảo','Cả hai phía đều để lại shadow.'],
+        ['3 · Close gần vùng giữa','Thân nhỏ cho thấy động lượng định hướng không mạnh.']
+      ],
+      caveat:'Spinning Top chủ yếu phản ánh sự cân bằng/lưỡng lự. Ý nghĩa tăng hay giảm phải dựa trên trend trước đó và phản ứng sau mẫu.',
+      context:[
+        ['good','PHÙ HỢP','Tại cuối một nhịp mạnh hoặc vùng giá quan trọng','Sự lưỡng lự có thể là dấu hiệu momentum đang giảm.'],
+        ['wait','CHƯA ĐỦ','Trong vùng sideway','Spinning Top xuất hiện thường xuyên khi thị trường vốn đã cân bằng.'],
+        ['bad','SAI CÁCH ĐỌC','Coi thân xanh là bullish hoặc thân đỏ là bearish','Màu thân thứ yếu; điều quan trọng là thân nhỏ + context.']
+      ],
+      confirmation:[
+        ['CHƯA ĐỦ','Giá tiếp tục dao động quanh mẫu mà không phá cấu trúc.'],
+        ['TỐT HƠN','Giá phá khỏi range của mẫu theo hướng phù hợp context.'],
+        ['MẠNH HƠN','Breakout đi kèm thay đổi swing structure hoặc phản ứng rõ tại hỗ trợ/kháng cự.']
+      ],
+      invalidation:'Không có hướng vô hiệu cố định vì mẫu trung tính. Luận điểm chỉ thất bại nếu diễn biến sau đó đi ngược cách diễn giải theo bối cảnh.',
+      practice:[
+        ['good','Ví dụ A · Đáng chú ý','Sau nhịp tăng mạnh, Spinning Top xuất hiện tại kháng cự rồi giá suy yếu.','Có thể xem là dấu hiệu momentum tăng chậm lại.'],
+        ['wait','Ví dụ B · Trung tính','Spinning Top xuất hiện giữa range.','Không có thêm thông tin mới đáng kể.'],
+        ['fail','Ví dụ C · Diễn giải sai','Gọi đảo chiều nhưng giá tiếp tục breakout theo trend cũ.','Mẫu chỉ là lưỡng lự tạm thời, không phải đảo chiều.']
+      ],
+      analyzer:[
+        ['A','Hình dạng','Body nhỏ tương đối với range nhưng vẫn lớn hơn Doji; có shadow hai phía.'],
+        ['B','Phân biệt','Nếu Open và Close gần như trùng nhau, ưu tiên Doji.'],
+        ['C','Bối cảnh','Tại trend extreme mới tăng giá trị diễn giải; giữa sideway hạ confidence.'],
+        ['D','Xác nhận','Không gán hướng nếu chưa có breakout/follow-through.']
+      ]
+    },
+    'Marubozu': {
+      identifyTitle:'Thân dài chiếm phần lớn range, shadow rất ngắn hoặc gần như không có — một nến thể hiện directional control mạnh.',
+      identify:[
+        ['Thân nến','Dài và chiếm phần lớn biên độ phiên.'],
+        ['Bóng nến','Upper/lower shadow rất ngắn hoặc gần như không có tùy biến thể.'],
+        ['Màu thân','Quan trọng hơn các mẫu trung tính: thân tăng cho thấy buyer control, thân giảm cho thấy seller control.'],
+        ['Bối cảnh','Có thể xuất hiện trong breakout, continuation hoặc exhaustion; vị trí quyết định cách diễn giải.']
+      ],
+      storyTitle:'Một phe kiểm soát gần như toàn bộ phiên và giữ phần lớn thành quả đến lúc đóng cửa.',
+      story:[
+        ['1 · Directional pressure','Giá di chuyển mạnh theo một hướng ngay trong phiên.'],
+        ['2 · Ít rejection','Shadow ngắn cho thấy phía đối diện không tạo được phản ứng đáng kể.'],
+        ['3 · Close gần cực trị','Giá đóng gần High hoặc Low, xác nhận quyền kiểm soát rõ của một phe.']
+      ],
+      caveat:'Marubozu cho thấy conviction mạnh trong chính cây nến đó, nhưng không tự nói move sẽ kéo dài bao lâu. Gần vùng cực trị sau một trend dài, nó vẫn có thể là exhaustion.',
+      context:[
+        ['good','PHÙ HỢP','Breakout hoặc continuation có cấu trúc hỗ trợ','Một Marubozu cùng hướng với breakout/trend có thể củng cố động lượng.'],
+        ['wait','CHƯA ĐỦ','Xuất hiện đơn lẻ giữa vùng nhiễu','Một nến mạnh trong sideway có thể nhanh chóng bị hấp thụ.'],
+        ['bad','SAI CÁCH ĐỌC','Mặc định “thân dài = xu hướng sẽ tiếp tục”','Cần xét vị trí, gap, volume, kháng cự/hỗ trợ và follow-through.']
+      ],
+      confirmation:[
+        ['CHƯA ĐỦ','Nến sau đảo ngược mạnh và trả giá trở lại range cũ.'],
+        ['TỐT HƠN','Giá giữ được phần lớn thân Marubozu và tiếp tục theo cùng hướng.'],
+        ['MẠNH HƠN','Follow-through phá cấu trúc hoặc duy trì breakout phía ngoài vùng giá quan trọng.']
+      ],
+      invalidation:'Luận điểm continuation suy yếu khi giá nhanh chóng bị kéo ngược xuyên sâu vào thân Marubozu hoặc phá ngược cực trị đối diện của mẫu.',
+      practice:[
+        ['good','Ví dụ A · Breakout khỏe','Bullish Marubozu phá kháng cự và nến sau giữ trên vùng breakout.','Directional control được xác nhận tốt.'],
+        ['wait','Ví dụ B · Chưa đủ','Marubozu xuất hiện giữa sideway nhưng không phá cấu trúc.','Chưa nên suy rộng thành một trend mới.'],
+        ['fail','Ví dụ C · False move','Sau Marubozu, giá đảo ngược mạnh và quay lại range cũ.','Conviction của cây nến không chuyển thành follow-through.']
+      ],
+      analyzer:[
+        ['A','Hình dạng','Body dài tương đối, shadow rất ngắn so với body/range; tránh dùng ngưỡng tuyệt đối cứng.'],
+        ['B','Hướng','Bullish và bearish Marubozu phải được phân biệt theo Open-Close.'],
+        ['C','Bối cảnh','AI phải xác định đây là breakout, continuation hay move đơn lẻ trước khi diễn giải.'],
+        ['D','Xác nhận','Confidence tăng khi giá giữ được thân và có follow-through theo cùng hướng.']
+      ]
+    }  };
 
   function profileFor(p){ return lessonProfiles[p.name] || null; }
   function identifyHtml(p){
