@@ -193,3 +193,45 @@
   .compare-v2-row>*{border-right:0;border-bottom:1px solid #e2e8f0}
   .compare-v2-row>*:last-child{border-bottom:0}
 }
+
+/* Lesson navigation */
+.lesson-topnav{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  margin-bottom:18px;
+  flex-wrap:wrap;
+}
+.lesson-back-home{
+  appearance:none;
+  border:1px solid #cbd5e1;
+  background:#fff;
+  color:#334155;
+  padding:9px 13px;
+  border-radius:10px;
+  font-size:.82rem;
+  font-weight:750;
+  cursor:pointer;
+  transition:.18s ease;
+}
+.lesson-back-home:hover{
+  color:#7c3aed;
+  border-color:#a78bfa;
+  background:#faf7ff;
+  transform:translateX(-2px);
+}
+.lesson-topnav .breadcrumb{
+  margin:0;
+}
+@media(max-width:720px){
+  .lesson-topnav{
+    align-items:flex-start;
+  }
+  .lesson-topnav .breadcrumb{
+    width:100%;
+    overflow-x:auto;
+    white-space:nowrap;
+    padding-bottom:4px;
+  }
+}
