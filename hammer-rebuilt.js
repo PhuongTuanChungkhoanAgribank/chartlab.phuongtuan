@@ -65,12 +65,30 @@
             <article class="lesson-block">
               <span class="lesson-index">02</span>
               <div><span class="kicker">CÂU CHUYỆN CUNG — CẦU</span><h2>Lực bán suy yếu, lực mua bắt đầu giành lại quyền kiểm soát.</h2>
-                <div class="story-flow">
-                  <div><b>1 · Lực bán chiếm ưu thế</b><p>Đầu phiên, bên bán đẩy giá xuống sâu và tạo bóng dưới dài.</p></div><i>→</i>
-                  <div><b>2 · Lực cầu bắt đáy xuất hiện</b><p>Bên mua vào mạnh ở vùng giá thấp và kéo giá trở lại.</p></div><i>→</i>
-                  <div><b>3 · Đóng cửa gần vùng cao</b><p>Giá hồi lên gần mức cao trong phiên, cho thấy lực bán suy yếu và bên mua dần lấy lại thế chủ động.</p></div>
+                <div class="hammer-3d-story" aria-label="Mô phỏng cung cầu của nến Hammer">
+                  <div class="hammer-3d-stage">
+                    <div class="hammer-3d-grid"></div>
+                    <div class="hammer-3d-price-path">
+                      <span class="price-node start">Mở cửa</span>
+                      <span class="price-node low">Giá bị ép xuống</span>
+                      <span class="price-node recover">Lực mua kéo ngược</span>
+                      <span class="price-node close">Đóng cửa gần vùng cao</span>
+                    </div>
+                    <div class="hammer-3d-candle">
+                      <span class="hammer-3d-wick"></span>
+                      <span class="hammer-3d-body"></span>
+                      <span class="hammer-3d-base"></span>
+                    </div>
+                    <div class="hammer-force sell"><b>Lực bán</b><span>đẩy giá xuống</span></div>
+                    <div class="hammer-force buy"><b>Lực mua</b><span>kéo giá trở lại</span></div>
+                  </div>
+                  <div class="hammer-3d-steps">
+                    <article><span>01</span><b>Lực bán chiếm ưu thế</b><p>Đầu phiên, bên bán ép giá xuống sâu và tạo bóng dưới dài.</p></article>
+                    <article><span>02</span><b>Lực mua phản công</b><p>Khi giá xuống thấp, lực cầu xuất hiện và kéo giá trở lại mạnh.</p></article>
+                    <article><span>03</span><b>Đóng cửa gần vùng cao</b><p>Bên mua lấy lại phần lớn quãng giảm trong phiên, cho thấy vùng giá thấp đã bị từ chối.</p></article>
+                  </div>
                 </div>
-                <p class="lesson-caveat">Hammer cho thấy cán cân cung — cầu đã chuyển biến tích cực hơn trong phiên, nhưng vẫn cần các nến sau xác nhận.</p>
+                <p class="lesson-caveat">Mô hình này giúp hình dung diễn biến trong phiên. Hammer cho thấy cán cân cung — cầu đã tích cực hơn, nhưng vẫn cần các nến sau xác nhận.</p>
               </div>
             </article>
 
