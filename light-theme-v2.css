@@ -553,3 +553,41 @@ td,th{border-color:var(--cl-border)!important}
 @media(max-width:900px){.hammer-3d-story{grid-template-columns:1fr}.hammer-3d-stage{min-height:360px}}
 @media(max-width:560px){.hammer-3d-stage{min-height:320px}.hammer-3d-candle{transform:translate(-50%,-50%) scale(.84) rotateY(-12deg)}.price-node{font-size:.62rem;padding:6px 8px}.hammer-force{font-size:.68rem;padding:8px 10px}}
 @media(prefers-reduced-motion:reduce){.hammer-3d-candle,.hammer-force{animation:none!important}}
+
+
+/* Hammer motion story — explicit intraday path */
+.hammer-motion-story{grid-template-columns:minmax(0,1.25fr) minmax(320px,.75fr)}
+.hammer-motion-stage{min-height:500px;padding:24px}
+.motion-title{position:absolute;left:24px;top:20px;z-index:4;display:flex;flex-direction:column;gap:2px}
+.motion-title b{font-size:.95rem;color:#172033}.motion-title span{font-size:.72rem;color:#64748b}
+.hammer-motion-svg{position:absolute;left:3%;right:3%;top:64px;width:94%;height:330px;overflow:visible}
+.motion-level{stroke-width:2;stroke-dasharray:8 8;opacity:.6}
+.close-level{stroke:#c4b5fd}.low-level{stroke:#fecdd3}
+.motion-price-path{fill:none;stroke:url(#hammerPathGradient);stroke-width:10;stroke-linecap:round;stroke-linejoin:round;filter:url(#motionGlow);stroke-dasharray:1050;stroke-dashoffset:1050;animation:drawHammerPath 4.6s ease forwards}
+.motion-sell-arrow,.motion-buy-arrow{fill:none;stroke-width:4;stroke-linecap:round;stroke-dasharray:320;stroke-dashoffset:320}
+.motion-sell-arrow{stroke:#e11d48;animation:drawForce 1.6s ease .5s forwards}
+.motion-buy-arrow{stroke:#7c3aed;animation:drawForce 1.8s ease 2.2s forwards}
+.motion-dot{stroke:#fff;stroke-width:5;filter:drop-shadow(0 5px 10px rgba(15,23,42,.16));opacity:0;animation:popDot .35s ease forwards}
+.open-dot{fill:#0f172a;animation-delay:.1s}.low-dot{fill:#e11d48;animation-delay:1.6s}.recover-dot{fill:#8b5cf6;animation-delay:2.9s}.close-dot{fill:#7c3aed;animation-delay:4s}
+.motion-marker circle{fill:#fff;stroke:#cbd5e1;stroke-width:2}.motion-marker text{font-size:14px;font-weight:900;fill:#172033;text-anchor:middle}
+.motion-marker{opacity:0;animation:popMarker .32s ease forwards}
+.m1{animation-delay:.15s}.m2{animation-delay:1.7s}.m3{animation-delay:3s}.m4{animation-delay:4.1s}
+.motion-label{font-size:16px;font-weight:850;fill:#334155}.motion-label.red{fill:#be123c}.motion-label.purple{fill:#6d28d9}
+.motion-force-label{font-size:13px;font-weight:900;letter-spacing:.07em}.sell-label{fill:#be123c}.buy-label{fill:#6d28d9}
+.hammer-result-card{position:absolute;right:20px;bottom:20px;z-index:5;width:220px;padding:14px 15px;border-radius:16px;background:rgba(255,255,255,.94);border:1px solid #ddd6fe;box-shadow:0 12px 28px rgba(76,29,149,.10)}
+.hammer-result-card>span{display:block;margin-bottom:8px;font-size:.62rem;font-weight:900;letter-spacing:.08em;color:#7c3aed}
+.hammer-result-card p{margin:8px 0 0!important;color:#475569!important;font-size:.76rem!important;line-height:1.45!important}
+.mini-hammer{position:relative;width:46px;height:72px;margin-left:4px}.mini-hammer i{position:absolute;left:21px;top:5px;width:5px;height:62px;border-radius:5px;background:#7c3aed}.mini-hammer b{position:absolute;left:9px;top:6px;width:29px;height:20px;border-radius:7px;background:#7c3aed}
+.hammer-motion-steps{gap:10px}
+.hammer-motion-steps article{padding-top:15px;padding-bottom:15px}
+.hammer-motion-steps article:nth-child(1){background:#f8fafc;border-color:#e2e8f0}
+.hammer-motion-steps article:nth-child(2){background:#fff1f2;border-color:#fecdd3}
+.hammer-motion-steps article:nth-child(3){background:#f5f3ff;border-color:#ddd6fe}
+.hammer-motion-steps article:nth-child(4){background:#fff9ed;border-color:#fde68a}
+@keyframes drawHammerPath{to{stroke-dashoffset:0}}
+@keyframes drawForce{to{stroke-dashoffset:0}}
+@keyframes popDot{from{opacity:0;transform:scale(.3)}to{opacity:1;transform:scale(1)}}
+@keyframes popMarker{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:980px){.hammer-motion-story{grid-template-columns:1fr}.hammer-motion-stage{min-height:470px}}
+@media(max-width:620px){.hammer-motion-stage{min-height:440px;padding:16px}.motion-title{left:16px}.hammer-motion-svg{top:62px;height:300px}.hammer-result-card{right:14px;bottom:14px;width:190px}.motion-label{font-size:14px}.motion-force-label{font-size:11px}}
+@media(prefers-reduced-motion:reduce){.motion-price-path,.motion-sell-arrow,.motion-buy-arrow,.motion-dot,.motion-marker{animation:none!important;stroke-dashoffset:0!important;opacity:1!important}}
