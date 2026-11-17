@@ -65,27 +65,70 @@
             <article class="lesson-block">
               <span class="lesson-index">02</span>
               <div><span class="kicker">CÂU CHUYỆN CUNG — CẦU</span><h2>Lực bán suy yếu, lực mua bắt đầu giành lại quyền kiểm soát.</h2>
-                <div class="hammer-3d-story" aria-label="Mô phỏng cung cầu của nến Hammer">
-                  <div class="hammer-3d-stage">
+                <div class="hammer-3d-story hammer-motion-story" aria-label="Mô phỏng đường đi của giá trong phiên tạo nến Hammer">
+                  <div class="hammer-3d-stage hammer-motion-stage">
                     <div class="hammer-3d-grid"></div>
-                    <div class="hammer-3d-price-path">
-                      <span class="price-node start">Mở cửa</span>
-                      <span class="price-node low">Giá bị ép xuống</span>
-                      <span class="price-node recover">Lực mua kéo ngược</span>
-                      <span class="price-node close">Đóng cửa gần vùng cao</span>
+                    <div class="motion-title"><b>Đường đi của giá trong một phiên</b><span>Đọc từ ① đến ④</span></div>
+
+                    <svg class="hammer-motion-svg" viewBox="0 0 620 400" role="img" aria-label="Giá mở cửa, giảm sâu, tạo đáy rồi hồi phục và đóng cửa gần vùng cao">
+                      <defs>
+                        <linearGradient id="hammerPathGradient" x1="0" y1="0" x2="1" y2="1">
+                          <stop offset="0%" stop-color="#e11d48"/>
+                          <stop offset="52%" stop-color="#f59e0b"/>
+                          <stop offset="100%" stop-color="#7c3aed"/>
+                        </linearGradient>
+                        <filter id="motionGlow" x="-30%" y="-30%" width="160%" height="160%">
+                          <feGaussianBlur stdDeviation="5" result="blur"/>
+                          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+                        </filter>
+                        <marker id="arrowPurple" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                          <path d="M 0 0 L 10 5 L 0 10 z" fill="#7c3aed"/>
+                        </marker>
+                        <marker id="arrowRed" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                          <path d="M 0 0 L 10 5 L 0 10 z" fill="#e11d48"/>
+                        </marker>
+                      </defs>
+
+                      <line x1="58" y1="92" x2="558" y2="92" class="motion-level close-level"/>
+                      <line x1="58" y1="328" x2="558" y2="328" class="motion-level low-level"/>
+
+                      <path class="motion-price-path" d="M105 122 C145 145 175 226 222 305 C252 354 292 337 318 302 C356 252 378 176 430 122 C465 86 505 82 536 98"/>
+                      <path class="motion-sell-arrow" d="M118 138 C155 176 184 242 218 294" marker-end="url(#arrowRed)"/>
+                      <path class="motion-buy-arrow" d="M278 318 C326 276 354 190 425 126 C458 96 492 90 528 99" marker-end="url(#arrowPurple)"/>
+
+                      <circle cx="105" cy="122" r="11" class="motion-dot open-dot"/>
+                      <circle cx="240" cy="326" r="11" class="motion-dot low-dot"/>
+                      <circle cx="407" cy="142" r="11" class="motion-dot recover-dot"/>
+                      <circle cx="536" cy="98" r="11" class="motion-dot close-dot"/>
+
+                      <g class="motion-marker m1"><circle cx="105" cy="74" r="18"/><text x="105" y="80">1</text></g>
+                      <g class="motion-marker m2"><circle cx="240" cy="372" r="18"/><text x="240" y="378">2</text></g>
+                      <g class="motion-marker m3"><circle cx="407" cy="190" r="18"/><text x="407" y="196">3</text></g>
+                      <g class="motion-marker m4"><circle cx="536" cy="54" r="18"/><text x="536" y="60">4</text></g>
+
+                      <text x="72" y="112" class="motion-label">Mở cửa</text>
+                      <text x="182" y="314" class="motion-label red">Giá thấp nhất</text>
+                      <text x="350" y="132" class="motion-label purple">Kéo giá trở lại</text>
+                      <text x="438" y="88" class="motion-label purple">Đóng cửa</text>
+
+                      <text x="78" y="205" class="motion-force-label sell-label">BÊN BÁN ÉP GIÁ XUỐNG</text>
+                      <text x="350" y="250" class="motion-force-label buy-label">BÊN MUA KÉO GIÁ LÊN</text>
+                    </svg>
+
+                    <div class="hammer-result-card">
+                      <span>KẾT QUẢ CỦA CẢ QUÁ TRÌNH</span>
+                      <div class="mini-hammer">
+                        <i></i><b></b>
+                      </div>
+                      <p>Bóng dưới dài chính là dấu vết của đoạn giá đã bị ép xuống rồi được kéo ngược lên.</p>
                     </div>
-                    <div class="hammer-3d-candle">
-                      <span class="hammer-3d-wick"></span>
-                      <span class="hammer-3d-body"></span>
-                      <span class="hammer-3d-base"></span>
-                    </div>
-                    <div class="hammer-force sell"><b>Lực bán</b><span>đẩy giá xuống</span></div>
-                    <div class="hammer-force buy"><b>Lực mua</b><span>kéo giá trở lại</span></div>
                   </div>
-                  <div class="hammer-3d-steps">
-                    <article><span>01</span><b>Lực bán chiếm ưu thế</b><p>Đầu phiên, bên bán ép giá xuống sâu và tạo bóng dưới dài.</p></article>
-                    <article><span>02</span><b>Lực mua phản công</b><p>Khi giá xuống thấp, lực cầu xuất hiện và kéo giá trở lại mạnh.</p></article>
-                    <article><span>03</span><b>Đóng cửa gần vùng cao</b><p>Bên mua lấy lại phần lớn quãng giảm trong phiên, cho thấy vùng giá thấp đã bị từ chối.</p></article>
+
+                  <div class="hammer-3d-steps hammer-motion-steps">
+                    <article><span>01</span><b>Mở cửa ở vùng phía trên</b><p>Phiên bắt đầu quanh vùng thân nến. Lúc này chưa có Hammer — mới chỉ là điểm xuất phát.</p></article>
+                    <article><span>02</span><b>Bên bán ép giá xuống sâu</b><p>Giá giảm mạnh xuống vùng thấp. Quãng đường đi xuống này về sau trở thành phần bóng dưới của Hammer.</p></article>
+                    <article><span>03</span><b>Bên mua xuất hiện và kéo ngược</b><p>Tại vùng giá thấp, lực mua đủ mạnh để hấp thụ áp lực bán và kéo giá quay trở lại gần vùng mở cửa.</p></article>
+                    <article><span>04</span><b>Đóng cửa trở lại gần vùng cao</b><p>Phần lớn mức giảm trong phiên bị xóa. Kết quả cuối cùng là thân nhỏ ở phía trên và bóng dưới dài — hình dạng Hammer.</p></article>
                   </div>
                 </div>
                 <p class="lesson-caveat">Mô hình này giúp hình dung diễn biến trong phiên. Hammer cho thấy cán cân cung — cầu đã tích cực hơn, nhưng vẫn cần các nến sau xác nhận.</p>
