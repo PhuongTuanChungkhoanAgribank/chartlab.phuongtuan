@@ -513,3 +513,43 @@ td,th{border-color:var(--cl-border)!important}
 .hammer-v3-practice-grid p{
   color:#475569!important;
 }
+
+
+/* Hammer 3D-lite supply-demand prototype */
+.hammer-3d-story{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(320px,.85fr);gap:22px;align-items:stretch;margin-top:18px}
+.hammer-3d-stage{position:relative;min-height:430px;border:1px solid #e9d5ff;border-radius:24px;overflow:hidden;background:
+  radial-gradient(circle at 28% 20%,rgba(139,92,246,.16),transparent 28%),
+  linear-gradient(160deg,#fbf8ff 0%,#f5f8ff 52%,#fff9ef 100%);
+  box-shadow:0 20px 42px rgba(76,29,149,.10);perspective:900px}
+.hammer-3d-grid{position:absolute;inset:0;background-image:
+  linear-gradient(rgba(124,58,237,.07) 1px,transparent 1px),
+  linear-gradient(90deg,rgba(124,58,237,.07) 1px,transparent 1px);
+  background-size:34px 34px;transform:perspective(700px) rotateX(63deg) scale(1.35) translateY(36%);transform-origin:center bottom;opacity:.7}
+.hammer-3d-candle{position:absolute;left:50%;top:51%;width:118px;height:260px;transform:translate(-50%,-50%) rotateY(-12deg) rotateX(2deg);filter:drop-shadow(0 24px 24px rgba(76,29,149,.18));animation:hammerFloat 4s ease-in-out infinite}
+.hammer-3d-wick{position:absolute;left:50%;top:4px;width:12px;height:230px;border-radius:10px;background:linear-gradient(90deg,#6d28d9,#8b5cf6,#5b21b6);transform:translateX(-50%)}
+.hammer-3d-body{position:absolute;left:18px;top:14px;width:82px;height:62px;border-radius:14px;background:linear-gradient(145deg,#8b5cf6,#6d28d9 72%);box-shadow:inset 9px 0 14px rgba(255,255,255,.20),inset -10px -12px 14px rgba(63,25,116,.18)}
+.hammer-3d-base{position:absolute;left:4px;bottom:0;width:110px;height:12px;border-radius:50%;background:rgba(76,29,149,.14);filter:blur(3px);transform:rotateX(72deg)}
+.hammer-force{position:absolute;display:flex;flex-direction:column;gap:2px;padding:10px 13px;border-radius:14px;backdrop-filter:blur(8px);box-shadow:0 10px 24px rgba(15,23,42,.08);font-size:.78rem}
+.hammer-force b{font-size:.82rem}.hammer-force span{color:#64748b}
+.hammer-force.sell{left:8%;top:17%;background:#fff1f2;border:1px solid #fecdd3;color:#be123c;animation:sellPulse 3.2s ease-in-out infinite}
+.hammer-force.buy{right:7%;bottom:18%;background:#f3e8ff;border:1px solid #ddd6fe;color:#6d28d9;animation:buyPulse 3.2s ease-in-out .7s infinite}
+.hammer-3d-price-path{position:absolute;inset:0;pointer-events:none}
+.price-node{position:absolute;padding:7px 10px;border-radius:999px;background:rgba(255,255,255,.92);border:1px solid #e2e8f0;color:#334155;font-size:.7rem;font-weight:800;box-shadow:0 8px 16px rgba(15,23,42,.06)}
+.price-node.start{left:10%;top:36%}
+.price-node.low{left:11%;bottom:10%;color:#be123c;border-color:#fecdd3;background:#fff7f7}
+.price-node.recover{right:8%;bottom:36%;color:#6d28d9;border-color:#ddd6fe;background:#fbf8ff}
+.price-node.close{right:8%;top:22%;color:#7c3aed;border-color:#ddd6fe;background:#faf7ff}
+.hammer-3d-steps{display:grid;gap:12px}
+.hammer-3d-steps article{position:relative;padding:18px 18px 18px 54px;border-radius:18px;border:1px solid #e2e8f0;background:#fff;box-shadow:0 10px 24px rgba(15,23,42,.045)}
+.hammer-3d-steps article:nth-child(1){background:#fff4f5;border-color:#fecdd3}
+.hammer-3d-steps article:nth-child(2){background:#f8f5ff;border-color:#ddd6fe}
+.hammer-3d-steps article:nth-child(3){background:#fff9ed;border-color:#fde68a}
+.hammer-3d-steps article>span{position:absolute;left:16px;top:17px;width:28px;height:28px;border-radius:9px;display:grid;place-items:center;background:#172033;color:#fff;font-size:.68rem;font-weight:900}
+.hammer-3d-steps article b{display:block;margin-bottom:5px;color:#172033}
+.hammer-3d-steps article p{margin:0!important;color:#475569!important;line-height:1.6!important;font-size:.86rem!important}
+@keyframes hammerFloat{0%,100%{transform:translate(-50%,-50%) rotateY(-12deg) rotateX(2deg) translateY(0)}50%{transform:translate(-50%,-50%) rotateY(-6deg) rotateX(2deg) translateY(-8px)}}
+@keyframes sellPulse{0%,100%{transform:translateY(0)}50%{transform:translateY(8px)}}
+@keyframes buyPulse{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@media(max-width:900px){.hammer-3d-story{grid-template-columns:1fr}.hammer-3d-stage{min-height:360px}}
+@media(max-width:560px){.hammer-3d-stage{min-height:320px}.hammer-3d-candle{transform:translate(-50%,-50%) scale(.84) rotateY(-12deg)}.price-node{font-size:.62rem;padding:6px 8px}.hammer-force{font-size:.68rem;padding:8px 10px}}
+@media(prefers-reduced-motion:reduce){.hammer-3d-candle,.hammer-force{animation:none!important}}
