@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#ffffff" />
+  <meta name="description" content="ChartLab Dữ liệu thị trường — dữ liệu vĩ mô, tiền tệ và hàng hóa miễn phí phục vụ nhà đầu tư." />
+  <link rel="icon" href="./icon.svg" type="image/svg+xml" />
+  <title>Dữ liệu thị trường · chartlab.phuongtuan</title>
+  <link rel="stylesheet" href="./market-data.css?v=20261118-1" />
+</head>
+<body>
+  <header class="md-topbar">
+    <a class="md-brand" href="./index.html" aria-label="Về ChartLab">
+      <span class="md-brand-mark">CL</span>
+      <span>
+        <strong>chartlab.phuongtuan</strong>
+        <small>Dữ liệu thị trường</small>
+      </span>
+    </a>
+    <a class="md-back" href="./index.html">← Quay lại phần học</a>
+  </header>
+
+  <main class="md-shell">
+    <section class="md-hero">
+      <div>
+        <span class="md-kicker">MARKET DATA · FREE SOURCES</span>
+        <h1>Dữ liệu thị trường</h1>
+        <p>Hiểu dữ liệu · Hiểu tác động · Hiểu thị trường</p>
+      </div>
+      <div class="md-source-badges" aria-label="Nguồn dữ liệu">
+        <span>Wichart</span><span>NSO</span><span>SBV</span><span>FRED</span>
+      </div>
+    </section>
+
+    <section class="md-toolbar">
+      <label class="md-search">
+        <span>⌕</span>
+        <input id="marketSearch" type="search" placeholder="Tìm CPI, tín dụng, lãi suất, dầu WTI..." autocomplete="off" />
+      </label>
+      <div class="md-tabs" id="marketTabs" role="tablist"></div>
+    </section>
+
+    <section class="md-layout">
+      <aside class="md-sidebar">
+        <div class="md-sidebar-title">
+          <strong>Chỉ tiêu</strong>
+          <span id="indicatorCount"></span>
+        </div>
+        <div id="indicatorList" class="md-indicator-list"></div>
+      </aside>
+
+      <section class="md-main">
+        <article class="md-chart-card">
+          <div class="md-chart-head">
+            <div>
+              <span id="chartCategory" class="md-chip"></span>
+              <h2 id="chartTitle">Đang tải...</h2>
+              <p id="chartSubtitle"></p>
+            </div>
+            <div id="sourceStatus" class="md-source-status"></div>
+          </div>
+
+          <div class="md-kpis" id="marketKpis"></div>
+          <div id="marketChart" class="md-chart" role="img" aria-label="Biểu đồ dữ liệu thị trường"></div>
+          <div id="chartMessage" class="md-message" hidden></div>
+        </article>
+
+        <div class="md-insight-grid">
+          <article class="md-info-card">
+            <span class="md-section-label">HIỂU NHANH</span>
+            <h3 id="quickTitle">Ý nghĩa với nhà đầu tư</h3>
+            <p id="quickInsight"></p>
+          </article>
+
+          <article class="md-info-card">
+            <span class="md-section-label">TÁC ĐỘNG ĐẾN CHỨNG KHOÁN</span>
+            <div id="impactTags" class="md-impact-tags"></div>
+            <p id="impactNote"></p>
+          </article>
+
+          <article class="md-info-card md-source-card">
+            <span class="md-section-label">NGUỒN & CẬP NHẬT</span>
+            <dl>
+              <div><dt>Nguồn hiển thị</dt><dd id="feedSource">—</dd></div>
+              <div><dt>Nguồn gốc</dt><dd id="originSource">—</dd></div>
+              <div><dt>Tần suất</dt><dd id="frequency">—</dd></div>
+              <div><dt>Cập nhật</dt><dd id="updatedAt">—</dd></div>
+            </dl>
+          </article>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <footer class="md-footer">
+    <span>ChartLab · dữ liệu phục vụ mục đích học tập và tham khảo.</span>
+    <span>Ưu tiên nguồn miễn phí và nguồn chính thức.</span>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+  <script src="./market-data.js?v=20261118-1"></script>
+</body>
+</html>
