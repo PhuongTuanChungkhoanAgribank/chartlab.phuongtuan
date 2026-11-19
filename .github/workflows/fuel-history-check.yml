@@ -1,0 +1,12 @@
+name: Check fuel history
+on:
+  push:
+    branches: ["fix/fuel-full-history-lines"]
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - run: node --check market-data.js
