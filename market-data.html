@@ -17,15 +17,29 @@
         <span class="md-brand-name"><strong>chartlab</strong><em>.phuongtuan</em></span>
       </a>
 
-      <nav class="md-nav-links" aria-label="Điều hướng chính">
-        <a href="./index.html#/level/1">Học</a>
-        <a href="./index.html#/library">Mẫu hình</a>
-        <a href="./index.html#/history">Lịch sử</a>
-        <a href="./index.html#/methodology">Phương pháp</a>
-        <a class="active" href="./market-data.html" aria-current="page">Dữ liệu thị trường</a>
-      </nav>
+      <nav class="md-nav-groups" aria-label="Điều hướng chính">
+        <div class="md-nav-group">
+          <button class="md-nav-trigger" type="button">Phân tích kỹ thuật <span>▼</span></button>
+          <div class="md-dropdown">
+            <a href="./index.html#/level/1"><b>Học</b><small>Học theo Level</small></a>
+            <a href="./index.html#/library"><b>Mẫu hình</b><small>Tra cứu mẫu hình</small></a>
+            <a href="./index.html#/history"><b>Lịch sử</b><small>Xem lại phân tích</small></a>
+            <a href="./index.html#/methodology"><b>Phương pháp</b><small>Nguyên tắc & nguồn</small></a>
+            <div class="md-practice"><a href="./index.html#/analyzer"><b>▣ Phân tích chart</b><small>Thực hành trên chart thực tế</small></a></div>
+          </div>
+        </div>
 
-      <a class="md-analyze-nav" href="./index.html#/analyzer">▣&nbsp; Phân tích chart</a>
+        <div class="md-nav-group active">
+          <button class="md-nav-trigger" type="button">Dữ liệu Vĩ mô – Tiền tệ – Hàng hóa <span>▼</span></button>
+          <div class="md-dropdown">
+            <a href="./market-data.html"><b>Tổng quan</b><small>Toàn bộ dữ liệu</small></a>
+            <a href="./market-data.html?group=macro"><b>Vĩ mô</b><small>GDP · CPI · PMI · FDI</small></a>
+            <a href="./market-data.html?group=money"><b>Tiền tệ</b><small>Tín dụng · M2 · Lãi suất</small></a>
+            <a href="./market-data.html?group=commodity"><b>Hàng hóa</b><small>Dầu · Thép · Vàng · Nông sản</small></a>
+            <a href="./market-data.html?group=global"><b>Quốc tế</b><small>Lợi suất · Fed · CPI Mỹ</small></a>
+          </div>
+        </div>
+      </nav>
     </div>
   </header>
 
@@ -125,7 +139,16 @@
     <a href="./index.html#/analyzer"><b>▣</b><span>Analyzer</span></a>
   </nav>
 
+  <script>
+    document.querySelectorAll(".md-nav-trigger").forEach(btn=>btn.addEventListener("click",(e)=>{
+      e.stopPropagation();
+      const group=btn.closest(".md-nav-group");
+      document.querySelectorAll(".md-nav-group.open").forEach(x=>{if(x!==group)x.classList.remove("open")});
+      group.classList.toggle("open");
+    }));
+    document.addEventListener("click",()=>document.querySelectorAll(".md-nav-group.open").forEach(x=>x.classList.remove("open")));
+  </script>
   <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
-  <script src="./market-data.js?v=20261119-2"></script>
+  <script src="./market-data.js?v=20261119-4"></script>
 </body>
 </html>
