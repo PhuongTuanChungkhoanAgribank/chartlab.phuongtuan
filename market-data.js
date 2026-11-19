@@ -121,66 +121,23 @@
   }
 
   function applyDomesticFuelLatest(payload){
-    const latestTs = new Date("2026-11-19T15:00:00+07:00").getTime();
-    const previousTs = new Date("2026-11-12T15:00:00+07:00").getTime();
-    const wanted = [
-      {name:"E10 RON95-V", match:/E10.*RON\s*95.*V\b/i, previousValue:21840, value:21100},
-      {name:"E5 RON92", match:/E5.*RON\s*92|RON\s*92.*E5/i, previousValue:19390, value:18570},
-      {name:"Diesel", match:/diesel.*0[,.]05|đi[eê]zen.*0[,.]05|DO\b/i, previousValue:26820, value:26340}
+    const rows = [
+      ["2026-10-08T15:00:00+07:00",29050,27700,29120],
+      ["2026-10-15T15:00:00+07:00",27520,26670,28800],
+      ["2026-10-22T15:00:00+07:00",25710,25060,29250],
+      ["2026-10-29T15:00:00+07:00",26530,26020,30240],
+      ["2026-11-01T00:00:00+07:00",24950,24220,30240],
+      ["2026-11-03T22:00:00+07:00",24230,23200,28870],
+      ["2026-11-05T15:00:00+07:00",22650,20890,28690],
+      ["2026-11-12T15:00:00+07:00",21840,19390,26820],
+      ["2026-11-19T15:00:00+07:00",21100,18570,26340]
+    ].map(r=>[new Date(r[0]).getTime(),r[1],r[2],r[3]]);
+
+    payload.series = [
+      {name:"E10 RON95-V",unit:"đồng/lít",type:"line",yAxisIndex:0,data:rows.map(r=>[r[0],r[1]])},
+      {name:"E5 RON92",unit:"đồng/lít",type:"line",yAxisIndex:0,data:rows.map(r=>[r[0],r[2]])},
+      {name:"Diesel",unit:"đồng/lít",type:"line",yAxisIndex:0,data:rows.map(r=>[r[0],r[3]])}
     ];
-
-    const normalizeFuelValue = (v) => {
-      const n = Number(v);
-      if(!Number.isFinite(n)) return null;
-      return Math.abs(n) < 1000 ? Math.round(n * 1000) : Math.round(n);
-    };
-    const compressChanges = (points) => {
-      const out = [];
-      let previous = null;
-      points.slice().sort((a,b)=>a[0]-b[0]).forEach(([ts,val])=>{
-        const normalized = normalizeFuelValue(val);
-        if(normalized === null) return;
-        if(previous === null || normalized !== previous){
-          out.push([Number(ts), normalized]);
-          previous = normalized;
-        }
-      });
-      return out;
-    };
-
-    const nextSeries = [];
-    wanted.forEach(target=>{
-      const source = payload.series.find(s=>target.match.test(String(s.name||"")));
-      let points = source ? compressChanges(source.data || []) : [];
-      // Không dùng RON95 thường thay cho E10 RON95-V. Nếu Wichart chưa có lịch sử E10-V,
-      // neo hai kỳ Petrolimex chính thức 12/11 và 19/11 để KPI luôn so với kỳ liền kề.
-      if(target.name === "E10 RON95-V"){
-        points = points.filter(p => Number(p[0]) >= previousTs);
-        if(!points.some(p => Number(p[0]) === previousTs)){
-          points.unshift([previousTs,target.previousValue]);
-        }
-      } else {
-        const prevIdx = points.findIndex(p => Number(p[0]) === previousTs);
-        if(prevIdx >= 0) points[prevIdx][1] = target.previousValue;
-        else points.push([previousTs,target.previousValue]);
-      }
-      points = points.filter(p => Number(p[0]) <= latestTs).sort((a,b)=>a[0]-b[0]);
-      const last = points[points.length-1];
-      if(!last || Number(last[0]) < latestTs){
-        points.push([latestTs,target.value]);
-      }else if(Number(last[0]) === latestTs){
-        last[1] = target.value;
-      }
-      nextSeries.push({
-        name:target.name,
-        unit:"đồng/lít",
-        type:"scatter",
-        yAxisIndex:0,
-        data:points
-      });
-    });
-
-    payload.series = nextSeries;
     payload.title = "Giá xăng dầu bán lẻ trong nước";
     payload.updated = "15:00 19/11/2026";
   }
@@ -334,10 +291,10 @@
       ],
       dataZoom:[{type:"inside"},{type:"slider",height:20,bottom:18,borderColor:"#e5e7eb",fillerColor:"rgba(115,87,255,.12)"}],
       series:payload.series.map((s,i)=>({
-        name:s.name,type:item.domesticFuel?"scatter":(s.type==="bar"?"bar":"line"),yAxisIndex:s.yAxisIndex||0,data:s.data,
-        showSymbol:item.domesticFuel || (s.data.length<=2),symbol:item.domesticFuel?"diamond":"circle",symbolSize:item.domesticFuel?9:7,
-        smooth:!item.domesticFuel && s.type!=="bar",connectNulls:!item.domesticFuel,
-        barMaxWidth:24,lineStyle:item.domesticFuel?{width:0}:{width:2},areaStyle:(!item.domesticFuel&&i===0&&s.type!=="bar")?{opacity:.035}:undefined
+        name:s.name,type:item.domesticFuel?"line":(s.type==="bar"?"bar":"line"),yAxisIndex:s.yAxisIndex||0,data:s.data,
+        showSymbol:item.domesticFuel || (s.data.length<=2),symbol:item.domesticFuel?"diamond":"circle",symbolSize:item.domesticFuel?8:7,
+        smooth:false,connectNulls:true,
+        barMaxWidth:24,lineStyle:{width:item.domesticFuel?2:2},areaStyle:(!item.domesticFuel&&i===0&&s.type!=="bar")?{opacity:.035}:undefined
       }))
     };
     if(allValues.length===0) throw new Error("Nguồn chưa trả về dữ liệu.");
