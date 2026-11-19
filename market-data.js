@@ -30,7 +30,7 @@
     {id:"dtnh",name:"Dự trữ ngoại hối",group:"money",groupLabel:"Tiền tệ & thanh khoản",feed:"Wichart",origin:"Ngân hàng Nhà nước / nguồn công bố quốc tế",freq:"Hàng tháng / quý",insight:"Dự trữ ngoại hối thể hiện bộ đệm của nhà điều hành trước biến động tỷ giá và dòng vốn.",impact:["Tỷ giá","Ngân hàng","Khối ngoại"],note:"Cần nhìn cùng cán cân thương mại và cán cân thanh toán.",driver:"wichart"},
     {id:"cctt",name:"Cán cân thanh toán",group:"money",groupLabel:"Tiền tệ & thanh khoản",feed:"Wichart",origin:"Ngân hàng Nhà nước (SBV)",freq:"Hàng quý",insight:"Cán cân thanh toán tổng hợp các dòng ngoại tệ vào ra nền kinh tế, giúp đánh giá áp lực lên tỷ giá và dự trữ ngoại hối.",impact:["Tỷ giá","Khối ngoại","Ngân hàng"],note:"Tách tài khoản vãng lai và tài khoản tài chính khi cần phân tích sâu.",driver:"wichart"},
 
-    {id:"xang_dau",name:"Giá xăng dầu trong nước",group:"commodity",groupLabel:"Hàng hóa",feed:"Wichart + kỳ điều hành mới nhất",origin:"Petrolimex / Bộ Công Thương",freq:"Theo kỳ điều hành",unit:"đồng/lít, kg",insight:"Giá xăng dầu bán lẻ trong nước truyền dẫn biến động năng lượng thế giới vào chi phí vận tải, sản xuất và CPI. Theo dõi theo từng kỳ điều hành giúp nhìn rõ độ trễ so với dầu WTI/Brent.",impact:["CPI","Vận tải","Hàng không","Bán lẻ"],note:"Mốc 19/11/2026 - Vùng 1: E10 RON95-V 21.100 đ/lít; E10 RON95-III 19.100 đ/lít; E5 RON92 18.570 đ/lít; Diesel 0,05S-II 26.340 đ/lít; FO 3,5S 18.670 đ/kg.",driver:"wichart",commodity:true,domesticFuel:true},
+    {id:"xang_dau",name:"Giá xăng dầu trong nước",group:"commodity",groupLabel:"Hàng hóa",feed:"Wichart + kỳ điều hành mới nhất",origin:"Petrolimex / Bộ Công Thương",freq:"Theo kỳ điều hành",unit:"đồng/lít",insight:"Giá xăng dầu bán lẻ trong nước truyền dẫn biến động năng lượng thế giới vào chi phí vận tải, sản xuất và CPI. Biểu đồ chỉ giữ các mốc giá thay đổi theo kỳ điều hành để dễ theo dõi.",impact:["CPI","Vận tải","Hàng không","Bán lẻ"],note:"Theo dõi 3 loại: E10 RON95-V, E5 RON92 và Diesel. Mốc Vùng 1 từ 15h 19/11/2026 lần lượt là 21.100; 18.570; 26.340 đồng/lít.",driver:"wichart",commodity:true,domesticFuel:true},
     {id:"dau_wti",name:"Dầu WTI",group:"commodity",groupLabel:"Hàng hóa",feed:"Wichart",origin:"Thị trường hàng hóa quốc tế",freq:"Hàng ngày",insight:"Giá dầu ảnh hưởng trực tiếp tới nhóm dầu khí và gián tiếp tới vận tải, hàng không, hóa chất và lạm phát.",impact:["Dầu khí","Hàng không","Vận tải"],note:"Nên xem đồng thời Brent và crack spread khi phân tích lọc hóa dầu.",driver:"wichart",commodity:true},
     {id:"vang",name:"Giá vàng",group:"commodity",groupLabel:"Hàng hóa",feed:"Wichart",origin:"Thị trường vàng",freq:"Hàng ngày",insight:"Vàng thường phản ánh nhu cầu phòng thủ, kỳ vọng lãi suất thực và rủi ro vĩ mô.",impact:["Tài sản phòng thủ","Tỷ giá"],note:"Theo dõi cùng lợi suất thực và USD.",driver:"wichart",commodity:true},
     {id:"hrc_trung_quoc",name:"HRC Trung Quốc",group:"commodity",groupLabel:"Hàng hóa",feed:"Wichart",origin:"Thị trường thép Trung Quốc",freq:"Hàng ngày",insight:"HRC là biến đầu vào/đầu ra quan trọng của ngành thép. Biến động giá ảnh hưởng doanh thu, tồn kho và biên lợi nhuận theo từng doanh nghiệp.",impact:["HPG","HSG","NKG"],note:"Cần xem thêm quặng sắt, than cốc và tồn kho thép.",driver:"wichart",commodity:true},
@@ -120,38 +120,51 @@
 
   function applyDomesticFuelLatest(payload){
     const latestTs = new Date("2026-11-19T15:00:00+07:00").getTime();
-    const latestSeries = [
-      {name:"Xăng E10 RON95-V", match:/E10.*RON\s*95.*V\b/i, value:21100, unit:"đồng/lít"},
-      {name:"Xăng E10 RON95-III", match:/E10.*RON\s*95.*III|RON\s*95.*III/i, value:19100, unit:"đồng/lít"},
-      {name:"Xăng E5 RON92", match:/E5.*RON\s*92|RON\s*92.*E5/i, value:18570, unit:"đồng/lít"},
-      {name:"Diesel 0,05S-II", match:/diesel.*0[,.]05|đi[eê]zen.*0[,.]05|DO\b/i, value:26340, unit:"đồng/lít"},
-      {name:"FO 3,5S", match:/FO.*3[,.]5|mazut|madut/i, value:18670, unit:"đồng/kg"}
+    const wanted = [
+      {name:"E10 RON95-V", match:/RON\s*95/i, value:21100},
+      {name:"E5 RON92", match:/E5.*RON\s*92|RON\s*92.*E5/i, value:18570},
+      {name:"Diesel", match:/diesel|đi[eê]zen|DO\b/i, value:26340}
     ];
 
-    const used = new Set();
-    payload.series.forEach((s, idx)=>{
-      const hit = latestSeries.find(x => !used.has(x.name) && x.match.test(String(s.name||"")));
-      if(!hit) return;
-      used.add(hit.name);
-      s.name = hit.name;
-      const last=s.data[s.data.length-1];
-      if(!last || Number(last[0]) < latestTs) s.data.push([latestTs,hit.value]);
-      else if(Number(last[0])===latestTs) last[1]=hit.value;
-      s.unit = hit.unit;
-    });
+    const normalizeFuelValue = (v) => {
+      const n = Number(v);
+      if(!Number.isFinite(n)) return null;
+      return Math.abs(n) < 1000 ? Math.round(n * 1000) : Math.round(n);
+    };
+    const compressChanges = (points) => {
+      const out = [];
+      let previous = null;
+      points.slice().sort((a,b)=>a[0]-b[0]).forEach(([ts,val])=>{
+        const normalized = normalizeFuelValue(val);
+        if(normalized === null) return;
+        if(previous === null || normalized !== previous){
+          out.push([Number(ts), normalized]);
+          previous = normalized;
+        }
+      });
+      return out;
+    };
 
-    // E10 mới có thể chưa có trong chuỗi lịch sử của Wichart. Vẫn hiển thị mốc chính thức mới nhất.
-    latestSeries.forEach(hit=>{
-      if(used.has(hit.name)) return;
-      payload.series.push({
-        name:hit.name,
-        unit:hit.unit,
-        type:"line",
+    const nextSeries = [];
+    wanted.forEach(target=>{
+      const source = payload.series.find(s=>target.match.test(String(s.name||"")));
+      let points = source ? compressChanges(source.data || []) : [];
+      const last = points[points.length-1];
+      if(!last || Number(last[0]) < latestTs || Number(last[1]) !== target.value){
+        points.push([latestTs,target.value]);
+      }else if(Number(last[0]) === latestTs){
+        last[1] = target.value;
+      }
+      nextSeries.push({
+        name:target.name,
+        unit:"đồng/lít",
+        type:"scatter",
         yAxisIndex:0,
-        data:[[latestTs,hit.value]]
+        data:points
       });
     });
 
+    payload.series = nextSeries;
     payload.title = "Giá xăng dầu bán lẻ trong nước";
     payload.updated = "15:00 19/11/2026";
   }
@@ -216,6 +229,37 @@
     return series.data[series.data.length-1];
   }
 
+  function getVisibleWindow(){
+    if(!chart) return null;
+    const opt = chart.getOption();
+    const zoom = Array.isArray(opt.dataZoom) ? opt.dataZoom[0] : null;
+    if(!zoom) return null;
+    const start = Number(zoom.start ?? 0);
+    const end = Number(zoom.end ?? 100);
+    if(!Number.isFinite(start) || !Number.isFinite(end)) return null;
+    return {start,end};
+  }
+
+  function getVisibleObservationCount(payload){
+    const primary = payload?.series?.[0];
+    if(!primary?.data?.length) return 0;
+    const points = primary.data;
+    const window = getVisibleWindow();
+    if(!window || (window.start <= 0 && window.end >= 100)) return points.length;
+    const minTs = Number(points[0][0]);
+    const maxTs = Number(points[points.length-1][0]);
+    if(!Number.isFinite(minTs) || !Number.isFinite(maxTs) || maxTs <= minTs) return points.length;
+    const left = minTs + (maxTs-minTs) * window.start / 100;
+    const right = minTs + (maxTs-minTs) * window.end / 100;
+    return points.filter(p => Number(p[0]) >= left && Number(p[0]) <= right).length;
+  }
+
+  function updateObservationKpi(){
+    if(!activeData) return;
+    const el = document.querySelector('[data-kpi="observations"] strong');
+    if(el) el.textContent = String(getVisibleObservationCount(activeData));
+  }
+
   function renderKpis(payload,item){
     const primary = payload.series[0];
     const p = latestOf(primary);
@@ -228,8 +272,8 @@
       ["Giá trị mới nhất", p ? valueFormatter(p[1]) : "—", unit],
       ["Thay đổi kỳ gần nhất", change === null ? "—" : (change>=0?"+":"")+valueFormatter(change), unit],
       ["Thay đổi tương đối", changePct === null ? "—" : (changePct>=0?"+":"")+fmt(changePct), changePct===null?"":"%"],
-      ["Số kỳ quan sát", primary?.data?.length || 0, ""]
-    ].map(k => `<div class="md-kpi"><span>${k[0]}</span><strong>${k[1]}</strong><em>${k[2]}</em></div>`).join("");
+      ["Số kỳ quan sát", getVisibleObservationCount(payload), ""]
+    ].map((k,idx) => `<div class="md-kpi"${idx===3?' data-kpi="observations"':''}><span>${k[0]}</span><strong>${k[1]}</strong><em>${k[2]}</em></div>`).join("");
   }
 
   function renderMeta(item,payload){
@@ -264,9 +308,10 @@
       ],
       dataZoom:[{type:"inside"},{type:"slider",height:20,bottom:18,borderColor:"#e5e7eb",fillerColor:"rgba(115,87,255,.12)"}],
       series:payload.series.map((s,i)=>({
-        name:s.name,type:s.type==="bar"?"bar":"line",yAxisIndex:s.yAxisIndex||0,data:s.data,
-        showSymbol:item.domesticFuel && s.data.length<=2,symbolSize:7,smooth:s.type!=="bar",connectNulls:true,
-        barMaxWidth:24,lineStyle:{width:2},areaStyle:i===0&&s.type!=="bar"?{opacity:.035}:undefined
+        name:s.name,type:item.domesticFuel?"scatter":(s.type==="bar"?"bar":"line"),yAxisIndex:s.yAxisIndex||0,data:s.data,
+        showSymbol:item.domesticFuel || (s.data.length<=2),symbol:item.domesticFuel?"diamond":"circle",symbolSize:item.domesticFuel?9:7,
+        smooth:!item.domesticFuel && s.type!=="bar",connectNulls:!item.domesticFuel,
+        barMaxWidth:24,lineStyle:item.domesticFuel?{width:0}:{width:2},areaStyle:(!item.domesticFuel&&i===0&&s.type!=="bar")?{opacity:.035}:undefined
       }))
     };
     if(allValues.length===0) throw new Error("Nguồn chưa trả về dữ liệu.");
@@ -284,7 +329,7 @@
     try{
       const payload = item.driver === "fred" ? await fetchFred(item) : await fetchWichart(item);
       activeData = payload;
-      renderMeta(item,payload); renderKpis(payload,item); renderChart(payload,item);
+      renderMeta(item,payload); renderKpis(payload,item); renderChart(payload,item); requestAnimationFrame(updateObservationKpi);
     }catch(err){
       console.error(err);
       $("chartCategory").textContent = item.groupLabel;
@@ -308,6 +353,8 @@
   }
 
   $("marketSearch").addEventListener("input",renderList);
+  chart?.on("datazoom",()=>requestAnimationFrame(updateObservationKpi));
+  chart?.on("restore",()=>requestAnimationFrame(updateObservationKpi));
   window.addEventListener("resize",()=>chart?.resize());
   renderTabs(); renderList(); loadOverview(); loadIndicator(activeId);
 })();
