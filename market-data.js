@@ -120,10 +120,11 @@
 
   function applyDomesticFuelLatest(payload){
     const latestTs = new Date("2026-11-19T15:00:00+07:00").getTime();
+    const previousTs = new Date("2026-11-12T15:00:00+07:00").getTime();
     const wanted = [
-      {name:"E10 RON95-V", match:/RON\s*95/i, value:21100},
-      {name:"E5 RON92", match:/E5.*RON\s*92|RON\s*92.*E5/i, value:18570},
-      {name:"Diesel", match:/diesel|đi[eê]zen|DO\b/i, value:26340}
+      {name:"E10 RON95-V", match:/E10.*RON\s*95.*V\b/i, previousValue:21840, value:21100},
+      {name:"E5 RON92", match:/E5.*RON\s*92|RON\s*92.*E5/i, previousValue:19390, value:18570},
+      {name:"Diesel", match:/diesel.*0[,.]05|đi[eê]zen.*0[,.]05|DO\b/i, previousValue:26820, value:26340}
     ];
 
     const normalizeFuelValue = (v) => {
@@ -149,8 +150,21 @@
     wanted.forEach(target=>{
       const source = payload.series.find(s=>target.match.test(String(s.name||"")));
       let points = source ? compressChanges(source.data || []) : [];
+      // Không dùng RON95 thường thay cho E10 RON95-V. Nếu Wichart chưa có lịch sử E10-V,
+      // neo hai kỳ Petrolimex chính thức 12/11 và 19/11 để KPI luôn so với kỳ liền kề.
+      if(target.name === "E10 RON95-V"){
+        points = points.filter(p => Number(p[0]) >= previousTs);
+        if(!points.some(p => Number(p[0]) === previousTs)){
+          points.unshift([previousTs,target.previousValue]);
+        }
+      } else {
+        const prevIdx = points.findIndex(p => Number(p[0]) === previousTs);
+        if(prevIdx >= 0) points[prevIdx][1] = target.previousValue;
+        else points.push([previousTs,target.previousValue]);
+      }
+      points = points.filter(p => Number(p[0]) <= latestTs).sort((a,b)=>a[0]-b[0]);
       const last = points[points.length-1];
-      if(!last || Number(last[0]) < latestTs || Number(last[1]) !== target.value){
+      if(!last || Number(last[0]) < latestTs){
         points.push([latestTs,target.value]);
       }else if(Number(last[0]) === latestTs){
         last[1] = target.value;
@@ -271,7 +285,7 @@
     $("marketKpis").innerHTML = [
       ["Giá trị mới nhất", p ? valueFormatter(p[1]) : "—", unit],
       ["Thay đổi kỳ gần nhất", change === null ? "—" : (change>=0?"+":"")+valueFormatter(change), unit],
-      ["Thay đổi tương đối", changePct === null ? "—" : (changePct>=0?"+":"")+fmt(changePct), changePct===null?"":"%"],
+      ["% thay đổi so với kỳ trước", changePct === null ? "—" : (changePct>=0?"+":"")+fmt(changePct), changePct===null?"":"%"],
       ["Số kỳ quan sát", getVisibleObservationCount(payload), ""]
     ].map((k,idx) => `<div class="md-kpi"${idx===3?' data-kpi="observations"':''}><span>${k[0]}</span><strong>${k[1]}</strong><em>${k[2]}</em></div>`).join("");
   }
