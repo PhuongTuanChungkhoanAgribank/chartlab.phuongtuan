@@ -1,43 +1,49 @@
 (() => {
   const href = "./market-data.html";
+
   const style = document.createElement("style");
   style.textContent = `
-    .chartlab-market-link{display:inline-flex;align-items:center;gap:7px;padding:9px 12px;border-radius:12px;background:linear-gradient(135deg,#fff0e5,#f0ecff);border:1px solid #eadfff;color:#5c48ca!important;font-weight:800;font-size:13px;text-decoration:none!important;box-shadow:0 7px 20px rgba(70,52,150,.08)}
-    .chartlab-market-link:hover{transform:translateY(-1px)}
-    .chartlab-market-link .dot{width:8px;height:8px;border-radius:50%;background:#ff8b3d}
-    .chartlab-market-float{position:fixed;right:18px;bottom:18px;z-index:80}
-    @media(max-width:720px){.chartlab-market-float{right:12px;bottom:78px}.chartlab-market-link{padding:9px 11px}}
+    .nav-links .chartlab-market-nav{
+      border:0;background:transparent;color:#3f4656;cursor:pointer;padding:10px 12px;
+      border-radius:10px;font:inherit;font-weight:500;white-space:nowrap
+    }
+    .nav-links .chartlab-market-nav:hover{background:#f7f5ff;color:#5c48ca}
+    .mobile-nav .chartlab-market-mobile{border:0;background:transparent;color:inherit}
+    .mobile-nav .chartlab-market-mobile b{font-size:16px}
   `;
   document.head.appendChild(style);
 
-  function add(){
-    if(document.querySelector(".chartlab-market-link")) return true;
-    const a = document.createElement("a");
-    a.href = href;
-    a.className = "chartlab-market-link";
-    a.innerHTML = '<span class="dot"></span><span>Dữ liệu thị trường</span>';
-    a.setAttribute("aria-label","Mở Dữ liệu thị trường");
-
-    const target =
-      document.querySelector(".topbar-actions") ||
-      document.querySelector(".header-actions") ||
-      document.querySelector("header nav") ||
-      document.querySelector("header");
-
-    if(target){
-      target.appendChild(a);
-    }else{
-      const wrap = document.createElement("div");
-      wrap.className = "chartlab-market-float";
-      wrap.appendChild(a);
-      document.body.appendChild(wrap);
-    }
-    return true;
+  function syncDesktop(){
+    const nav = document.querySelector(".nav-links");
+    if(!nav) return;
+    if(nav.querySelector(".chartlab-market-nav")) return;
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "chartlab-market-nav";
+    btn.textContent = "Dữ liệu thị trường";
+    btn.setAttribute("aria-label","Mở Dữ liệu thị trường");
+    btn.addEventListener("click", () => { window.location.href = href; });
+    nav.appendChild(btn);
   }
 
-  if(!add()){
-    const obs = new MutationObserver(() => { if(add()) obs.disconnect(); });
-    obs.observe(document.documentElement,{childList:true,subtree:true});
-    setTimeout(() => { obs.disconnect(); add(); },2500);
+  function syncMobile(){
+    const nav = document.querySelector(".mobile-nav");
+    if(!nav || nav.querySelector(".chartlab-market-mobile")) return;
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "chartlab-market-mobile";
+    btn.innerHTML = "<b>▥</b><span>Dữ liệu</span>";
+    btn.setAttribute("aria-label","Mở Dữ liệu thị trường");
+    btn.addEventListener("click", () => { window.location.href = href; });
+    nav.appendChild(btn);
   }
+
+  function sync(){
+    syncDesktop();
+    syncMobile();
+  }
+
+  sync();
+  const obs = new MutationObserver(sync);
+  obs.observe(document.documentElement,{childList:true,subtree:true});
 })();
