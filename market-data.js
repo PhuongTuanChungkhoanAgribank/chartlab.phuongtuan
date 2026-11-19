@@ -30,6 +30,7 @@
     {id:"dtnh",name:"Dự trữ ngoại hối",group:"money",groupLabel:"Tiền tệ & thanh khoản",feed:"Wichart",origin:"Ngân hàng Nhà nước / nguồn công bố quốc tế",freq:"Hàng tháng / quý",insight:"Dự trữ ngoại hối thể hiện bộ đệm của nhà điều hành trước biến động tỷ giá và dòng vốn.",impact:["Tỷ giá","Ngân hàng","Khối ngoại"],note:"Cần nhìn cùng cán cân thương mại và cán cân thanh toán.",driver:"wichart"},
     {id:"cctt",name:"Cán cân thanh toán",group:"money",groupLabel:"Tiền tệ & thanh khoản",feed:"Wichart",origin:"Ngân hàng Nhà nước (SBV)",freq:"Hàng quý",insight:"Cán cân thanh toán tổng hợp các dòng ngoại tệ vào ra nền kinh tế, giúp đánh giá áp lực lên tỷ giá và dự trữ ngoại hối.",impact:["Tỷ giá","Khối ngoại","Ngân hàng"],note:"Tách tài khoản vãng lai và tài khoản tài chính khi cần phân tích sâu.",driver:"wichart"},
 
+    {id:"xang_dau",name:"Giá xăng dầu trong nước",group:"commodity",groupLabel:"Hàng hóa",feed:"Wichart + kỳ điều hành mới nhất",origin:"Bộ Công Thương / VnExpress đối chiếu",freq:"Theo kỳ điều hành",unit:"đồng/lít, kg",insight:"Giá xăng dầu bán lẻ trong nước truyền dẫn biến động năng lượng thế giới vào chi phí vận tải, sản xuất và CPI. Theo dõi theo từng kỳ điều hành giúp nhìn rõ độ trễ so với dầu WTI/Brent.",impact:["CPI","Vận tải","Hàng không","Bán lẻ"],note:"Mốc 19/11/2026: E5 RON92 18.670 đ/lít; E10 RON95-III 19.100 đ/lít; Diesel 26.340 đ/lít; Mazut 18.670 đ/kg.",driver:"wichart",commodity:true,domesticFuel:true},
     {id:"dau_wti",name:"Dầu WTI",group:"commodity",groupLabel:"Hàng hóa",feed:"Wichart",origin:"Thị trường hàng hóa quốc tế",freq:"Hàng ngày",insight:"Giá dầu ảnh hưởng trực tiếp tới nhóm dầu khí và gián tiếp tới vận tải, hàng không, hóa chất và lạm phát.",impact:["Dầu khí","Hàng không","Vận tải"],note:"Nên xem đồng thời Brent và crack spread khi phân tích lọc hóa dầu.",driver:"wichart",commodity:true},
     {id:"vang",name:"Giá vàng",group:"commodity",groupLabel:"Hàng hóa",feed:"Wichart",origin:"Thị trường vàng",freq:"Hàng ngày",insight:"Vàng thường phản ánh nhu cầu phòng thủ, kỳ vọng lãi suất thực và rủi ro vĩ mô.",impact:["Tài sản phòng thủ","Tỷ giá"],note:"Theo dõi cùng lợi suất thực và USD.",driver:"wichart",commodity:true},
     {id:"hrc_trung_quoc",name:"HRC Trung Quốc",group:"commodity",groupLabel:"Hàng hóa",feed:"Wichart",origin:"Thị trường thép Trung Quốc",freq:"Hàng ngày",insight:"HRC là biến đầu vào/đầu ra quan trọng của ngành thép. Biến động giá ảnh hưởng doanh thu, tồn kho và biên lợi nhuận theo từng doanh nghiệp.",impact:["HPG","HSG","NKG"],note:"Cần xem thêm quặng sắt, than cốc và tồn kho thép.",driver:"wichart",commodity:true},
@@ -108,7 +109,28 @@
       yAxisIndex: idx > 0 && data.chart.series[0]?.type !== s.type ? 1 : 0,
       data:(s.data || []).map(p => [Number(p[0]), Number(p[1])]).filter(p => Number.isFinite(p[0]) && Number.isFinite(p[1])).sort((a,b)=>a[0]-b[0])
     }));
-    return {title:data.title || item.name, updated:data.timeUpdate || "Theo nguồn", stacked:!!data.stacked_column, series};
+    const payload = {title:data.title || item.name, updated:data.timeUpdate || "Theo nguồn", stacked:!!data.stacked_column, series};
+    if(item.domesticFuel) applyDomesticFuelLatest(payload);
+    return payload;
+  }
+
+  function applyDomesticFuelLatest(payload){
+    const latestTs = new Date("2026-11-19T15:00:00+07:00").getTime();
+    const latestMap = [
+      {match:/E5.*RON\s*92|RON\s*92.*E5/i,value:18670},
+      {match:/E10.*RON\s*95|RON\s*95.*E10|RON\s*95-?III/i,value:19100},
+      {match:/diesel|đi[eê]zen|DO\b/i,value:26340},
+      {match:/mazut|madut|FO\b/i,value:18670}
+    ];
+    payload.series.forEach(s=>{
+      const hit=latestMap.find(x=>x.match.test(String(s.name||"")));
+      if(!hit) return;
+      const last=s.data[s.data.length-1];
+      if(!last || Number(last[0]) < latestTs) s.data.push([latestTs,hit.value]);
+      else if(Number(last[0])===latestTs) last[1]=hit.value;
+      s.unit = s.unit || "đồng/lít, kg";
+    });
+    payload.updated = "15:00 19/11/2026";
   }
 
   async function fetchFred(item){
