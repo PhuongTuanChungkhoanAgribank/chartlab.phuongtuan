@@ -64,6 +64,8 @@
   let activeGroup = ["macro","money","commodity","global"].includes(initialGroup) ? initialGroup : "all";
   let activeId = "lslnh";
   let activeData = null;
+  let activeItem = null;
+  let selectedFuelSeries = "E10 RON95-V";
   const overviewIds = ["cpi","td","lslnh","DGS10"];
 
   function fmt(v){
@@ -254,8 +256,15 @@
     return {start,end};
   }
 
-  function getVisibleObservationCount(payload){
-    const primary = payload?.series?.[0];
+  function getSelectedSeries(payload,item){
+    if(item?.domesticFuel){
+      return payload?.series?.find(s=>s.name===selectedFuelSeries) || payload?.series?.[0];
+    }
+    return payload?.series?.[0];
+  }
+
+  function getVisibleObservationCount(payload,item){
+    const primary = getSelectedSeries(payload,item);
     if(!primary?.data?.length) return 0;
     const points = primary.data;
     const window = getVisibleWindow();
@@ -269,13 +278,13 @@
   }
 
   function updateObservationKpi(){
-    if(!activeData) return;
+    if(!activeData || !activeItem) return;
     const el = document.querySelector('[data-kpi="observations"] strong');
-    if(el) el.textContent = String(getVisibleObservationCount(activeData));
+    if(el) el.textContent = String(getVisibleObservationCount(activeData,activeItem));
   }
 
   function renderKpis(payload,item){
-    const primary = payload.series[0];
+    const primary = getSelectedSeries(payload,item);
     const p = latestOf(primary);
     const prev = primary?.data?.length > 1 ? primary.data[primary.data.length-2] : null;
     const change = p && prev ? p[1]-prev[1] : null;
@@ -283,10 +292,10 @@
     const valueFormatter = item.domesticFuel ? fmtFuel : fmt;
     const unit = item.domesticFuel ? (primary?.unit || "đồng/lít") : (primary?.unit || item.unit || "");
     $("marketKpis").innerHTML = [
-      ["Giá trị mới nhất", p ? valueFormatter(p[1]) : "—", unit],
-      ["Thay đổi kỳ gần nhất", change === null ? "—" : (change>=0?"+":"")+valueFormatter(change), unit],
-      ["% thay đổi so với kỳ trước", changePct === null ? "—" : (changePct>=0?"+":"")+fmt(changePct), changePct===null?"":"%"],
-      ["Số kỳ quan sát", getVisibleObservationCount(payload), ""]
+      [item.domesticFuel ? selectedFuelSeries + " · Giá mới nhất" : "Giá trị mới nhất", p ? valueFormatter(p[1]) : "—", unit],
+      [item.domesticFuel ? selectedFuelSeries + " · Thay đổi kỳ gần nhất" : "Thay đổi kỳ gần nhất", change === null ? "—" : (change>=0?"+":"")+valueFormatter(change), unit],
+      [item.domesticFuel ? selectedFuelSeries + " · % so với kỳ trước" : "% thay đổi so với kỳ trước", changePct === null ? "—" : (changePct>=0?"+":"")+fmt(changePct), changePct===null?"":"%"],
+      ["Số kỳ quan sát", getVisibleObservationCount(payload,item), ""]
     ].map((k,idx) => `<div class="md-kpi"${idx===3?' data-kpi="observations"':''}><span>${k[0]}</span><strong>${k[1]}</strong><em>${k[2]}</em></div>`).join("");
   }
 
@@ -313,7 +322,10 @@
       color:colors,
       grid:{left:54,right:payload.series.some(s=>s.yAxisIndex===1)?58:24,top:42,bottom:70,containLabel:true},
       tooltip:{trigger:"axis",axisPointer:{type:"cross"},valueFormatter:(v)=>item.domesticFuel ? fmtFuel(v) : fmt(v)},
-      legend:{top:4,type:"scroll",textStyle:{color:"#596174"}},
+      legend:{
+        top:4,type:"scroll",textStyle:{color:"#596174"},
+        selected:item.domesticFuel ? Object.fromEntries(payload.series.map(s=>[s.name,s.name===selectedFuelSeries])) : undefined
+      },
       toolbox:{right:8,feature:{dataZoom:{yAxisIndex:"none"},restore:{},saveAsImage:{name:item.id}}},
       xAxis:{type:"time",axisLine:{lineStyle:{color:"#cfd4df"}},axisLabel:{color:"#747c8c"}},
       yAxis:[
@@ -343,6 +355,10 @@
     try{
       const payload = item.driver === "fred" ? await fetchFred(item) : await fetchWichart(item);
       activeData = payload;
+      activeItem = item;
+      if(item.domesticFuel && !payload.series.some(s=>s.name===selectedFuelSeries)){
+        selectedFuelSeries = payload.series[0]?.name || "E10 RON95-V";
+      }
       renderMeta(item,payload); renderKpis(payload,item); renderChart(payload,item); requestAnimationFrame(updateObservationKpi);
     }catch(err){
       console.error(err);
@@ -367,6 +383,17 @@
   }
 
   $("marketSearch").addEventListener("input",renderList);
+  chart?.on("legendselectchanged",(params)=>{
+    if(!activeItem?.domesticFuel || !activeData) return;
+    const clicked = params?.name;
+    if(!activeData.series.some(s=>s.name===clicked)) return;
+    selectedFuelSeries = clicked;
+    const selected = {};
+    activeData.series.forEach(s=>{ selected[s.name] = s.name === clicked; });
+    chart.setOption({legend:{selected}});
+    renderKpis(activeData,activeItem);
+    requestAnimationFrame(updateObservationKpi);
+  });
   chart?.on("datazoom",()=>requestAnimationFrame(updateObservationKpi));
   chart?.on("restore",()=>requestAnimationFrame(updateObservationKpi));
   window.addEventListener("resize",()=>chart?.resize());
