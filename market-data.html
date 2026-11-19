@@ -7,18 +7,26 @@
   <meta name="description" content="ChartLab Dữ liệu thị trường — dữ liệu vĩ mô, tiền tệ và hàng hóa miễn phí phục vụ nhà đầu tư." />
   <link rel="icon" href="./icon.svg" type="image/svg+xml" />
   <title>Dữ liệu thị trường · chartlab.phuongtuan</title>
-  <link rel="stylesheet" href="./market-data.css?v=20261119-2" />
+  <link rel="stylesheet" href="./market-data.css?v=20261119-3" />
 </head>
 <body>
   <header class="md-topbar">
-    <a class="md-brand" href="./index.html" aria-label="Về ChartLab">
-      <span class="md-brand-mark">CL</span>
-      <span>
-        <strong>chartlab.phuongtuan</strong>
-        <small>Dữ liệu thị trường</small>
-      </span>
-    </a>
-    <a class="md-back" href="./index.html">← Quay lại phần học</a>
+    <div class="md-topbar-inner">
+      <a class="md-brand" href="./index.html" aria-label="Về ChartLab">
+        <span class="md-brand-mark"><i></i><i></i><i></i></span>
+        <span class="md-brand-name"><strong>chartlab</strong><em>.phuongtuan</em></span>
+      </a>
+
+      <nav class="md-nav-links" aria-label="Điều hướng chính">
+        <a href="./index.html#/level/1">Học</a>
+        <a href="./index.html#/library">Mẫu hình</a>
+        <a href="./index.html#/history">Lịch sử</a>
+        <a href="./index.html#/methodology">Phương pháp</a>
+        <a class="active" href="./market-data.html" aria-current="page">Dữ liệu thị trường</a>
+      </nav>
+
+      <a class="md-analyze-nav" href="./index.html#/analyzer">▣&nbsp; Phân tích chart</a>
+    </div>
   </header>
 
   <main class="md-shell">
@@ -108,6 +116,14 @@
     <span>ChartLab · dữ liệu phục vụ mục đích học tập và tham khảo.</span>
     <span>Ưu tiên nguồn miễn phí và nguồn chính thức.</span>
   </footer>
+
+  <nav class="md-mobile-nav" aria-label="Điều hướng mobile">
+    <a href="./index.html#/level/1"><b>◫</b><span>Học</span></a>
+    <a href="./index.html#/library"><b>◇</b><span>Mẫu hình</span></a>
+    <a class="active" href="./market-data.html"><b>▥</b><span>Dữ liệu</span></a>
+    <a href="./index.html#/history"><b>◷</b><span>Lịch sử</span></a>
+    <a href="./index.html#/analyzer"><b>▣</b><span>Analyzer</span></a>
+  </nav>
 
   <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
   <script src="./market-data.js?v=20261119-2"></script>
