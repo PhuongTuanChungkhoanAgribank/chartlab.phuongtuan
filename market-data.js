@@ -59,7 +59,8 @@
     ["all","Tất cả"],["macro","Vĩ mô"],["money","Tiền tệ"],["commodity","Hàng hóa"],["global","Quốc tế"]
   ];
 
-  let activeGroup = "all";
+  const initialGroup = new URLSearchParams(location.search).get("group");
+  let activeGroup = ["macro","money","commodity","global"].includes(initialGroup) ? initialGroup : "all";
   let activeId = "lslnh";
   let activeData = null;
   const overviewIds = ["cpi","td","lslnh","DGS10"];
