@@ -1,0 +1,12 @@
+name: Check fuel updates
+on:
+  push:
+    branches: ["fix/fuel-format-e10-observations"]
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - run: node --check market-data.js
