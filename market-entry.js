@@ -55,17 +55,17 @@
     const wrap = document.createElement("div");
     wrap.className = "chartlab-grouped-nav";
     wrap.innerHTML = `
+      <div class="chartlab-nav-group" data-menu="market">
+        <button class="chartlab-nav-trigger" type="button">Dữ liệu Vĩ mô – Tiền tệ – Hàng hóa <span class="chev">▼</span></button>
+        <div class="chartlab-dropdown">
+          ${marketItems.map(([group,title,sub])=>`<button type="button" data-market-group="${group}"><b>${title}</b><small>${sub}</small></button>`).join("")}
+        </div>
+      </div>
       <div class="chartlab-nav-group" data-menu="technical">
         <button class="chartlab-nav-trigger" type="button">Phân tích kỹ thuật <span class="chev">▼</span></button>
         <div class="chartlab-dropdown">
           ${techItems.map(([path,title,sub])=>`<button type="button" data-tech-route="${path}"><b>${title}</b><small>${sub}</small></button>`).join("")}
           <div class="practice"><button type="button" data-tech-route="/analyzer"><b>▣ Phân tích chart</b><small>Thực hành trên chart thực tế</small></button></div>
-        </div>
-      </div>
-      <div class="chartlab-nav-group" data-menu="market">
-        <button class="chartlab-nav-trigger" type="button">Dữ liệu Vĩ mô – Tiền tệ – Hàng hóa <span class="chev">▼</span></button>
-        <div class="chartlab-dropdown">
-          ${marketItems.map(([group,title,sub])=>`<button type="button" data-market-group="${group}"><b>${title}</b><small>${sub}</small></button>`).join("")}
         </div>
       </div>
     `;
