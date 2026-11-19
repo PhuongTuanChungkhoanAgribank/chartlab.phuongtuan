@@ -30,7 +30,7 @@
     {id:"dtnh",name:"Dự trữ ngoại hối",group:"money",groupLabel:"Tiền tệ & thanh khoản",feed:"Wichart",origin:"Ngân hàng Nhà nước / nguồn công bố quốc tế",freq:"Hàng tháng / quý",insight:"Dự trữ ngoại hối thể hiện bộ đệm của nhà điều hành trước biến động tỷ giá và dòng vốn.",impact:["Tỷ giá","Ngân hàng","Khối ngoại"],note:"Cần nhìn cùng cán cân thương mại và cán cân thanh toán.",driver:"wichart"},
     {id:"cctt",name:"Cán cân thanh toán",group:"money",groupLabel:"Tiền tệ & thanh khoản",feed:"Wichart",origin:"Ngân hàng Nhà nước (SBV)",freq:"Hàng quý",insight:"Cán cân thanh toán tổng hợp các dòng ngoại tệ vào ra nền kinh tế, giúp đánh giá áp lực lên tỷ giá và dự trữ ngoại hối.",impact:["Tỷ giá","Khối ngoại","Ngân hàng"],note:"Tách tài khoản vãng lai và tài khoản tài chính khi cần phân tích sâu.",driver:"wichart"},
 
-    {id:"xang_dau",name:"Giá xăng dầu trong nước",group:"commodity",groupLabel:"Hàng hóa",feed:"Wichart + kỳ điều hành mới nhất",origin:"Bộ Công Thương / VnExpress đối chiếu",freq:"Theo kỳ điều hành",unit:"đồng/lít, kg",insight:"Giá xăng dầu bán lẻ trong nước truyền dẫn biến động năng lượng thế giới vào chi phí vận tải, sản xuất và CPI. Theo dõi theo từng kỳ điều hành giúp nhìn rõ độ trễ so với dầu WTI/Brent.",impact:["CPI","Vận tải","Hàng không","Bán lẻ"],note:"Mốc 19/11/2026: E5 RON92 18.670 đ/lít; E10 RON95-III 19.100 đ/lít; Diesel 26.340 đ/lít; Mazut 18.670 đ/kg.",driver:"wichart",commodity:true,domesticFuel:true},
+    {id:"xang_dau",name:"Giá xăng dầu trong nước",group:"commodity",groupLabel:"Hàng hóa",feed:"Wichart + kỳ điều hành mới nhất",origin:"Petrolimex / Bộ Công Thương",freq:"Theo kỳ điều hành",unit:"đồng/lít, kg",insight:"Giá xăng dầu bán lẻ trong nước truyền dẫn biến động năng lượng thế giới vào chi phí vận tải, sản xuất và CPI. Theo dõi theo từng kỳ điều hành giúp nhìn rõ độ trễ so với dầu WTI/Brent.",impact:["CPI","Vận tải","Hàng không","Bán lẻ"],note:"Mốc 19/11/2026 - Vùng 1: E10 RON95-V 21.100 đ/lít; E10 RON95-III 19.100 đ/lít; E5 RON92 18.570 đ/lít; Diesel 0,05S-II 26.340 đ/lít; FO 3,5S 18.670 đ/kg.",driver:"wichart",commodity:true,domesticFuel:true},
     {id:"dau_wti",name:"Dầu WTI",group:"commodity",groupLabel:"Hàng hóa",feed:"Wichart",origin:"Thị trường hàng hóa quốc tế",freq:"Hàng ngày",insight:"Giá dầu ảnh hưởng trực tiếp tới nhóm dầu khí và gián tiếp tới vận tải, hàng không, hóa chất và lạm phát.",impact:["Dầu khí","Hàng không","Vận tải"],note:"Nên xem đồng thời Brent và crack spread khi phân tích lọc hóa dầu.",driver:"wichart",commodity:true},
     {id:"vang",name:"Giá vàng",group:"commodity",groupLabel:"Hàng hóa",feed:"Wichart",origin:"Thị trường vàng",freq:"Hàng ngày",insight:"Vàng thường phản ánh nhu cầu phòng thủ, kỳ vọng lãi suất thực và rủi ro vĩ mô.",impact:["Tài sản phòng thủ","Tỷ giá"],note:"Theo dõi cùng lợi suất thực và USD.",driver:"wichart",commodity:true},
     {id:"hrc_trung_quoc",name:"HRC Trung Quốc",group:"commodity",groupLabel:"Hàng hóa",feed:"Wichart",origin:"Thị trường thép Trung Quốc",freq:"Hàng ngày",insight:"HRC là biến đầu vào/đầu ra quan trọng của ngành thép. Biến động giá ảnh hưởng doanh thu, tồn kho và biên lợi nhuận theo từng doanh nghiệp.",impact:["HPG","HSG","NKG"],note:"Cần xem thêm quặng sắt, than cốc và tồn kho thép.",driver:"wichart",commodity:true},
@@ -70,6 +70,10 @@
     if(v === null || v === undefined || Number.isNaN(Number(v))) return "—";
     const n = Number(v);
     return new Intl.NumberFormat("vi-VN",{maximumFractionDigits:2}).format(n);
+  }
+  function fmtFuel(v){
+    if(v === null || v === undefined || Number.isNaN(Number(v))) return "—";
+    return new Intl.NumberFormat("vi-VN",{maximumFractionDigits:0}).format(Number(v));
   }
   function fmtDate(x){
     const d = new Date(x);
@@ -116,20 +120,39 @@
 
   function applyDomesticFuelLatest(payload){
     const latestTs = new Date("2026-11-19T15:00:00+07:00").getTime();
-    const latestMap = [
-      {match:/E5.*RON\s*92|RON\s*92.*E5/i,value:18670},
-      {match:/E10.*RON\s*95|RON\s*95.*E10|RON\s*95-?III/i,value:19100},
-      {match:/diesel|đi[eê]zen|DO\b/i,value:26340},
-      {match:/mazut|madut|FO\b/i,value:18670}
+    const latestSeries = [
+      {name:"Xăng E10 RON95-V", match:/E10.*RON\s*95.*V\b/i, value:21100, unit:"đồng/lít"},
+      {name:"Xăng E10 RON95-III", match:/E10.*RON\s*95.*III|RON\s*95.*III/i, value:19100, unit:"đồng/lít"},
+      {name:"Xăng E5 RON92", match:/E5.*RON\s*92|RON\s*92.*E5/i, value:18570, unit:"đồng/lít"},
+      {name:"Diesel 0,05S-II", match:/diesel.*0[,.]05|đi[eê]zen.*0[,.]05|DO\b/i, value:26340, unit:"đồng/lít"},
+      {name:"FO 3,5S", match:/FO.*3[,.]5|mazut|madut/i, value:18670, unit:"đồng/kg"}
     ];
-    payload.series.forEach(s=>{
-      const hit=latestMap.find(x=>x.match.test(String(s.name||"")));
+
+    const used = new Set();
+    payload.series.forEach((s, idx)=>{
+      const hit = latestSeries.find(x => !used.has(x.name) && x.match.test(String(s.name||"")));
       if(!hit) return;
+      used.add(hit.name);
+      s.name = hit.name;
       const last=s.data[s.data.length-1];
       if(!last || Number(last[0]) < latestTs) s.data.push([latestTs,hit.value]);
       else if(Number(last[0])===latestTs) last[1]=hit.value;
-      s.unit = s.unit || "đồng/lít, kg";
+      s.unit = hit.unit;
     });
+
+    // E10 mới có thể chưa có trong chuỗi lịch sử của Wichart. Vẫn hiển thị mốc chính thức mới nhất.
+    latestSeries.forEach(hit=>{
+      if(used.has(hit.name)) return;
+      payload.series.push({
+        name:hit.name,
+        unit:hit.unit,
+        type:"line",
+        yAxisIndex:0,
+        data:[[latestTs,hit.value]]
+      });
+    });
+
+    payload.title = "Giá xăng dầu bán lẻ trong nước";
     payload.updated = "15:00 19/11/2026";
   }
 
@@ -199,11 +222,13 @@
     const prev = primary?.data?.length > 1 ? primary.data[primary.data.length-2] : null;
     const change = p && prev ? p[1]-prev[1] : null;
     const changePct = p && prev && prev[1] ? change/Math.abs(prev[1])*100 : null;
+    const valueFormatter = item.domesticFuel ? fmtFuel : fmt;
+    const unit = item.domesticFuel ? (primary?.unit || "đồng/lít") : (primary?.unit || item.unit || "");
     $("marketKpis").innerHTML = [
-      ["Giá trị mới nhất", p ? fmt(p[1]) : "—", primary?.unit || item.unit || ""],
-      ["Thay đổi kỳ gần nhất", change === null ? "—" : (change>=0?"+":"")+fmt(change), primary?.unit || ""],
+      ["Giá trị mới nhất", p ? valueFormatter(p[1]) : "—", unit],
+      ["Thay đổi kỳ gần nhất", change === null ? "—" : (change>=0?"+":"")+valueFormatter(change), unit],
       ["Thay đổi tương đối", changePct === null ? "—" : (changePct>=0?"+":"")+fmt(changePct), changePct===null?"":"%"],
-      ["Điểm dữ liệu", primary?.data?.length || 0, ""]
+      ["Số kỳ quan sát", primary?.data?.length || 0, ""]
     ].map(k => `<div class="md-kpi"><span>${k[0]}</span><strong>${k[1]}</strong><em>${k[2]}</em></div>`).join("");
   }
 
@@ -229,18 +254,18 @@
       animationDuration:500,
       color:colors,
       grid:{left:54,right:payload.series.some(s=>s.yAxisIndex===1)?58:24,top:42,bottom:70,containLabel:true},
-      tooltip:{trigger:"axis",axisPointer:{type:"cross"},valueFormatter:(v)=>fmt(v)},
+      tooltip:{trigger:"axis",axisPointer:{type:"cross"},valueFormatter:(v)=>item.domesticFuel ? fmtFuel(v) : fmt(v)},
       legend:{top:4,type:"scroll",textStyle:{color:"#596174"}},
       toolbox:{right:8,feature:{dataZoom:{yAxisIndex:"none"},restore:{},saveAsImage:{name:item.id}}},
       xAxis:{type:"time",axisLine:{lineStyle:{color:"#cfd4df"}},axisLabel:{color:"#747c8c"}},
       yAxis:[
-        {type:"value",scale:true,axisLabel:{color:"#747c8c"},splitLine:{lineStyle:{color:"#eef0f5"}}},
+        {type:"value",scale:true,axisLabel:{color:"#747c8c",formatter:(v)=>item.domesticFuel ? fmtFuel(v) : fmt(v)},splitLine:{lineStyle:{color:"#eef0f5"}}},
         {type:"value",scale:true,position:"right",axisLabel:{color:"#747c8c"},splitLine:{show:false}}
       ],
       dataZoom:[{type:"inside"},{type:"slider",height:20,bottom:18,borderColor:"#e5e7eb",fillerColor:"rgba(115,87,255,.12)"}],
       series:payload.series.map((s,i)=>({
         name:s.name,type:s.type==="bar"?"bar":"line",yAxisIndex:s.yAxisIndex||0,data:s.data,
-        showSymbol:false,symbolSize:5,smooth:s.type!=="bar",connectNulls:true,
+        showSymbol:item.domesticFuel && s.data.length<=2,symbolSize:7,smooth:s.type!=="bar",connectNulls:true,
         barMaxWidth:24,lineStyle:{width:2},areaStyle:i===0&&s.type!=="bar"?{opacity:.035}:undefined
       }))
     };
