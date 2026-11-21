@@ -25,7 +25,6 @@
     {id:"lsdh",name:"Lãi suất điều hành",group:"money",groupLabel:"Tiền tệ & thanh khoản",feed:"Wichart",origin:"Ngân hàng Nhà nước (SBV)",freq:"Theo quyết định",insight:"Lãi suất điều hành thể hiện định hướng chính sách tiền tệ. Giảm lãi suất thường hỗ trợ chi phí vốn và định giá tài sản.",impact:["Ngân hàng","Bất động sản","Chứng khoán"],note:"Tác động thực tế còn phụ thuộc lãi suất huy động và tín dụng.",driver:"wichart"},
     {id:"dhtg",name:"Tỷ giá trung tâm & biên độ",group:"money",groupLabel:"Tiền tệ & thanh khoản",feed:"Wichart",origin:"Ngân hàng Nhà nước (SBV)",freq:"Hàng ngày",insight:"Tỷ giá phản ánh sức ép ngoại hối. Biến động mạnh có thể ảnh hưởng dư địa chính sách tiền tệ và doanh nghiệp vay ngoại tệ.",impact:["Ngân hàng","Xuất khẩu","Hàng không"],note:"Theo dõi thêm DXY và cán cân thương mại.",driver:"wichart"},
     {id:"nvttm",name:"Nghiệp vụ thị trường mở (OMO)",group:"money",groupLabel:"Tiền tệ & thanh khoản",feed:"Wichart",origin:"Ngân hàng Nhà nước (SBV)",freq:"Theo phiên",insight:"OMO cho thấy NHNN đang bơm hoặc hút thanh khoản ngắn hạn khỏi hệ thống ngân hàng.",impact:["Ngân hàng","Chứng khoán"],note:"Quy ước: số dương = bơm ròng; số âm = hút ròng. OMO khác với lãi suất cho vay qua đêm (O/N).",driver:"wichart"},
-    {id:"tpkb",name:"Tín phiếu NHNN",group:"money",groupLabel:"Tiền tệ & thanh khoản",feed:"Wichart",origin:"Ngân hàng Nhà nước (SBV)",freq:"Theo phiên",insight:"Phát hành tín phiếu thường là công cụ hút bớt thanh khoản ngắn hạn; đáo hạn tín phiếu có tác động ngược lại.",impact:["Ngân hàng","Chứng khoán"],note:"Phát hành tín phiếu thường hút tiền; tín phiếu đáo hạn bơm tiền trở lại hệ thống.",driver:"wichart"},
     {id:"dtnh",name:"Dự trữ ngoại hối",group:"money",groupLabel:"Tiền tệ & thanh khoản",feed:"Wichart",origin:"Ngân hàng Nhà nước / nguồn công bố quốc tế",freq:"Hàng tháng / quý",insight:"Dự trữ ngoại hối thể hiện bộ đệm của nhà điều hành trước biến động tỷ giá và dòng vốn.",impact:["Tỷ giá","Ngân hàng","Khối ngoại"],note:"Theo dõi cùng tỷ giá và cán cân thương mại.",driver:"wichart"},
     {id:"xang_dau",name:"Giá xăng dầu trong nước",group:"commodity",groupLabel:"Hàng hóa",feed:"Wichart + kỳ điều hành mới nhất",origin:"Petrolimex / Bộ Công Thương",freq:"Theo kỳ điều hành",unit:"đồng/lít",insight:"Giá xăng dầu bán lẻ trong nước truyền dẫn biến động năng lượng thế giới vào chi phí vận tải, sản xuất và CPI. Biểu đồ chỉ giữ các mốc giá thay đổi theo kỳ điều hành để dễ theo dõi.",impact:["CPI","Vận tải","Hàng không","Bán lẻ"],note:"Theo dõi 3 loại: E10 RON95-V, E5 RON92 và Diesel. Mốc Vùng 1 từ 15h 19/11/2026 lần lượt là 21.100; 18.570; 26.340 đồng/lít.",driver:"wichart",commodity:true,domesticFuel:true},
     {id:"dau_wti",name:"Dầu WTI",group:"commodity",groupLabel:"Hàng hóa",feed:"Wichart",origin:"Thị trường hàng hóa quốc tế",freq:"Hàng ngày",insight:"Giá dầu ảnh hưởng trực tiếp tới nhóm dầu khí và gián tiếp tới vận tải, hàng không, hóa chất và lạm phát.",impact:["Dầu khí","Hàng không","Vận tải"],note:"Nên xem đồng thời Brent và crack spread khi phân tích lọc hóa dầu.",driver:"wichart",commodity:true},
@@ -242,7 +241,7 @@
     if(item.id === "td"){
       payload.title = "Tín dụng toàn nền kinh tế";
       payload.series.forEach(s=>{
-        if(ratioSeries.test(String(s.name||"")) || s.unit === "%") s.name = "Tăng trưởng tín dụng";
+        if(ratioSeries.test(String(s.name||"")) || s.unit === "%") s.name = "Tăng trưởng tín dụng (theo nguồn)";
         else s.name = "Tổng dư nợ tín dụng";
       });
     }
@@ -703,5 +702,5 @@
   chart?.on("datazoom",()=>requestAnimationFrame(updateObservationKpi));
   chart?.on("restore",()=>requestAnimationFrame(updateObservationKpi));
   window.addEventListener("resize",()=>chart?.resize());
-  renderTabs(); renderList(); loadOverview(); loadIndicator(activeId);
+  renderTabs(); renderList(); loadIndicator(activeId);
 })();
