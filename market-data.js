@@ -635,9 +635,56 @@
     return false;
   }
 
+  function renderGlobalKpis(payload,item){
+    if(item.group!=="global") return false;
+    const card=(label,value,unit="")=>`<div class="md-kpi"><span>${label}</span><strong>${value}</strong><em>${unit}</em></div>`;
+    if(item.globalType==="centralBanks"){
+      $("marketKpis").innerHTML=(payload.centralBanks||[]).map(r=>card(r.label,r.display||fmt(r.value)+"%","")).join("");
+      return true;
+    }
+    if(item.globalType==="fedPolicy"){
+      const lo=latestOf(payload.series.find(s=>/Cận dưới/i.test(s.name)));
+      const hi=latestOf(payload.series.find(s=>/Cận trên/i.test(s.name)));
+      const l=lo?.[1], h=hi?.[1];
+      $("marketKpis").innerHTML=[
+        card("Target range",Number.isFinite(l)&&Number.isFinite(h)?fmt(l)+"–"+fmt(h):"—","%"),
+        card("Midpoint",Number.isFinite(l)&&Number.isFinite(h)?fmt((l+h)/2):"—","%"),
+        card("Cận dưới",Number.isFinite(l)?fmt(l):"—","%"),
+        card("Cận trên",Number.isFinite(h)?fmt(h):"—","%")
+      ].join("");
+      return true;
+    }
+    if(item.globalType==="inflation"){
+      const m=payload.metrics||[];
+      const a=m[0], b=m[1];
+      const rows=[
+        [a?.name||item.name+" tổng thể",a?.yoy,"YoY"],
+        [a?.name||item.name+" tổng thể",a?.mom,"MoM"],
+        [b?.name||"Lõi",b?.yoy,"YoY"],
+        [b?.name||"Lõi",b?.mom,"MoM"]
+      ];
+      $("marketKpis").innerHTML=rows.map(([n,v,p])=>card(n+" · "+p,Number.isFinite(v)?(v>=0?"+":"")+fmt(v):"—","%")).join("");
+      return true;
+    }
+    if(item.globalType==="jobs"){
+      const payroll=payload.series.find(s=>/việc làm phi nông nghiệp/i.test(s.name));
+      const unrate=payload.series.find(s=>/thất nghiệp/i.test(s.name));
+      const wage=payload.series.find(s=>/lương theo giờ/i.test(s.name));
+      $("marketKpis").innerHTML=[
+        card("Nonfarm · thay đổi tháng",latestOf(payroll)?(latestOf(payroll)[1]>=0?"+":"")+fmt(latestOf(payroll)[1]):"—","nghìn"),
+        card("Tỷ lệ thất nghiệp",latestOf(unrate)?fmt(latestOf(unrate)[1]):"—","%"),
+        card("Tăng lương theo giờ · YoY",latestOf(wage)?(latestOf(wage)[1]>=0?"+":"")+fmt(latestOf(wage)[1]):"—","%"),
+        card("Kỳ cập nhật",payload.updated||"—","")
+      ].join("");
+      return true;
+    }
+    return false;
+  }
+
   function renderKpis(payload,item){
     if(item.macroType && renderMacroKpis(item)) return;
     if(renderMoneyKpis(payload,item)) return;
+    if(renderGlobalKpis(payload,item)) return;
     const primary = getSelectedSeries(payload,item);
     const p = latestOf(primary);
     const prev = primary?.data?.length > 1 ? primary.data[primary.data.length-2] : null;
@@ -669,6 +716,21 @@
 
   function renderChart(payload,item){
     if(!chart) throw new Error("Không tải được thư viện biểu đồ.");
+    if(item.globalType==="centralBanks"){
+      const rows=payload.centralBanks||[];
+      if(!rows.length) throw new Error("Nguồn chưa trả về dữ liệu.");
+      chart.clear();
+      chart.setOption({
+        animationDuration:500,
+        grid:{left:60,right:24,top:30,bottom:55,containLabel:true},
+        tooltip:{trigger:"axis",axisPointer:{type:"shadow"},valueFormatter:(v)=>fmt(v)+"%"},
+        xAxis:{type:"category",data:rows.map(r=>r.label),axisLabel:{color:"#596174",fontWeight:700}},
+        yAxis:{type:"value",axisLabel:{color:"#747c8c",formatter:(v)=>fmt(v)+"%"},splitLine:{lineStyle:{color:"#eef0f5"}}},
+        series:[{name:"Lãi suất điều hành",type:"bar",barMaxWidth:52,data:rows.map(r=>Number(r.value)),itemStyle:{borderRadius:[8,8,0,0]}}],
+        toolbox:{right:8,feature:{saveAsImage:{name:item.id}}}
+      },true);
+      return;
+    }
     const colors = ["#7357ff","#ff8b3d","#0f7c83","#f2b94b","#d94c4c"];
     const allValues = payload.series.flatMap(s => s.data.map(p => p[1]));
     const option = {
