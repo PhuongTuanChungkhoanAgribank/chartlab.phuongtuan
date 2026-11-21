@@ -62,7 +62,7 @@
 
   const initialGroup = new URLSearchParams(location.search).get("group");
   let activeGroup = ["macro","money","commodity","global"].includes(initialGroup) ? initialGroup : "all";
-  let activeId = "lslnh";
+  let activeId = "cpi";
   let activeData = null;
   let activeItem = null;
   let selectedFuelSeries = "E10 RON95-V";
