@@ -124,10 +124,11 @@
   function applyMacroNormalization(payload,item){
     const ratioSeries = /tăng trưởng|tỷ lệ|growth|rate/i;
     payload.series.forEach(s=>{
-      if(ratioSeries.test(String(s.name||""))){
+      const isPercentSeries = ratioSeries.test(String(s.name||"")) || String(s.unit||"").includes("%") || (item.unit==="%" && payload.series.length===1);
+      if(isPercentSeries){
         s.data = s.data.map(([ts,val])=>[ts, Math.abs(Number(val)) <= 2 ? Number(val)*100 : Number(val)]);
         s.unit = "%";
-        s.yAxisIndex = 1;
+        if(payload.series.length>1) s.yAxisIndex = 1;
       }
     });
 
