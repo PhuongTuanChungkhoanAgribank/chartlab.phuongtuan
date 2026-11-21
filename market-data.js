@@ -4,18 +4,18 @@
   const chart = window.echarts ? echarts.init(chartEl) : null;
 
   const indicators = [
-    {id:"cpi",name:"CPI Việt Nam",group:"macro",groupLabel:"Vĩ mô Việt Nam",feed:"Wichart",origin:"Cục Thống kê (NSO)",freq:"Hàng tháng",unit:"%",insight:"CPI phản ánh tốc độ tăng mặt bằng giá. Khi lạm phát tăng mạnh, dư địa giảm lãi suất thường thu hẹp và định giá cổ phiếu có thể chịu áp lực.",impact:["Ngân hàng","Bất động sản","Bán lẻ"],note:"Theo dõi thêm lạm phát cơ bản, tỷ giá và lãi suất điều hành.",driver:"wichart"},
-    {id:"gdp",name:"Tăng trưởng GDP",group:"macro",groupLabel:"Vĩ mô Việt Nam",feed:"Wichart",origin:"Cục Thống kê (NSO)",freq:"Hàng quý",unit:"%",insight:"GDP cho biết tốc độ mở rộng của nền kinh tế. Tăng trưởng cải thiện thường hỗ trợ doanh thu doanh nghiệp và khẩu vị rủi ro.",impact:["Ngân hàng","Bán lẻ","Công nghiệp"],note:"Nên nhìn cùng sản xuất công nghiệp, bán lẻ và đầu tư.",driver:"wichart"},
-    {id:"iip",name:"Chỉ số sản xuất công nghiệp",group:"macro",groupLabel:"Vĩ mô Việt Nam",feed:"Wichart",origin:"Cục Thống kê (NSO)",freq:"Hàng tháng",insight:"IIP phản ánh nhịp sản xuất của nền kinh tế. Đà tăng tốt thường là tín hiệu thuận lợi cho nhóm công nghiệp và logistics.",impact:["Khu công nghiệp","Logistics","Sản xuất"],note:"Theo dõi cùng PMI và xuất nhập khẩu.",driver:"wichart"},
-    {id:"hhdv",name:"Tổng mức bán lẻ",group:"macro",groupLabel:"Vĩ mô Việt Nam",feed:"Wichart",origin:"Cục Thống kê (NSO)",freq:"Hàng tháng",insight:"Bán lẻ cho biết sức cầu trong nước. Tăng trưởng tốt thường hỗ trợ các doanh nghiệp tiêu dùng, bán lẻ và dịch vụ.",impact:["Bán lẻ","Tiêu dùng","Dịch vụ"],note:"Cần loại trừ ảnh hưởng giá để đánh giá sức mua thực.",driver:"wichart"},
-    {id:"fdi",name:"FDI",group:"macro",groupLabel:"Vĩ mô Việt Nam",feed:"Wichart",origin:"Cục Thống kê (NSO)",freq:"Hàng tháng",insight:"FDI đăng ký và giải ngân phản ánh sức hút đầu tư dài hạn. Dòng vốn mạnh thường hỗ trợ khu công nghiệp, logistics và xây dựng.",impact:["Khu công nghiệp","Logistics","Xây dựng"],note:"Ưu tiên theo dõi vốn giải ngân bên cạnh vốn đăng ký.",driver:"wichart"},
-    {id:"cctm",name:"Xuất nhập khẩu & cán cân thương mại",group:"macro",groupLabel:"Vĩ mô Việt Nam",feed:"Wichart",origin:"Cục Thống kê / Hải quan",freq:"Nửa tháng / tháng",insight:"Xuất nhập khẩu phản ánh cầu bên ngoài và sức khỏe sản xuất. Thặng dư thương mại cũng hỗ trợ nguồn cung ngoại tệ.",impact:["Dệt may","Thủy sản","Logistics"],note:"Nên bóc theo từng nhóm hàng khi phân tích doanh nghiệp.",driver:"wichart"},
-    {id:"vdtnsnn",name:"Đầu tư từ ngân sách nhà nước",group:"macro",groupLabel:"Vĩ mô Việt Nam",feed:"Wichart",origin:"Cục Thống kê / Bộ Tài chính",freq:"Hàng tháng",insight:"Giải ngân đầu tư công tạo cầu trực tiếp cho hạ tầng, vật liệu xây dựng và nhiều ngành liên quan.",impact:["Xây dựng","Đá","Thép"],note:"Theo dõi tiến độ giải ngân so với kế hoạch năm.",driver:"wichart"},
+    {id:"cpi",name:"CPI Việt Nam",group:"macro",groupLabel:"Vĩ mô Việt Nam",feed:"Wichart + NSO",origin:"Cục Thống kê (NSO)",freq:"Hàng tháng",unit:"%",macroType:"cpi",insight:"CPI phản ánh tốc độ tăng mặt bằng giá. ChartLab tách rõ biến động tháng, cùng kỳ và bình quân lũy kế để tránh nhầm giữa CPI tháng và CPI từ đầu năm.",impact:["Ngân hàng","Bất động sản","Bán lẻ"],note:"Tháng 10/2026: +0,20% MoM; +5,09% YoY; bình quân 10 tháng +4,57% YoY; lạm phát cơ bản +4,24%.",driver:"wichart"},
+    {id:"gdp",name:"Tăng trưởng GDP Việt Nam",group:"macro",groupLabel:"Vĩ mô Việt Nam",feed:"Wichart + NSO",origin:"Cục Thống kê (NSO)",freq:"Hàng quý",unit:"%",macroType:"gdp",insight:"GDP cho biết tốc độ mở rộng của nền kinh tế. Mặc định ưu tiên tốc độ tăng theo quý và lũy kế từ đầu năm thay vì giá trị GDP tuyệt đối.",impact:["Ngân hàng","Bán lẻ","Công nghiệp"],note:"Quý III/2026 tăng 9,95% YoY; GDP 9 tháng 2026 tăng 9,01% YoY.",driver:"wichart"},
+    {id:"iip",name:"Chỉ số sản xuất công nghiệp (IIP)",group:"macro",groupLabel:"Vĩ mô Việt Nam",feed:"Wichart + NSO",origin:"Cục Thống kê (NSO)",freq:"Hàng tháng",unit:"%",macroType:"iip",insight:"IIP phản ánh nhịp sản xuất của nền kinh tế. ChartLab ghi rõ tăng so với tháng trước, cùng kỳ và lũy kế từ đầu năm.",impact:["Khu công nghiệp","Logistics","Sản xuất"],note:"Tháng 10/2026: +2,3% MoM, +15,0% YoY; 10 tháng: +12,4% YoY.",driver:"wichart"},
+    {id:"hhdv",name:"Tổng mức bán lẻ",group:"macro",groupLabel:"Vĩ mô Việt Nam",feed:"Wichart + NSO",origin:"Cục Thống kê (NSO)",freq:"Hàng tháng",unit:"nghìn tỷ VND",macroType:"retail",insight:"Bán lẻ cho biết sức cầu trong nước. Cần nhìn cả mức doanh thu, tăng trưởng tháng và tăng trưởng cùng kỳ.",impact:["Bán lẻ","Tiêu dùng","Dịch vụ"],note:"Tháng 10/2026: 695,5 nghìn tỷ đồng; +1,0% MoM; +14,7% YoY. Lũy kế 10 tháng: 6.618,9 nghìn tỷ đồng; +13,5% YoY.",driver:"wichart"},
+    {id:"fdi",name:"FDI đăng ký & thực hiện",group:"macro",groupLabel:"Vĩ mô Việt Nam",feed:"Wichart + NSO",origin:"Cục Thống kê (NSO)",freq:"Hàng tháng",unit:"tỷ USD",macroType:"fdi",insight:"FDI cần tách rõ vốn đăng ký và vốn thực hiện. Với nhà đầu tư, số lũy kế từ đầu năm và tăng trưởng YoY dễ đọc hơn biến động từng tháng.",impact:["Khu công nghiệp","Logistics","Xây dựng"],note:"10 tháng 2026: FDI đăng ký 54,85 tỷ USD (+74,0% YoY); FDI thực hiện 24,08 tỷ USD (+13,1% YoY).",driver:"wichart"},
+    {id:"cctm",name:"Xuất nhập khẩu & cán cân thương mại",group:"macro",groupLabel:"Vĩ mô Việt Nam",feed:"Wichart + NSO",origin:"Cục Thống kê / Hải quan",freq:"Nửa tháng / tháng",unit:"tỷ USD",macroType:"trade",insight:"Xuất nhập khẩu phản ánh cầu bên ngoài và sức khỏe sản xuất. ChartLab chuẩn hóa toàn bộ sang tỷ USD để dễ đọc.",impact:["Dệt may","Thủy sản","Logistics"],note:"Tháng 10/2026: xuất khẩu 64,67 tỷ USD; nhập khẩu 57,36 tỷ USD; xuất siêu 7,31 tỷ USD. Lũy kế 10 tháng: nhập siêu 12,07 tỷ USD.",driver:"wichart"},
+    {id:"vdtnsnn",name:"Đầu tư từ ngân sách nhà nước",group:"macro",groupLabel:"Vĩ mô Việt Nam",feed:"Wichart + NSO",origin:"Cục Thống kê / Bộ Tài chính",freq:"Hàng tháng",unit:"nghìn tỷ VND",macroType:"publicInvestment",insight:"Giải ngân đầu tư công tạo cầu trực tiếp cho hạ tầng, vật liệu xây dựng và nhiều ngành liên quan. Cần nhìn cả tháng hiện tại, lũy kế và tiến độ kế hoạch năm.",impact:["Xây dựng","Đá","Thép"],note:"Tháng 10/2026: 121,6 nghìn tỷ đồng, +23,7% YoY. Lũy kế 10 tháng: 783,9 nghìn tỷ đồng, +19,8% YoY, đạt 69,0% kế hoạch năm.",driver:"wichart"},
     {id:"vdtptxh",name:"Vốn đầu tư phát triển toàn xã hội",group:"macro",groupLabel:"Vĩ mô Việt Nam",feed:"Wichart",origin:"Cục Thống kê (NSO)",freq:"Hàng quý",insight:"Tổng vốn đầu tư phát triển phản ánh quy mô vốn bỏ vào nền kinh tế từ nhà nước, tư nhân và FDI.",impact:["Xây dựng","Ngân hàng","Công nghiệp"],note:"Nên tách cơ cấu nhà nước, ngoài nhà nước và FDI để đọc động lực tăng trưởng.",driver:"wichart"},
     {id:"pmi",name:"PMI sản xuất",group:"macro",groupLabel:"Vĩ mô Việt Nam",feed:"Wichart",origin:"S&P Global / tổng hợp Wichart",freq:"Hàng tháng",unit:"điểm",insight:"PMI trên 50 thường cho thấy khu vực sản xuất mở rộng; dưới 50 cho thấy thu hẹp.",impact:["Sản xuất","Logistics","Khu công nghiệp"],note:"PMI là khảo sát sớm, nên đối chiếu với IIP và đơn hàng xuất khẩu.",driver:"wichart"},
-    {id:"kqt",name:"Khách quốc tế đến Việt Nam",group:"macro",groupLabel:"Vĩ mô Việt Nam",feed:"Wichart",origin:"Cục Thống kê (NSO)",freq:"Hàng tháng",insight:"Khách quốc tế phản ánh sức khỏe du lịch và dịch vụ, tác động tới hàng không, lưu trú, bán lẻ và vận tải.",impact:["Hàng không","Du lịch","Bán lẻ"],note:"Theo dõi thêm cơ cấu thị trường khách và công suất vận chuyển.",driver:"wichart"},
-    {id:"tcns",name:"Thu chi ngân sách nhà nước",group:"macro",groupLabel:"Vĩ mô Việt Nam",feed:"Wichart",origin:"Bộ Tài chính",freq:"Hàng tháng",insight:"Thu chi ngân sách phản ánh trạng thái tài khóa và khả năng hỗ trợ tăng trưởng thông qua chi đầu tư và chi thường xuyên.",impact:["Đầu tư công","Xây dựng","Trái phiếu"],note:"Quan trọng nhất là tiến độ chi đầu tư phát triển và cân đối ngân sách.",driver:"wichart"},
-    {id:"ncp",name:"Nợ công & nợ Chính phủ",group:"macro",groupLabel:"Vĩ mô Việt Nam",feed:"Wichart",origin:"Bộ Tài chính",freq:"Hàng năm / định kỳ",insight:"Nợ công cho biết dư địa tài khóa và nghĩa vụ trả nợ của khu vực công.",impact:["Trái phiếu","Tài khóa"],note:"Nên đặt trong tương quan GDP, thu ngân sách và cơ cấu kỳ hạn nợ.",driver:"wichart"},
+    {id:"kqt",name:"Khách quốc tế đến Việt Nam",group:"macro",groupLabel:"Vĩ mô Việt Nam",feed:"Wichart + NSO",origin:"Cục Thống kê (NSO)",freq:"Hàng tháng",unit:"triệu lượt",macroType:"tourism",insight:"Khách quốc tế phản ánh sức khỏe du lịch và dịch vụ. ChartLab ghi rõ mức tháng, MoM, YoY và lũy kế từ đầu năm.",impact:["Hàng không","Du lịch","Bán lẻ"],note:"Tháng 10/2026: 1,85 triệu lượt; +4,9% MoM; +7,0% YoY. Lũy kế 10 tháng: 19,5 triệu lượt, +13,8% YoY.",driver:"wichart"},
+    {id:"tcns",name:"Thu – chi ngân sách nhà nước",group:"macro",groupLabel:"Vĩ mô Việt Nam",feed:"Wichart + NSO",origin:"Bộ Tài chính / Cục Thống kê",freq:"Hàng tháng",unit:"nghìn tỷ VND",macroType:"budget",insight:"Thu chi ngân sách phản ánh trạng thái tài khóa. ChartLab dùng thu, chi và chênh lệch lũy kế; không gọi chênh lệch theo tháng là bội chi ngân sách.",impact:["Đầu tư công","Xây dựng","Trái phiếu"],note:"10 tháng 2026: thu 2.438,9 nghìn tỷ đồng (96,4% dự toán, +11,0% YoY); chi 2.108,7 nghìn tỷ đồng (66,8% dự toán, +14,8% YoY); chênh lệch thu–chi +330,2 nghìn tỷ đồng.",driver:"wichart"},
+    {id:"ncp",name:"Nợ Chính phủ – cơ cấu nguồn nợ",group:"macro",groupLabel:"Vĩ mô Việt Nam",feed:"Wichart + Bộ Tài chính",origin:"Bộ Tài chính",freq:"Hàng quý / định kỳ",unit:"nghìn tỷ VND",macroType:"governmentDebt",insight:"Nợ Chính phủ nên được nhìn cả quy mô và cơ cấu nguồn nợ. ChartLab tách nợ trong nước và nợ nước ngoài để đánh giá rủi ro lãi suất và tỷ giá.",impact:["Trái phiếu","Tài khóa","Tỷ giá"],note:"Quý I/2026: nợ Chính phủ 4.057,1 nghìn tỷ đồng; trong nước 3.179,2 nghìn tỷ; nước ngoài 877,9 nghìn tỷ.",driver:"wichart"},
     {id:"tn",name:"Tỷ lệ thất nghiệp",group:"macro",groupLabel:"Vĩ mô Việt Nam",feed:"Wichart",origin:"Cục Thống kê (NSO)",freq:"Hàng quý",unit:"%",insight:"Thất nghiệp phản ánh sức khỏe thị trường lao động và gián tiếp cho biết sức cầu tiêu dùng.",impact:["Bán lẻ","Tiêu dùng","Dịch vụ"],note:"Theo dõi cùng thu nhập và lực lượng lao động.",driver:"wichart"},
 
     {id:"td",name:"Tín dụng toàn nền kinh tế",group:"money",groupLabel:"Tiền tệ & thanh khoản",feed:"Wichart",origin:"Ngân hàng Nhà nước (SBV)",freq:"Hàng tháng",insight:"Tín dụng tăng cho thấy vốn đang được đưa vào nền kinh tế. Khi đi cùng chất lượng tài sản ổn định, đây thường là tín hiệu tích cực cho hoạt động kinh doanh.",impact:["Ngân hàng","Chứng khoán","Bất động sản"],note:"Theo dõi cùng huy động, NIM và nợ xấu.",driver:"wichart"},
@@ -116,8 +116,104 @@
       data:(s.data || []).map(p => [Number(p[0]), Number(p[1])]).filter(p => Number.isFinite(p[0]) && Number.isFinite(p[1])).sort((a,b)=>a[0]-b[0])
     }));
     const payload = {title:data.title || item.name, updated:data.timeUpdate || "Theo nguồn", stacked:!!data.stacked_column, series};
+    if(item.group === "macro") applyMacroNormalization(payload,item);
     if(item.domesticFuel) applyDomesticFuelLatest(payload);
     return payload;
+  }
+
+  function applyMacroNormalization(payload,item){
+    const ratioSeries = /tăng trưởng|tỷ lệ|growth|rate/i;
+    payload.series.forEach(s=>{
+      const isPercentSeries = ratioSeries.test(String(s.name||"")) || String(s.unit||"").includes("%") || (item.unit==="%" && payload.series.length===1);
+      if(isPercentSeries){
+        s.data = s.data.map(([ts,val])=>[ts, Math.abs(Number(val)) <= 2 ? Number(val)*100 : Number(val)]);
+        s.unit = "%";
+        if(payload.series.length>1) s.yAxisIndex = 1;
+      }
+    });
+
+    if(item.macroType === "gdp"){
+      payload.title = "Tăng trưởng GDP Việt Nam";
+      const growth = payload.series.find(s=>/tăng trưởng/i.test(String(s.name||"")));
+      if(growth){
+        growth.name = "Tăng trưởng GDP YoY";
+        growth.unit = "%";
+        growth.yAxisIndex = 0;
+        payload.series = [growth];
+      }
+    }
+
+    if(item.macroType === "cpi"){
+      payload.title = "CPI Việt Nam – phân biệt tháng và lũy kế";
+      payload.series.forEach(s=>{
+        s.name = "CPI bình quân lũy kế từ đầu năm (YoY)";
+        s.unit = "%";
+      });
+    }
+
+    if(item.macroType === "trade"){
+      payload.title = "Xuất nhập khẩu & cán cân thương mại";
+      payload.series.forEach(s=>{
+        s.data = s.data.map(([ts,val])=>[ts, Number(val)/1000]);
+        s.unit = "tỷ USD";
+      });
+    }
+
+    if(item.macroType === "retail"){
+      payload.series.forEach(s=>{
+        if(!ratioSeries.test(String(s.name||""))){
+          s.data = s.data.map(([ts,val])=>[ts, Number(val)/1000]);
+          s.unit = "nghìn tỷ VND";
+        }
+      });
+    }
+
+    if(item.macroType === "fdi"){
+      payload.series.forEach(s=>{
+        if(!ratioSeries.test(String(s.name||""))){
+          s.data = s.data.map(([ts,val])=>[ts, Number(val)/1000]);
+          s.unit = "tỷ USD";
+        }
+      });
+    }
+
+    if(item.macroType === "publicInvestment"){
+      payload.series.forEach(s=>{
+        if(!ratioSeries.test(String(s.name||""))){
+          s.data = s.data.map(([ts,val])=>[ts, Number(val)/1000]);
+          s.unit = "nghìn tỷ VND";
+        }
+      });
+    }
+
+    if(item.macroType === "tourism"){
+      payload.series.forEach(s=>{
+        if(!ratioSeries.test(String(s.name||""))){
+          s.data = s.data.map(([ts,val])=>[ts, Number(val)/1000]);
+          s.unit = "triệu lượt";
+        }
+      });
+    }
+
+    if(item.macroType === "budget"){
+      payload.title = "Thu – chi ngân sách nhà nước";
+      payload.series = payload.series.filter(s=>!/bội chi/i.test(String(s.name||"")));
+      payload.series.forEach(s=>{
+        s.data = s.data.map(([ts,val])=>[ts, Number(val)/1000]);
+        s.unit = "nghìn tỷ VND";
+        s.yAxisIndex = 0;
+      });
+    }
+
+    if(item.macroType === "governmentDebt"){
+      payload.title = "Nợ Chính phủ – quy mô và cơ cấu nguồn nợ";
+      payload.series.forEach(s=>{
+        if(!ratioSeries.test(String(s.name||""))){
+          s.data = s.data.map(([ts,val])=>[ts, Number(val)/1000]);
+          s.unit = "nghìn tỷ VND";
+        }
+      });
+    }
   }
 
   function applyDomesticFuelLatest(payload){
@@ -235,12 +331,82 @@
   }
 
   function updateObservationKpi(){
-    if(!activeData || !activeItem) return;
+    if(!activeData || !activeItem || activeItem.macroType) return;
     const el = document.querySelector('[data-kpi="observations"] strong');
     if(el) el.textContent = String(getVisibleObservationCount(activeData,activeItem));
   }
 
+  function renderMacroKpis(item){
+    const cards = {
+      cpi:[
+        ["CPI tháng 10 · MoM","+0,20","%"],
+        ["CPI tháng 10 · YoY","+5,09","%"],
+        ["CPI bình quân 10T · YoY","+4,57","%"],
+        ["Lạm phát cơ bản 10T","+4,24","%"]
+      ],
+      gdp:[
+        ["GDP quý III/2026 · YoY","+9,95","%"],
+        ["GDP 9 tháng 2026 · YoY","+9,01","%"],
+        ["GDP quý II/2026 · YoY","+8,81","%"],
+        ["GDP quý I/2026 · YoY","+8,15","%"]
+      ],
+      iip:[
+        ["IIP tháng 10 · MoM","+2,3","%"],
+        ["IIP tháng 10 · YoY","+15,0","%"],
+        ["IIP 10 tháng · YoY","+12,4","%"],
+        ["Kỳ tham chiếu","10/2026",""]
+      ],
+      retail:[
+        ["Bán lẻ tháng 10","695,5","nghìn tỷ VND"],
+        ["Tháng 10 · MoM","+1,0","%"],
+        ["Tháng 10 · YoY","+14,7","%"],
+        ["10 tháng · YoY","+13,5","%"]
+      ],
+      fdi:[
+        ["FDI đăng ký 10T","54,85","tỷ USD"],
+        ["FDI đăng ký · YoY","+74,0","%"],
+        ["FDI thực hiện 10T","24,08","tỷ USD"],
+        ["FDI thực hiện · YoY","+13,1","%"]
+      ],
+      trade:[
+        ["Xuất khẩu tháng 10","64,67","tỷ USD"],
+        ["Nhập khẩu tháng 10","57,36","tỷ USD"],
+        ["Cán cân tháng 10","+7,31","tỷ USD"],
+        ["Cán cân 10 tháng","-12,07","tỷ USD"]
+      ],
+      publicInvestment:[
+        ["Đầu tư NSNN tháng 10","121,6","nghìn tỷ VND"],
+        ["Tháng 10 · YoY","+23,7","%"],
+        ["Lũy kế 10 tháng","783,9","nghìn tỷ VND"],
+        ["Hoàn thành kế hoạch","69,0","%"]
+      ],
+      tourism:[
+        ["Khách quốc tế tháng 10","1,85","triệu lượt"],
+        ["Tháng 10 · MoM","+4,9","%"],
+        ["Tháng 10 · YoY","+7,0","%"],
+        ["10 tháng · YoY","+13,8","%"]
+      ],
+      budget:[
+        ["Thu NSNN 10 tháng","2.438,9","nghìn tỷ VND"],
+        ["Chi NSNN 10 tháng","2.108,7","nghìn tỷ VND"],
+        ["Chênh lệch thu – chi","+330,2","nghìn tỷ VND"],
+        ["Thu / Chi so dự toán","96,4 / 66,8","%"]
+      ],
+      governmentDebt:[
+        ["Nợ Chính phủ Q1/2026","4.057,1","nghìn tỷ VND"],
+        ["Nợ trong nước","3.179,2","nghìn tỷ VND"],
+        ["Nợ nước ngoài","877,9","nghìn tỷ VND"],
+        ["Trong nước / Nước ngoài","78,4 / 21,6","%"]
+      ]
+    };
+    const rows = cards[item.macroType];
+    if(!rows) return false;
+    $("marketKpis").innerHTML = rows.map((k,idx)=>`<div class="md-kpi"${idx===3&&item.macroType!=="governmentDebt"?' data-kpi="observations"':''}><span>${k[0]}</span><strong>${k[1]}</strong><em>${k[2]}</em></div>`).join("");
+    return true;
+  }
+
   function renderKpis(payload,item){
+    if(item.macroType && renderMacroKpis(item)) return;
     const primary = getSelectedSeries(payload,item);
     const p = latestOf(primary);
     const prev = primary?.data?.length > 1 ? primary.data[primary.data.length-2] : null;
@@ -287,7 +453,7 @@
       xAxis:{type:"time",axisLine:{lineStyle:{color:"#cfd4df"}},axisLabel:{color:"#747c8c"}},
       yAxis:[
         {type:"value",scale:true,axisLabel:{color:"#747c8c",formatter:(v)=>item.domesticFuel ? fmtFuel(v) : fmt(v)},splitLine:{lineStyle:{color:"#eef0f5"}}},
-        {type:"value",scale:true,position:"right",axisLabel:{color:"#747c8c"},splitLine:{show:false}}
+        {type:"value",scale:true,position:"right",axisLabel:{color:"#747c8c",formatter:(v)=>item.group==="macro" ? fmt(v)+"%" : fmt(v)},splitLine:{show:false}}
       ],
       dataZoom:[{type:"inside"},{type:"slider",height:20,bottom:18,borderColor:"#e5e7eb",fillerColor:"rgba(115,87,255,.12)"}],
       series:payload.series.map((s,i)=>({
