@@ -77,6 +77,10 @@
     if(v === null || v === undefined || Number.isNaN(Number(v))) return "—";
     return new Intl.NumberFormat("vi-VN",{maximumFractionDigits:0}).format(Number(v));
   }
+  function fmtGdp(v){
+    if(v === null || v === undefined || Number.isNaN(Number(v))) return "—";
+    return new Intl.NumberFormat("vi-VN",{minimumFractionDigits:2,maximumFractionDigits:2}).format(Number(v));
+  }
   function fmtDate(x){
     const d = new Date(x);
     return Number.isNaN(d.getTime()) ? "—" : d.toLocaleDateString("vi-VN");
@@ -444,7 +448,7 @@
       animationDuration:500,
       color:colors,
       grid:{left:54,right:payload.series.some(s=>s.yAxisIndex===1)?58:24,top:42,bottom:70,containLabel:true},
-      tooltip:{trigger:"axis",axisPointer:{type:"cross"},valueFormatter:(v)=>item.domesticFuel ? fmtFuel(v) : fmt(v)},
+      tooltip:{trigger:"axis",axisPointer:{type:"cross"},valueFormatter:(v)=>item.domesticFuel ? fmtFuel(v) : (item.macroType==="gdp" ? fmtGdp(v)+"%" : fmt(v))},
       legend:{
         top:4,type:"scroll",textStyle:{color:"#596174"},
         selected:item.domesticFuel ? Object.fromEntries(payload.series.map(s=>[s.name,s.name===selectedFuelSeries])) : undefined
@@ -452,7 +456,7 @@
       toolbox:{right:8,feature:{dataZoom:{yAxisIndex:"none"},restore:{},saveAsImage:{name:item.id}}},
       xAxis:{type:"time",axisLine:{lineStyle:{color:"#cfd4df"}},axisLabel:{color:"#747c8c"}},
       yAxis:[
-        {type:"value",scale:true,axisLabel:{color:"#747c8c",formatter:(v)=>item.domesticFuel ? fmtFuel(v) : fmt(v)},splitLine:{lineStyle:{color:"#eef0f5"}}},
+        {type:"value",scale:true,axisLabel:{color:"#747c8c",formatter:(v)=>item.domesticFuel ? fmtFuel(v) : (item.macroType==="gdp" ? fmtGdp(v)+"%" : fmt(v))},splitLine:{lineStyle:{color:"#eef0f5"}}},
         {type:"value",scale:true,position:"right",axisLabel:{color:"#747c8c",formatter:(v)=>item.group==="macro" ? fmt(v)+"%" : fmt(v)},splitLine:{show:false}}
       ],
       dataZoom:[{type:"inside"},{type:"slider",height:20,bottom:18,borderColor:"#e5e7eb",fillerColor:"rgba(115,87,255,.12)"}],
