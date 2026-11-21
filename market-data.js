@@ -240,15 +240,10 @@
     });
 
     if(item.id === "td"){
-      // Nếu nguồn thực tế trả "Tổng tiền gửi", không được gắn nhãn thành tín dụng.
-      const hasDeposit = payload.series.some(s=>/tiền gửi|deposit/i.test(String(s.name||"")));
-      if(hasDeposit){
-        payload.title = "Huy động vốn toàn nền kinh tế (Tổng tiền gửi)";
-      }else{
-        payload.title = "Tín dụng toàn nền kinh tế";
-      }
+      payload.title = "Tín dụng toàn nền kinh tế";
       payload.series.forEach(s=>{
-        if(/tăng trưởng/i.test(String(s.name||""))) s.name = hasDeposit ? "Tăng trưởng huy động" : "Tăng trưởng tín dụng";
+        if(ratioSeries.test(String(s.name||"")) || s.unit === "%") s.name = "Tăng trưởng tín dụng";
+        else s.name = "Tổng dư nợ tín dụng";
       });
     }
 
@@ -258,6 +253,22 @@
         if(/tổng tiền gửi|tiền gửi/i.test(String(s.name||""))) s.name = "Tổng tiền gửi";
         if(/tăng trưởng/i.test(String(s.name||""))) s.name = "Tăng trưởng huy động";
       });
+    }
+
+    if(item.id === "td" || item.id === "hd"){
+      const amount = payload.series.find(s=>s.unit !== "%") || payload.series[0];
+      const growth = payload.series.find(s=>s.unit === "%") || byName(/tăng trưởng/i);
+      const a = latestOf(amount), g = latestOf(growth);
+      const prev = amount?.data?.length>1 ? amount.data[amount.data.length-2] : null;
+      const ch = a && prev ? a[1]-prev[1] : null;
+      const label = item.id === "td" ? "Tín dụng" : "Huy động";
+      $("marketKpis").innerHTML = [
+        [label+" mới nhất", a?fmt(a[1]):"—", amount?.unit||""],
+        ["Thay đổi kỳ gần nhất", ch===null?"—":(ch>=0?"+":"")+fmt(ch), amount?.unit||""],
+        ["Tăng trưởng "+label.toLowerCase(), g?fmt(g[1]):"—", "%"],
+        ["Số kỳ quan sát", getVisibleObservationCount(payload,item), ""]
+      ].map((k,idx)=>`<div class="md-kpi"${idx===3?' data-kpi="observations"':''}><span>${k[0]}</span><strong>${k[1]}</strong><em>${k[2]}</em></div>`).join("");
+      return true;
     }
 
     if(item.id === "ctt"){
@@ -539,12 +550,14 @@
     if(item.id === "tpkb"){
       const issue=byName(/phát hành/i), mature=byName(/đáo hạn/i);
       const a=latestOf(issue), b=latestOf(mature);
-      const net=(a?Number(a[1]):0)+(b?Number(b[1]):0);
+      const issued=a?Math.abs(Number(a[1])):0;
+      const matured=b?Math.abs(Number(b[1])):0;
+      const netLiquidity=matured-issued;
       $("marketKpis").innerHTML = [
-        ["Tín phiếu phát hành",a?fmt(Math.abs(a[1])):"—",issue?.unit||"tỷ VND"],
-        ["Tín phiếu đáo hạn",b?fmt(Math.abs(b[1])):"—",mature?.unit||"tỷ VND"],
-        ["Bơm/hút ròng qua tín phiếu",(a||b)?(net>=0?"+":"")+fmt(net):"—",issue?.unit||mature?.unit||"tỷ VND"],
-        ["Quy ước","Phát hành hút / Đáo hạn bơm",""]
+        ["Tín phiếu phát hành",a?fmt(issued):"—",issue?.unit||"tỷ VND"],
+        ["Tín phiếu đáo hạn",b?fmt(matured):"—",mature?.unit||"tỷ VND"],
+        ["Bơm/hút ròng qua tín phiếu",(a||b)?(netLiquidity>=0?"+":"")+fmt(netLiquidity):"—",issue?.unit||mature?.unit||"tỷ VND"],
+        ["Quy ước","+ Bơm / − Hút",""]
       ].map(k=>`<div class="md-kpi"><span>${k[0]}</span><strong>${k[1]}</strong><em>${k[2]}</em></div>`).join("");
       return true;
     }
