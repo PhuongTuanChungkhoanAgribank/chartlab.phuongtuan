@@ -128,6 +128,58 @@
     return payload;
   }
 
+  let localMarketBundlePromise = null;
+  async function loadLocalMarketBundle(){
+    if(!localMarketBundlePromise){
+      localMarketBundlePromise = fetch("./data/market-global.json",{cache:"no-store"}).then(r=>{
+        if(!r.ok) throw new Error("Không tải được gói dữ liệu quốc tế nội bộ");
+        return r.json();
+      });
+    }
+    return localMarketBundlePromise;
+  }
+  function calcPctSeries(data, lag){
+    return data.map((p,i)=>{
+      if(i<lag) return null;
+      const prev=Number(data[i-lag][1]), cur=Number(p[1]);
+      if(!Number.isFinite(prev)||!Number.isFinite(cur)||prev===0) return null;
+      return [p[0],(cur/prev-1)*100];
+    }).filter(Boolean);
+  }
+  function calcDiffSeries(data){
+    return data.map((p,i)=>i? [p[0],Number(p[1])-Number(data[i-1][1])] : null).filter(Boolean);
+  }
+  async function fetchLocalIndicator(item){
+    const bundle=await loadLocalMarketBundle();
+    if(item.globalType==="centralBanks"){
+      const rows=Object.values(bundle.central_banks||{});
+      return {title:item.name,updated:bundle.generated_at||"Theo nguồn",stacked:false,centralBanks:rows,series:rows.map(r=>({name:r.label,unit:"%",type:"bar",yAxisIndex:0,data:[[new Date(r.date+"T00:00:00Z").getTime(),Number(r.value)]]}))};
+    }
+    const ids=item.localSeries||[];
+    const sourceSeries=ids.map(id=>({id,...(bundle.series?.[id]||{})})).filter(s=>Array.isArray(s.data)&&s.data.length);
+    if(!sourceSeries.length) throw new Error("Gói dữ liệu nội bộ chưa có chuỗi cho chỉ tiêu này.");
+
+    if(item.globalType==="inflation"){
+      const series=sourceSeries.map(s=>({name:s.name.replace(" Mỹ","")+" YoY",unit:"%",type:"line",yAxisIndex:0,data:calcPctSeries(s.data,12)}));
+      const metrics=sourceSeries.map(s=>({name:s.name,yoy:calcPctSeries(s.data,12).at(-1)?.[1]??null,mom:calcPctSeries(s.data,1).at(-1)?.[1]??null}));
+      return {title:item.name,updated:sourceSeries.map(s=>s.updated).filter(Boolean).sort().at(-1)||"Theo nguồn",stacked:false,series,metrics};
+    }
+    if(item.globalType==="jobs"){
+      const payroll=sourceSeries.find(s=>s.id==="PAYEMS");
+      const unrate=sourceSeries.find(s=>s.id==="UNRATE");
+      const wage=sourceSeries.find(s=>s.id==="CES0500000003");
+      const series=[];
+      if(payroll) series.push({name:"Thay đổi việc làm phi nông nghiệp",unit:"nghìn việc làm",type:"bar",yAxisIndex:0,data:calcDiffSeries(payroll.data)});
+      if(unrate) series.push({name:"Tỷ lệ thất nghiệp",unit:"%",type:"line",yAxisIndex:1,data:unrate.data});
+      if(wage) series.push({name:"Tăng lương theo giờ YoY",unit:"%",type:"line",yAxisIndex:1,data:calcPctSeries(wage.data,12)});
+      return {title:item.name,updated:sourceSeries.map(s=>s.updated).filter(Boolean).sort().at(-1)||"Theo nguồn",stacked:false,series};
+    }
+    if(item.globalType==="fedPolicy"){
+      return {title:item.name,updated:sourceSeries.map(s=>s.updated).filter(Boolean).sort().at(-1)||"Theo nguồn",stacked:false,series:sourceSeries.map((s,i)=>({name:i===0?"Cận dưới":"Cận trên",unit:"%",type:"line",yAxisIndex:0,data:s.data}))};
+    }
+    return {title:item.name,updated:sourceSeries[0].updated||"Theo nguồn",stacked:false,series:sourceSeries.map(s=>({name:s.name||item.name,unit:item.unit||s.unit||"",type:"line",yAxisIndex:0,data:s.data}))};
+  }
+
   function applyMacroNormalization(payload,item){
     const ratioSeries = /tăng trưởng|tỷ lệ|growth|rate/i;
     payload.series.forEach(s=>{
@@ -373,7 +425,8 @@
       const card = document.querySelector(`[data-overview-id="${id}"]`);
       if(!item || !card) return;
       try{
-        const payload = item.driver === "fred" ? await fetchFred(item) : await fetchWichart(item);
+        if(item.driver === "pending") throw new Error("PENDING_SOURCE");
+      const payload = item.driver === "local" ? await fetchLocalIndicator(item) : (item.driver === "fred" ? await fetchFred(item) : await fetchWichart(item));
         const primary = payload.series[0];
         const p = latestOf(primary);
         const prev = primary?.data?.length > 1 ? primary.data[primary.data.length-2] : null;
@@ -686,7 +739,7 @@
       $("updatedAt").textContent = "Chưa cập nhật";
       $("marketKpis").innerHTML = "";
       $("chartMessage").hidden = false;
-      $("chartMessage").textContent = "Nguồn " + item.feed + " hiện không phản hồi hoặc trình duyệt chặn truy cập chéo miền. ChartLab không hiển thị dữ liệu giả. Hãy thử tải lại sau.";
+      $("chartMessage").textContent = err?.message === "PENDING_SOURCE" ? "ChartLab đang chuẩn hóa nguồn chuỗi lịch sử cho chỉ tiêu này. Chưa hiển thị cho đến khi nguồn đủ tin cậy; không sử dụng dữ liệu giả." : ("Nguồn " + item.feed + " hiện không phản hồi hoặc dữ liệu đóng gói chưa sẵn sàng. ChartLab không hiển thị dữ liệu giả.");
       chart?.clear();
     }finally{
       chart?.hideLoading();
