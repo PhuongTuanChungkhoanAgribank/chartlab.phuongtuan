@@ -19,17 +19,14 @@
     {id:"tn",name:"Tỷ lệ thất nghiệp",group:"macro",groupLabel:"Vĩ mô Việt Nam",feed:"Wichart",origin:"Cục Thống kê (NSO)",freq:"Hàng quý",unit:"%",insight:"Thất nghiệp phản ánh sức khỏe thị trường lao động và gián tiếp cho biết sức cầu tiêu dùng.",impact:["Bán lẻ","Tiêu dùng","Dịch vụ"],note:"Theo dõi cùng thu nhập và lực lượng lao động.",driver:"wichart"},
 
     {id:"td",name:"Tín dụng toàn nền kinh tế",group:"money",groupLabel:"Tiền tệ & thanh khoản",feed:"Wichart",origin:"Ngân hàng Nhà nước (SBV)",freq:"Hàng tháng",insight:"Tín dụng tăng cho thấy vốn đang được đưa vào nền kinh tế. Khi đi cùng chất lượng tài sản ổn định, đây thường là tín hiệu tích cực cho hoạt động kinh doanh.",impact:["Ngân hàng","Chứng khoán","Bất động sản"],note:"Theo dõi cùng huy động, NIM và nợ xấu.",driver:"wichart"},
-    {id:"ctt",name:"Cung tiền M2",group:"money",groupLabel:"Tiền tệ & thanh khoản",feed:"Wichart",origin:"Ngân hàng Nhà nước (SBV)",freq:"Hàng tháng",insight:"M2 phản ánh lượng tiền trong nền kinh tế. Tăng trưởng thanh khoản thường hỗ trợ tài sản tài chính nhưng cần đặt cạnh lạm phát và tỷ giá.",impact:["Chứng khoán","Ngân hàng","Bất động sản"],note:"Không nên dùng M2 đơn lẻ để dự báo thị trường.",driver:"wichart"},
+    {id:"hd",name:"Huy động vốn toàn nền kinh tế (Tổng tiền gửi)",group:"money",groupLabel:"Tiền tệ & thanh khoản",feed:"Wichart",origin:"Ngân hàng Nhà nước (SBV)",freq:"Hàng tháng",insight:"Huy động cho biết quy mô tiền gửi và tốc độ tăng nguồn vốn trong hệ thống ngân hàng. Cần so sánh cùng tín dụng trên cùng kỳ đo để đánh giá áp lực thanh khoản.",impact:["Ngân hàng"],note:"So sánh với tăng trưởng tín dụng trên cùng chuẩn kỳ (YoY/YTD) để tránh diễn giải sai.",driver:"wichart"},
+    {id:"ctt",name:"Cung tiền M2 – Tổng phương tiện thanh toán",group:"money",groupLabel:"Tiền tệ & thanh khoản",feed:"Wichart",origin:"Ngân hàng Nhà nước (SBV)",freq:"Hàng tháng",insight:"M2 phản ánh lượng tiền trong nền kinh tế. Tăng trưởng thanh khoản thường hỗ trợ tài sản tài chính nhưng cần đặt cạnh lạm phát và tỷ giá.",impact:["Chứng khoán","Ngân hàng","Bất động sản"],note:"Đường tăng trưởng M2 được hiển thị theo %, tách biệt với quy mô M2 tuyệt đối.",driver:"wichart"},
     {id:"lslnh",name:"Lãi suất liên ngân hàng",group:"money",groupLabel:"Tiền tệ & thanh khoản",feed:"Wichart",origin:"Ngân hàng Nhà nước (SBV)",freq:"Hàng ngày / tuần",insight:"Lãi suất liên ngân hàng là nhiệt kế thanh khoản hệ thống. Tăng đột biến thường cho thấy thanh khoản ngắn hạn đang căng hơn.",impact:["Ngân hàng","Chứng khoán"],note:"Quan sát kỳ hạn qua đêm cùng OMO và tín phiếu.",driver:"wichart"},
     {id:"lsdh",name:"Lãi suất điều hành",group:"money",groupLabel:"Tiền tệ & thanh khoản",feed:"Wichart",origin:"Ngân hàng Nhà nước (SBV)",freq:"Theo quyết định",insight:"Lãi suất điều hành thể hiện định hướng chính sách tiền tệ. Giảm lãi suất thường hỗ trợ chi phí vốn và định giá tài sản.",impact:["Ngân hàng","Bất động sản","Chứng khoán"],note:"Tác động thực tế còn phụ thuộc lãi suất huy động và tín dụng.",driver:"wichart"},
     {id:"dhtg",name:"Tỷ giá trung tâm & biên độ",group:"money",groupLabel:"Tiền tệ & thanh khoản",feed:"Wichart",origin:"Ngân hàng Nhà nước (SBV)",freq:"Hàng ngày",insight:"Tỷ giá phản ánh sức ép ngoại hối. Biến động mạnh có thể ảnh hưởng dư địa chính sách tiền tệ và doanh nghiệp vay ngoại tệ.",impact:["Ngân hàng","Xuất khẩu","Hàng không"],note:"Theo dõi thêm DXY và cán cân thương mại.",driver:"wichart"},
-    {id:"nvttm",name:"Nghiệp vụ thị trường mở (OMO)",group:"money",groupLabel:"Tiền tệ & thanh khoản",feed:"Wichart",origin:"Ngân hàng Nhà nước (SBV)",freq:"Theo phiên",insight:"OMO cho thấy NHNN đang bơm hoặc hút thanh khoản ngắn hạn khỏi hệ thống ngân hàng.",impact:["Ngân hàng","Chứng khoán"],note:"Cần nhìn theo số dư ròng nhiều phiên thay vì một phiên đơn lẻ.",driver:"wichart"},
-    {id:"tpkb",name:"Tín phiếu NHNN",group:"money",groupLabel:"Tiền tệ & thanh khoản",feed:"Wichart",origin:"Ngân hàng Nhà nước (SBV)",freq:"Theo phiên",insight:"Phát hành tín phiếu thường là công cụ hút bớt thanh khoản ngắn hạn; đáo hạn tín phiếu có tác động ngược lại.",impact:["Ngân hàng","Chứng khoán"],note:"Đọc cùng OMO và lãi suất liên ngân hàng.",driver:"wichart"},
-    {id:"hd",name:"Huy động vốn toàn nền kinh tế",group:"money",groupLabel:"Tiền tệ & thanh khoản",feed:"Wichart",origin:"Ngân hàng Nhà nước (SBV)",freq:"Hàng tháng",insight:"Huy động cho biết tốc độ tăng nguồn vốn trong hệ thống ngân hàng. Chênh lệch tăng trưởng huy động và tín dụng có thể gợi ý áp lực thanh khoản.",impact:["Ngân hàng"],note:"So sánh với tăng trưởng tín dụng và lãi suất huy động.",driver:"wichart"},
-    {id:"lshd",name:"Lãi suất huy động",group:"money",groupLabel:"Tiền tệ & thanh khoản",feed:"Wichart",origin:"Ngân hàng Nhà nước / thị trường",freq:"Hàng tháng",unit:"%",insight:"Lãi suất huy động là chi phí vốn quan trọng của ngân hàng và là mức sinh lời cạnh tranh với các tài sản rủi ro.",impact:["Ngân hàng","Chứng khoán","Bất động sản"],note:"Xu hướng lãi suất huy động thường truyền dẫn sang lãi suất cho vay với độ trễ.",driver:"wichart"},
-    {id:"dtnh",name:"Dự trữ ngoại hối",group:"money",groupLabel:"Tiền tệ & thanh khoản",feed:"Wichart",origin:"Ngân hàng Nhà nước / nguồn công bố quốc tế",freq:"Hàng tháng / quý",insight:"Dự trữ ngoại hối thể hiện bộ đệm của nhà điều hành trước biến động tỷ giá và dòng vốn.",impact:["Tỷ giá","Ngân hàng","Khối ngoại"],note:"Cần nhìn cùng cán cân thương mại và cán cân thanh toán.",driver:"wichart"},
-    {id:"cctt",name:"Cán cân thanh toán",group:"money",groupLabel:"Tiền tệ & thanh khoản",feed:"Wichart",origin:"Ngân hàng Nhà nước (SBV)",freq:"Hàng quý",insight:"Cán cân thanh toán tổng hợp các dòng ngoại tệ vào ra nền kinh tế, giúp đánh giá áp lực lên tỷ giá và dự trữ ngoại hối.",impact:["Tỷ giá","Khối ngoại","Ngân hàng"],note:"Tách tài khoản vãng lai và tài khoản tài chính khi cần phân tích sâu.",driver:"wichart"},
-
+    {id:"nvttm",name:"Nghiệp vụ thị trường mở (OMO)",group:"money",groupLabel:"Tiền tệ & thanh khoản",feed:"Wichart",origin:"Ngân hàng Nhà nước (SBV)",freq:"Theo phiên",insight:"OMO cho thấy NHNN đang bơm hoặc hút thanh khoản ngắn hạn khỏi hệ thống ngân hàng.",impact:["Ngân hàng","Chứng khoán"],note:"Quy ước: số dương = bơm ròng; số âm = hút ròng. OMO khác với lãi suất cho vay qua đêm (O/N).",driver:"wichart"},
+    {id:"tpkb",name:"Tín phiếu NHNN",group:"money",groupLabel:"Tiền tệ & thanh khoản",feed:"Wichart",origin:"Ngân hàng Nhà nước (SBV)",freq:"Theo phiên",insight:"Phát hành tín phiếu thường là công cụ hút bớt thanh khoản ngắn hạn; đáo hạn tín phiếu có tác động ngược lại.",impact:["Ngân hàng","Chứng khoán"],note:"Phát hành tín phiếu thường hút tiền; tín phiếu đáo hạn bơm tiền trở lại hệ thống.",driver:"wichart"},
+    {id:"dtnh",name:"Dự trữ ngoại hối",group:"money",groupLabel:"Tiền tệ & thanh khoản",feed:"Wichart",origin:"Ngân hàng Nhà nước / nguồn công bố quốc tế",freq:"Hàng tháng / quý",insight:"Dự trữ ngoại hối thể hiện bộ đệm của nhà điều hành trước biến động tỷ giá và dòng vốn.",impact:["Tỷ giá","Ngân hàng","Khối ngoại"],note:"Theo dõi cùng tỷ giá và cán cân thương mại.",driver:"wichart"},
     {id:"xang_dau",name:"Giá xăng dầu trong nước",group:"commodity",groupLabel:"Hàng hóa",feed:"Wichart + kỳ điều hành mới nhất",origin:"Petrolimex / Bộ Công Thương",freq:"Theo kỳ điều hành",unit:"đồng/lít",insight:"Giá xăng dầu bán lẻ trong nước truyền dẫn biến động năng lượng thế giới vào chi phí vận tải, sản xuất và CPI. Biểu đồ chỉ giữ các mốc giá thay đổi theo kỳ điều hành để dễ theo dõi.",impact:["CPI","Vận tải","Hàng không","Bán lẻ"],note:"Theo dõi 3 loại: E10 RON95-V, E5 RON92 và Diesel. Mốc Vùng 1 từ 15h 19/11/2026 lần lượt là 21.100; 18.570; 26.340 đồng/lít.",driver:"wichart",commodity:true,domesticFuel:true},
     {id:"dau_wti",name:"Dầu WTI",group:"commodity",groupLabel:"Hàng hóa",feed:"Wichart",origin:"Thị trường hàng hóa quốc tế",freq:"Hàng ngày",insight:"Giá dầu ảnh hưởng trực tiếp tới nhóm dầu khí và gián tiếp tới vận tải, hàng không, hóa chất và lạm phát.",impact:["Dầu khí","Hàng không","Vận tải"],note:"Nên xem đồng thời Brent và crack spread khi phân tích lọc hóa dầu.",driver:"wichart",commodity:true},
     {id:"vang",name:"Giá vàng",group:"commodity",groupLabel:"Hàng hóa",feed:"Wichart",origin:"Thị trường vàng",freq:"Hàng ngày",insight:"Vàng thường phản ánh nhu cầu phòng thủ, kỳ vọng lãi suất thực và rủi ro vĩ mô.",impact:["Tài sản phòng thủ","Tỷ giá"],note:"Theo dõi cùng lợi suất thực và USD.",driver:"wichart",commodity:true},
@@ -121,6 +118,7 @@
     }));
     const payload = {title:data.title || item.name, updated:data.timeUpdate || "Theo nguồn", stacked:!!data.stacked_column, series};
     if(item.group === "macro") applyMacroNormalization(payload,item);
+    if(item.group === "money") applyMoneyNormalization(payload,item);
     if(item.domesticFuel) applyDomesticFuelLatest(payload);
     return payload;
   }
@@ -147,6 +145,7 @@
           const t = Number(ts);
           const d = new Date(t);
           if(d.getUTCFullYear()===2026 && d.getUTCMonth()===8) return [t,9.95];
+          if(d.getUTCFullYear()===2026 && Number(val)>=9.9 && Number(val)<=10.1 && d.getUTCMonth()>=7 && d.getUTCMonth()<=9) return [t,9.95];
           return [t,val];
         });
         payload.series = [growth];
@@ -222,6 +221,83 @@
           s.data = s.data.map(([ts,val])=>[ts, Number(val)/1000]);
           s.unit = "nghìn tỷ VND";
         }
+      });
+    }
+  }
+
+
+  function applyMoneyNormalization(payload,item){
+    const ratioSeries = /tăng trưởng|tỷ lệ|growth|rate/i;
+
+    // Các series tỷ lệ từ Wichart thường trả dạng 0.xx; chuẩn hóa thành điểm %.
+    payload.series.forEach(s=>{
+      const isPercent = ratioSeries.test(String(s.name||"")) || String(s.unit||"").includes("%");
+      if(isPercent){
+        s.data = s.data.map(([ts,val])=>[ts, Math.abs(Number(val)) <= 2 ? Number(val)*100 : Number(val)]);
+        s.unit = "%";
+        s.yAxisIndex = 1;
+      }
+    });
+
+    if(item.id === "td"){
+      // Nếu nguồn thực tế trả "Tổng tiền gửi", không được gắn nhãn thành tín dụng.
+      const hasDeposit = payload.series.some(s=>/tiền gửi|deposit/i.test(String(s.name||"")));
+      if(hasDeposit){
+        payload.title = "Huy động vốn toàn nền kinh tế (Tổng tiền gửi)";
+      }else{
+        payload.title = "Tín dụng toàn nền kinh tế";
+      }
+      payload.series.forEach(s=>{
+        if(/tăng trưởng/i.test(String(s.name||""))) s.name = hasDeposit ? "Tăng trưởng huy động" : "Tăng trưởng tín dụng";
+      });
+    }
+
+    if(item.id === "hd"){
+      payload.title = "Huy động vốn toàn nền kinh tế (Tổng tiền gửi)";
+      payload.series.forEach(s=>{
+        if(/tổng tiền gửi|tiền gửi/i.test(String(s.name||""))) s.name = "Tổng tiền gửi";
+        if(/tăng trưởng/i.test(String(s.name||""))) s.name = "Tăng trưởng huy động";
+      });
+    }
+
+    if(item.id === "ctt"){
+      payload.title = "Cung tiền M2 – Tổng phương tiện thanh toán";
+      payload.series.forEach(s=>{
+        if(!ratioSeries.test(String(s.name||""))) s.name = "Cung tiền M2";
+        if(ratioSeries.test(String(s.name||""))) s.name = "Tăng trưởng M2";
+      });
+    }
+
+    if(item.id === "lsdh"){
+      payload.title = "Lãi suất điều hành";
+    }
+
+    if(item.id === "dhtg"){
+      payload.title = "Tỷ giá USD/VND";
+    }
+
+    if(item.id === "nvttm"){
+      payload.series.forEach(s=>{
+        if(/bơm hút ròng của nhnn/i.test(String(s.name||""))) s.name = "Bơm/hút ròng tổng hợp NHNN";
+        if(/sbv-bill/i.test(String(s.name||""))) s.name = "Bơm/hút ròng tín phiếu NHNN";
+        if(/omo/i.test(String(s.name||""))) s.name = "Bơm/hút ròng OMO";
+      });
+    }
+
+    if(item.id === "tpkb"){
+      payload.title = "Tín phiếu NHNN";
+      payload.series.forEach(s=>{
+        if(/phát hành/i.test(String(s.name||""))) s.name = "Tín phiếu phát hành";
+        if(/đáo hạn/i.test(String(s.name||""))) s.name = "Tín phiếu đáo hạn";
+      });
+    }
+
+    if(item.id === "dtnh"){
+      payload.title = "Dự trữ ngoại hối Nhà nước";
+      payload.series.forEach(s=>{
+        s.data = s.data.map(([ts,val])=>[ts, Number(val)/1000]);
+        s.unit = "tỷ USD";
+        s.yAxisIndex = 0;
       });
     }
   }
@@ -415,8 +491,82 @@
     return true;
   }
 
+
+  function renderMoneyKpis(payload,item){
+    if(item.group !== "money") return false;
+    const byName = (re)=>payload.series.find(s=>re.test(String(s.name||"")));
+
+    if(item.id === "ctt"){
+      const amount = payload.series.find(s=>s.unit !== "%") || payload.series[0];
+      const growth = byName(/Tăng trưởng M2/i);
+      const a = latestOf(amount), g = latestOf(growth);
+      const prev = amount?.data?.length>1 ? amount.data[amount.data.length-2] : null;
+      const ch = a && prev ? a[1]-prev[1] : null;
+      $("marketKpis").innerHTML = [
+        ["M2 mới nhất", a?fmt(a[1]):"—", amount?.unit||""],
+        ["Thay đổi M2 kỳ gần nhất", ch===null?"—":(ch>=0?"+":"")+fmt(ch), amount?.unit||""],
+        ["Tăng trưởng M2", g?fmt(g[1]):"—", "%"],
+        ["Số kỳ quan sát", getVisibleObservationCount(payload,item), ""]
+      ].map((k,idx)=>`<div class="md-kpi"${idx===3?' data-kpi="observations"':''}><span>${k[0]}</span><strong>${k[1]}</strong><em>${k[2]}</em></div>`).join("");
+      return true;
+    }
+
+    if(item.id === "lsdh"){
+      const picks = [
+        byName(/chiết khấu/i),
+        byName(/tái cấp vốn/i),
+        byName(/qua đêm/i)
+      ];
+      const labels = ["Lãi suất chiết khấu","Lãi suất tái cấp vốn","LS qua đêm bù đắp thiếu hụt vốn"];
+      $("marketKpis").innerHTML = picks.map((s,i)=>{
+        const p=latestOf(s);
+        return `<div class="md-kpi"><span>${labels[i]}</span><strong>${p?fmt(p[1]):"—"}</strong><em>%</em></div>`;
+      }).join("") + `<div class="md-kpi"><span>Trạng thái</span><strong>Chưa thay đổi</strong><em>kỳ gần nhất</em></div>`;
+      return true;
+    }
+
+    if(item.id === "nvttm"){
+      const omo=byName(/OMO/i), bill=byName(/tín phiếu/i), total=byName(/tổng hợp NHNN/i);
+      const cards=[
+        ["Bơm/hút ròng OMO",latestOf(omo),omo?.unit||"tỷ VND"],
+        ["Bơm/hút ròng tín phiếu",latestOf(bill),bill?.unit||"tỷ VND"],
+        ["Bơm/hút ròng tổng hợp NHNN",latestOf(total),total?.unit||"tỷ VND"]
+      ];
+      $("marketKpis").innerHTML = cards.map(k=>`<div class="md-kpi"><span>${k[0]}</span><strong>${k[1]?(k[1][1]>=0?"+":"")+fmt(k[1][1]):"—"}</strong><em>${k[2]}</em></div>`).join("") + `<div class="md-kpi"><span>Quy ước</span><strong>+ Bơm / − Hút</strong><em>ròng</em></div>`;
+      return true;
+    }
+
+    if(item.id === "tpkb"){
+      const issue=byName(/phát hành/i), mature=byName(/đáo hạn/i);
+      const a=latestOf(issue), b=latestOf(mature);
+      const net=(a?Number(a[1]):0)+(b?Number(b[1]):0);
+      $("marketKpis").innerHTML = [
+        ["Tín phiếu phát hành",a?fmt(Math.abs(a[1])):"—",issue?.unit||"tỷ VND"],
+        ["Tín phiếu đáo hạn",b?fmt(Math.abs(b[1])):"—",mature?.unit||"tỷ VND"],
+        ["Bơm/hút ròng qua tín phiếu",(a||b)?(net>=0?"+":"")+fmt(net):"—",issue?.unit||mature?.unit||"tỷ VND"],
+        ["Quy ước","Phát hành hút / Đáo hạn bơm",""]
+      ].map(k=>`<div class="md-kpi"><span>${k[0]}</span><strong>${k[1]}</strong><em>${k[2]}</em></div>`).join("");
+      return true;
+    }
+
+    if(item.id === "dtnh"){
+      const s=payload.series[0], p=latestOf(s), prev=s?.data?.length>1?s.data[s.data.length-2]:null;
+      const ch=p&&prev?p[1]-prev[1]:null;
+      $("marketKpis").innerHTML = [
+        ["Dự trữ ngoại hối mới nhất",p?fmt(p[1]):"—","tỷ USD"],
+        ["Thay đổi kỳ gần nhất",ch===null?"—":(ch>=0?"+":"")+fmt(ch),"tỷ USD"],
+        ["% thay đổi so kỳ trước",p&&prev&&prev[1]?(ch/Math.abs(prev[1])*100>=0?"+":"")+fmt(ch/Math.abs(prev[1])*100):"—","%"],
+        ["Số kỳ quan sát",getVisibleObservationCount(payload,item),""]
+      ].map((k,idx)=>`<div class="md-kpi"${idx===3?' data-kpi="observations"':''}><span>${k[0]}</span><strong>${k[1]}</strong><em>${k[2]}</em></div>`).join("");
+      return true;
+    }
+
+    return false;
+  }
+
   function renderKpis(payload,item){
     if(item.macroType && renderMacroKpis(item)) return;
+    if(renderMoneyKpis(payload,item)) return;
     const primary = getSelectedSeries(payload,item);
     const p = latestOf(primary);
     const prev = primary?.data?.length > 1 ? primary.data[primary.data.length-2] : null;
@@ -457,20 +607,30 @@
       tooltip:{trigger:"axis",axisPointer:{type:"cross"},valueFormatter:(v)=>item.domesticFuel ? fmtFuel(v) : (item.macroType==="gdp" ? fmtGdp(v)+"%" : fmt(v))},
       legend:{
         top:4,type:"scroll",textStyle:{color:"#596174"},
-        selected:item.domesticFuel ? Object.fromEntries(payload.series.map(s=>[s.name,s.name===selectedFuelSeries])) : undefined
+        selected:item.domesticFuel
+          ? Object.fromEntries(payload.series.map(s=>[s.name,s.name===selectedFuelSeries]))
+          : (item.id==="dhtg"
+              ? Object.fromEntries(payload.series.map(s=>[s.name,!/trần|sàn/i.test(String(s.name||""))]))
+              : undefined)
       },
       toolbox:{right:8,feature:{dataZoom:{yAxisIndex:"none"},restore:{},saveAsImage:{name:item.id}}},
       xAxis:{type:"time",axisLine:{lineStyle:{color:"#cfd4df"}},axisLabel:{color:"#747c8c"}},
       yAxis:[
         {type:"value",scale:true,axisLabel:{color:"#747c8c",formatter:(v)=>item.domesticFuel ? fmtFuel(v) : (item.macroType==="gdp" ? fmtGdp(v)+"%" : fmt(v))},splitLine:{lineStyle:{color:"#eef0f5"}}},
-        {type:"value",scale:true,position:"right",axisLabel:{color:"#747c8c",formatter:(v)=>item.group==="macro" ? fmt(v)+"%" : fmt(v)},splitLine:{show:false}}
+        {type:"value",scale:true,position:"right",axisLabel:{color:"#747c8c",formatter:(v)=>((item.group==="macro") || (item.group==="money" && payload.series.some(s=>s.yAxisIndex===1 && s.unit==="%"))) ? fmt(v)+"%" : fmt(v)},splitLine:{show:false}}
       ],
       dataZoom:[{type:"inside"},{type:"slider",height:20,bottom:18,borderColor:"#e5e7eb",fillerColor:"rgba(115,87,255,.12)"}],
       series:payload.series.map((s,i)=>({
         name:s.name,type:item.domesticFuel?"line":(s.type==="bar"?"bar":"line"),yAxisIndex:s.yAxisIndex||0,data:s.data,
         showSymbol:item.domesticFuel || (s.data.length<=2),symbol:item.domesticFuel?"diamond":"circle",symbolSize:item.domesticFuel?8:7,
         smooth:false,connectNulls:true,
-        barMaxWidth:24,lineStyle:{width:item.domesticFuel?2:2},areaStyle:(!item.domesticFuel&&i===0&&s.type!=="bar")?{opacity:.035}:undefined
+        barMaxWidth:24,
+        lineStyle:{
+          width:item.domesticFuel?2:(item.id==="dhtg" ? (/trung tâm/i.test(String(s.name||""))?3:2) : 2),
+          type:item.id==="dhtg" && /trần|sàn/i.test(String(s.name||"")) ? "dashed" : "solid",
+          opacity:item.id==="dhtg" && /trần|sàn/i.test(String(s.name||"")) ? 0.7 : 1
+        },
+        areaStyle:(!item.domesticFuel&&i===0&&s.type!=="bar")?{opacity:.035}:undefined
       }))
     };
     if(allValues.length===0) throw new Error("Nguồn chưa trả về dữ liệu.");
