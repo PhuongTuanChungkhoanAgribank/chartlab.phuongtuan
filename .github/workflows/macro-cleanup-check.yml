@@ -1,0 +1,14 @@
+name: Check macro cleanup
+on:
+  push:
+    branches: ["feature/macro-cleanup-v2"]
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - run: |
+          node --check market-data.js
+          test -s market-data.html
