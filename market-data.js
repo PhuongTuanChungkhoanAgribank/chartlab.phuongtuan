@@ -161,7 +161,7 @@
 
     if(item.globalType==="inflation"){
       const series=sourceSeries.map(s=>({name:s.name.replace(" Mỹ","")+" YoY",unit:"%",type:"line",yAxisIndex:0,data:calcPctSeries(s.data,12)}));
-      const metrics=sourceSeries.map(s=>({name:s.name,yoy:calcPctSeries(s.data,12).at(-1)?.[1]??null,mom:calcPctSeries(s.data,1).at(-1)?.[1]??null}));
+      const metrics=sourceSeries.map(s=>{ const y=calcPctSeries(s.data,12), m=calcPctSeries(s.data,1); return {name:s.name,yoy:y.length?y[y.length-1][1]:null,mom:m.length?m[m.length-1][1]:null,latest:s.data.length?s.data[s.data.length-1][1]:null}; });
       return {title:item.name,updated:sourceSeries.map(s=>s.updated).filter(Boolean).sort().at(-1)||"Theo nguồn",stacked:false,series,metrics};
     }
     if(item.globalType==="jobs"){
@@ -657,13 +657,18 @@
     if(item.globalType==="inflation"){
       const m=payload.metrics||[];
       const a=m[0], b=m[1];
-      const rows=[
-        [a?.name||item.name+" tổng thể",a?.yoy,"YoY"],
-        [a?.name||item.name+" tổng thể",a?.mom,"MoM"],
-        [b?.name||"Lõi",b?.yoy,"YoY"],
-        [b?.name||"Lõi",b?.mom,"MoM"]
+      const rows=b ? [
+        [a?.name||item.name+" tổng thể",a?.yoy,"YoY","%"],
+        [a?.name||item.name+" tổng thể",a?.mom,"MoM","%"],
+        [b?.name||"Lõi",b?.yoy,"YoY","%"],
+        [b?.name||"Lõi",b?.mom,"MoM","%"]
+      ] : [
+        [a?.name||item.name,a?.yoy,"YoY","%"],
+        [a?.name||item.name,a?.mom,"MoM","%"],
+        [a?.name||item.name,a?.latest,"Chỉ số",""],
+        ["Kỳ cập nhật",payload.updated||"—","",""]
       ];
-      $("marketKpis").innerHTML=rows.map(([n,v,p])=>card(n+" · "+p,Number.isFinite(v)?(v>=0?"+":"")+fmt(v):"—","%")).join("");
+      $("marketKpis").innerHTML=rows.map(([n,v,p,u])=>card(n+(p?" · "+p:""),Number.isFinite(v)?((u==="%"&&v>=0)?"+":"")+fmt(v):String(v??"—"),u)).join("");
       return true;
     }
     if(item.globalType==="jobs"){
