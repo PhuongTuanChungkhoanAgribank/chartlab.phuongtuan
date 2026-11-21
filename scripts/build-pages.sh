@@ -6,6 +6,7 @@ cd "$ROOT_DIR"
 
 rm -rf _site
 mkdir -p _site/data
+python3 scripts/build-market-global.py
 cp index.html config.js manifest.webmanifest icon.svg .nojekyll lesson-v2.js lesson-v2.css lesson-v2-single-candle.js lesson-v2-vi.js analyzer-skills.js analyzer-skills.css analyzer-clipboard.js lesson-v3-hammer.css pattern-navigation-fix.js preview-contrast-fix.js candlestick-curated-notes.js candlestick-compare-curated.js candlestick-standard-template.js hammer-rebuilt.js compare-hammer-v2.js library-vi-labels.js candlestick-qa.js light-theme-v2.css market-data.html market-data.css market-data.js market-entry.js _site/
 
 restore() {

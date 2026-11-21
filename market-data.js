@@ -26,30 +26,36 @@
     {id:"dhtg",name:"Tỷ giá trung tâm & biên độ",group:"money",groupLabel:"Tiền tệ & thanh khoản",feed:"Wichart",origin:"Ngân hàng Nhà nước (SBV)",freq:"Hàng ngày",insight:"Tỷ giá phản ánh sức ép ngoại hối. Biến động mạnh có thể ảnh hưởng dư địa chính sách tiền tệ và doanh nghiệp vay ngoại tệ.",impact:["Ngân hàng","Xuất khẩu","Hàng không"],note:"Theo dõi thêm DXY và cán cân thương mại.",driver:"wichart"},
     {id:"nvttm",name:"Nghiệp vụ thị trường mở (OMO)",group:"money",groupLabel:"Tiền tệ & thanh khoản",feed:"Wichart",origin:"Ngân hàng Nhà nước (SBV)",freq:"Theo phiên",insight:"OMO cho thấy NHNN đang bơm hoặc hút thanh khoản ngắn hạn khỏi hệ thống ngân hàng.",impact:["Ngân hàng","Chứng khoán"],note:"Quy ước: số dương = bơm ròng; số âm = hút ròng. OMO khác với lãi suất cho vay qua đêm (O/N).",driver:"wichart"},
     {id:"dtnh",name:"Dự trữ ngoại hối",group:"money",groupLabel:"Tiền tệ & thanh khoản",feed:"Wichart",origin:"Ngân hàng Nhà nước / nguồn công bố quốc tế",freq:"Hàng tháng / quý",insight:"Dự trữ ngoại hối thể hiện bộ đệm của nhà điều hành trước biến động tỷ giá và dòng vốn.",impact:["Tỷ giá","Ngân hàng","Khối ngoại"],note:"Theo dõi cùng tỷ giá và cán cân thương mại.",driver:"wichart"},
-    {id:"xang_dau",name:"Giá xăng dầu trong nước",group:"commodity",groupLabel:"Hàng hóa",feed:"Wichart + kỳ điều hành mới nhất",origin:"Petrolimex / Bộ Công Thương",freq:"Theo kỳ điều hành",unit:"đồng/lít",insight:"Giá xăng dầu bán lẻ trong nước truyền dẫn biến động năng lượng thế giới vào chi phí vận tải, sản xuất và CPI. Biểu đồ chỉ giữ các mốc giá thay đổi theo kỳ điều hành để dễ theo dõi.",impact:["CPI","Vận tải","Hàng không","Bán lẻ"],note:"Theo dõi 3 loại: E10 RON95-V, E5 RON92 và Diesel. Mốc Vùng 1 từ 15h 19/11/2026 lần lượt là 21.100; 18.570; 26.340 đồng/lít.",driver:"wichart",commodity:true,domesticFuel:true},
-    {id:"dau_wti",name:"Dầu WTI",group:"commodity",groupLabel:"Hàng hóa",feed:"Wichart",origin:"Thị trường hàng hóa quốc tế",freq:"Hàng ngày",insight:"Giá dầu ảnh hưởng trực tiếp tới nhóm dầu khí và gián tiếp tới vận tải, hàng không, hóa chất và lạm phát.",impact:["Dầu khí","Hàng không","Vận tải"],note:"Nên xem đồng thời Brent và crack spread khi phân tích lọc hóa dầu.",driver:"wichart",commodity:true},
-    {id:"vang",name:"Giá vàng",group:"commodity",groupLabel:"Hàng hóa",feed:"Wichart",origin:"Thị trường vàng",freq:"Hàng ngày",insight:"Vàng thường phản ánh nhu cầu phòng thủ, kỳ vọng lãi suất thực và rủi ro vĩ mô.",impact:["Tài sản phòng thủ","Tỷ giá"],note:"Theo dõi cùng lợi suất thực và USD.",driver:"wichart",commodity:true},
-    {id:"hrc_trung_quoc",name:"HRC Trung Quốc",group:"commodity",groupLabel:"Hàng hóa",feed:"Wichart",origin:"Thị trường thép Trung Quốc",freq:"Hàng ngày",insight:"HRC là biến đầu vào/đầu ra quan trọng của ngành thép. Biến động giá ảnh hưởng doanh thu, tồn kho và biên lợi nhuận theo từng doanh nghiệp.",impact:["HPG","HSG","NKG"],note:"Cần xem thêm quặng sắt, than cốc và tồn kho thép.",driver:"wichart",commodity:true},
-    {id:"quang_sat",name:"Quặng sắt",group:"commodity",groupLabel:"Hàng hóa",feed:"Wichart",origin:"Thị trường nguyên liệu thép",freq:"Hàng ngày",insight:"Quặng sắt là nguyên liệu đầu vào lớn của thép lò cao. Giá tăng có thể gây áp lực chi phí nếu giá bán thép không tăng tương ứng.",impact:["Thép"],note:"Đọc cùng HRC và than cốc để đánh giá spread.",driver:"wichart",commodity:true},
+    {id:"gold_intl",name:"Vàng quốc tế",group:"commodity",groupLabel:"Hàng hóa",feed:"GoldPrice.com / nguồn quốc tế",origin:"GoldPrice.com · LBMA/Metals.dev",freq:"Hàng ngày",unit:"USD/oz",insight:"Vàng quốc tế phản ánh nhu cầu phòng thủ, kỳ vọng lãi suất thực, USD và rủi ro vĩ mô toàn cầu.",impact:["Tài sản phòng thủ","USD","Lợi suất"],note:"Đơn vị USD trên mỗi troy ounce (USD/oz).",driver:"local",localSeries:["GOLD_INTL"]},
+    {id:"vang",name:"Vàng trong nước – SJC",group:"commodity",groupLabel:"Hàng hóa",feed:"Wichart",origin:"SJC / thị trường vàng trong nước",freq:"Hàng ngày",unit:"VND/lượng",insight:"Vàng SJC phản ánh thêm cung cầu nội địa và chênh lệch so với giá vàng quốc tế.",impact:["Tỷ giá","Tài sản phòng thủ"],note:"Hiển thị riêng giá mua vào và bán ra; không trộn với XAU/USD.",driver:"wichart",commodity:true},
+    {id:"xang_dau",name:"Giá xăng dầu trong nước",group:"commodity",groupLabel:"Hàng hóa",feed:"Wichart + kỳ điều hành mới nhất",origin:"Petrolimex / Bộ Công Thương",freq:"Theo kỳ điều hành",unit:"đồng/lít",insight:"Giá xăng dầu bán lẻ trong nước truyền dẫn biến động năng lượng thế giới vào chi phí vận tải, sản xuất và CPI. Biểu đồ chỉ giữ các mốc giá thay đổi theo kỳ điều hành để dễ theo dõi.",impact:["CPI","Vận tải","Hàng không","Bán lẻ"],note:"Theo dõi 3 loại: E10 RON95-V, E5 RON92 và Diesel.",driver:"wichart",commodity:true,domesticFuel:true},
+    {id:"dau_wti",name:"Dầu WTI",group:"commodity",groupLabel:"Hàng hóa",feed:"Wichart",origin:"Thị trường hàng hóa quốc tế",freq:"Hàng ngày",insight:"WTI là benchmark dầu thô Mỹ, ảnh hưởng kỳ vọng năng lượng và nhóm dầu khí.",impact:["Dầu khí","Hàng không","Vận tải"],note:"Nên xem đồng thời Brent và crack spread khi phân tích lọc hóa dầu.",driver:"wichart",commodity:true},
+    {id:"brent",name:"Dầu Brent",group:"commodity",groupLabel:"Hàng hóa",feed:"EIA qua FRED · dữ liệu đóng gói",origin:"U.S. Energy Information Administration",freq:"Hàng ngày",unit:"USD/thùng",insight:"Brent là benchmark dầu thô quốc tế quan trọng đối với định giá dầu và sản phẩm lọc hóa dầu.",impact:["Dầu khí","BSR","Hàng không"],note:"Dữ liệu được lấy lúc build để tránh lỗi CORS trên GitHub Pages.",driver:"local",localSeries:["DCOILBRENTEU"]},
+    {id:"crack_321",name:"Crack spread 3-2-1",group:"commodity",groupLabel:"Hàng hóa",feed:"EIA",origin:"U.S. Energy Information Administration",freq:"Hàng ngày / tuần",unit:"USD/thùng",insight:"Crack spread 3-2-1 là chỉ báo biên lọc dầu ngắn hạn, hữu ích khi theo dõi triển vọng BSR.",impact:["BSR","Lọc hóa dầu"],note:"Đang chuẩn hóa nguồn chuỗi lịch sử EIA trước khi hiển thị để tránh tạo dữ liệu giả.",driver:"pending"},
+    {id:"hrc_hpg",name:"HRC trong nước – HPG",group:"commodity",groupLabel:"Hàng hóa",feed:"HPG",origin:"Tập đoàn Hòa Phát",freq:"Theo thông báo giá",unit:"VND/tấn",insight:"Giá HRC nội địa là biến quan trọng đối với chuỗi thép dẹt và biên lợi nhuận các doanh nghiệp sử dụng HRC.",impact:["HPG","HSG","NKG"],note:"Đang chuẩn hóa chuỗi giá công bố của HPG.",driver:"pending"},
+    {id:"thep_xd_hpg",name:"Thép xây dựng – HPG",group:"commodity",groupLabel:"Hàng hóa",feed:"HPG",origin:"Tập đoàn Hòa Phát",freq:"Theo thông báo giá",unit:"VND/kg",insight:"Giá thép xây dựng HPG phản ánh mặt bằng giá thép nội địa phục vụ xây dựng và đầu tư công.",impact:["HPG","Xây dựng","Đầu tư công"],note:"Đang chuẩn hóa chuỗi giá công bố của HPG.",driver:"pending"},
+    {id:"ton_ma",name:"Giá tôn mạ",group:"commodity",groupLabel:"Hàng hóa",feed:"Nguồn doanh nghiệp",origin:"Hoa Sen / Nam Kim",freq:"Theo thông báo giá",unit:"VND/kg",insight:"Giá tôn mạ giúp theo dõi mặt bằng giá sản phẩm thép hạ nguồn.",impact:["HSG","NKG"],note:"Đang chọn nguồn lịch sử công khai và ổn định giữa Hoa Sen/Nam Kim.",driver:"pending"},
+    {id:"cat_xay_dung",name:"Giá cát xây dựng – Đà Nẵng",group:"commodity",groupLabel:"Hàng hóa",feed:"Sở Xây dựng Đà Nẵng",origin:"Công bố giá VLXD Đà Nẵng",freq:"Hàng tháng",unit:"VND/m³",insight:"Giá cát xây dựng phản ánh chi phí vật liệu tại địa phương và cần ghi rõ phạm vi địa lý.",impact:["Xây dựng","Hạ tầng","Đầu tư công"],note:"Benchmark Đà Nẵng; giá thực tế phụ thuộc loại cát, nguồn mỏ và điều kiện vận chuyển.",driver:"pending"},
+    {id:"hrc_trung_quoc",name:"HRC Trung Quốc",group:"commodity",groupLabel:"Hàng hóa",feed:"Wichart",origin:"Thị trường thép Trung Quốc",freq:"Hàng ngày",insight:"HRC Trung Quốc là benchmark quốc tế quan trọng cho chuỗi thép Việt Nam.",impact:["HPG","HSG","NKG"],note:"Cần xem thêm quặng sắt, than cốc và tồn kho thép.",driver:"wichart",commodity:true},
+    {id:"quang_sat",name:"Quặng sắt",group:"commodity",groupLabel:"Hàng hóa",feed:"Wichart",origin:"Thị trường nguyên liệu thép",freq:"Hàng ngày",insight:"Quặng sắt là nguyên liệu đầu vào lớn của thép lò cao.",impact:["Thép"],note:"Đọc cùng HRC và than cốc để đánh giá spread.",driver:"wichart",commodity:true},
     {id:"dong",name:"Giá đồng",group:"commodity",groupLabel:"Hàng hóa",feed:"Wichart",origin:"Thị trường kim loại",freq:"Hàng ngày",insight:"Đồng thường được xem là chỉ báo nhạy với chu kỳ công nghiệp và xây dựng toàn cầu.",impact:["Kim loại","Điện","Xây dựng"],note:"Theo dõi thêm PMI Trung Quốc và tồn kho kim loại.",driver:"wichart",commodity:true},
-    {id:"cao_su_nhat_ban",name:"Cao su thế giới",group:"commodity",groupLabel:"Hàng hóa",feed:"Wichart",origin:"Thị trường cao su quốc tế",freq:"Hàng ngày",insight:"Giá cao su ảnh hưởng doanh thu các doanh nghiệp cao su tự nhiên và chi phí đầu vào của ngành săm lốp.",impact:["Cao su","Săm lốp"],note:"Cần so với sản lượng và giá bán thực tế của doanh nghiệp.",driver:"wichart",commodity:true},
-    {id:"phan_ure",name:"Giá Ure",group:"commodity",groupLabel:"Hàng hóa",feed:"Wichart",origin:"Thị trường phân bón",freq:"Hàng ngày",insight:"Giá Ure quyết định phần lớn triển vọng giá bán của doanh nghiệp phân đạm, trong khi khí đầu vào quyết định biên lợi nhuận.",impact:["Phân bón"],note:"Theo dõi đồng thời khí đầu vào và chính sách xuất khẩu của các nước lớn.",driver:"wichart",commodity:true},
-    {id:"than_newcastle",name:"Than Newcastle",group:"commodity",groupLabel:"Hàng hóa",feed:"Wichart",origin:"Thị trường than quốc tế",freq:"Hàng ngày",insight:"Giá than ảnh hưởng chi phí nhiên liệu, điện và một phần chuỗi sản xuất công nghiệp.",impact:["Nhiệt điện","Xi măng","Hóa chất"],note:"Tác động khác nhau tùy doanh nghiệp mua than theo hợp đồng hay giá thị trường.",driver:"wichart",commodity:true},
-    {id:"khi_thien_nhien",name:"Khí thiên nhiên",group:"commodity",groupLabel:"Hàng hóa",feed:"Wichart",origin:"Thị trường năng lượng quốc tế",freq:"Hàng ngày",insight:"Giá khí tự nhiên ảnh hưởng điện khí, phân bón và nhiều ngành công nghiệp sử dụng khí làm nguyên liệu.",impact:["Điện khí","Phân bón","Hóa chất"],note:"Phân biệt giá khí theo khu vực và cơ chế hợp đồng.",driver:"wichart",commodity:true},
-    {id:"ca_phe",name:"Giá cà phê",group:"commodity",groupLabel:"Hàng hóa",feed:"Wichart",origin:"Thị trường nông sản",freq:"Hàng ngày",insight:"Giá cà phê tác động trực tiếp tới doanh thu xuất khẩu và các doanh nghiệp trong chuỗi cà phê.",impact:["Nông nghiệp","Xuất khẩu"],note:"Theo dõi sản lượng vụ mùa, tồn kho và tỷ giá.",driver:"wichart",commodity:true},
-    {id:"tieu",name:"Giá hồ tiêu",group:"commodity",groupLabel:"Hàng hóa",feed:"Wichart",origin:"Thị trường nông sản",freq:"Hàng ngày",insight:"Giá hồ tiêu phản ánh cung cầu một mặt hàng xuất khẩu quan trọng của Việt Nam.",impact:["Nông nghiệp","Xuất khẩu"],note:"Sản lượng và tồn kho thường gây biến động lớn theo mùa vụ.",driver:"wichart",commodity:true},
-    {id:"heo_hoi",name:"Giá heo hơi",group:"commodity",groupLabel:"Hàng hóa",feed:"Wichart",origin:"Thị trường chăn nuôi Việt Nam",freq:"Hàng ngày",insight:"Giá heo hơi ảnh hưởng doanh thu chăn nuôi và đồng thời là một cấu phần đáng chú ý của giá thực phẩm.",impact:["Chăn nuôi","Thực phẩm","CPI"],note:"Nên nhìn cùng giá thức ăn chăn nuôi và quy mô đàn.",driver:"wichart",commodity:true},
+    {id:"cao_su_nhat_ban",name:"Cao su thế giới",group:"commodity",groupLabel:"Hàng hóa",feed:"Wichart",origin:"Thị trường cao su quốc tế",freq:"Hàng ngày",insight:"Giá cao su ảnh hưởng doanh thu doanh nghiệp cao su tự nhiên và chi phí săm lốp.",impact:["Cao su","Săm lốp"],note:"Cần so với sản lượng và giá bán thực tế.",driver:"wichart",commodity:true},
+    {id:"phan_ure",name:"Giá Ure",group:"commodity",groupLabel:"Hàng hóa",feed:"Wichart",origin:"Thị trường phân bón",freq:"Hàng ngày",insight:"Giá Ure quyết định phần lớn triển vọng giá bán doanh nghiệp phân đạm.",impact:["Phân bón"],note:"Theo dõi đồng thời khí đầu vào.",driver:"wichart",commodity:true},
+    {id:"than_newcastle",name:"Than Newcastle",group:"commodity",groupLabel:"Hàng hóa",feed:"Wichart",origin:"Thị trường than quốc tế",freq:"Hàng ngày",insight:"Giá than ảnh hưởng chi phí nhiên liệu, điện và một phần chuỗi sản xuất công nghiệp.",impact:["Nhiệt điện","Xi măng","Hóa chất"],note:"Tác động phụ thuộc cơ chế mua than từng doanh nghiệp.",driver:"wichart",commodity:true},
+    {id:"khi_thien_nhien",name:"Khí thiên nhiên",group:"commodity",groupLabel:"Hàng hóa",feed:"Wichart",origin:"Thị trường năng lượng quốc tế",freq:"Hàng ngày",insight:"Giá khí tự nhiên ảnh hưởng điện khí, phân bón và hóa chất.",impact:["Điện khí","Phân bón","Hóa chất"],note:"Phân biệt giá khí theo khu vực.",driver:"wichart",commodity:true},
+    {id:"ca_phe",name:"Giá cà phê",group:"commodity",groupLabel:"Hàng hóa",feed:"Wichart",origin:"Thị trường nông sản",freq:"Hàng ngày",insight:"Giá cà phê tác động trực tiếp tới doanh thu xuất khẩu.",impact:["Nông nghiệp","Xuất khẩu"],note:"Theo dõi sản lượng vụ mùa, tồn kho và tỷ giá.",driver:"wichart",commodity:true},
+    {id:"tieu",name:"Giá hồ tiêu",group:"commodity",groupLabel:"Hàng hóa",feed:"Wichart",origin:"Thị trường nông sản",freq:"Hàng ngày",insight:"Giá hồ tiêu phản ánh cung cầu một mặt hàng xuất khẩu quan trọng của Việt Nam.",impact:["Nông nghiệp","Xuất khẩu"],note:"Sản lượng và tồn kho thường gây biến động theo mùa vụ.",driver:"wichart",commodity:true},
+    {id:"heo_hoi",name:"Giá heo hơi",group:"commodity",groupLabel:"Hàng hóa",feed:"Wichart",origin:"Thị trường chăn nuôi Việt Nam",freq:"Hàng ngày",insight:"Giá heo hơi ảnh hưởng doanh thu chăn nuôi và CPI thực phẩm.",impact:["Chăn nuôi","Thực phẩm","CPI"],note:"Nên nhìn cùng giá thức ăn chăn nuôi.",driver:"wichart",commodity:true},
     {id:"nhua_duong_60_70",name:"Giá nhựa đường",group:"commodity",groupLabel:"Hàng hóa",feed:"Wichart",origin:"Thị trường vật liệu xây dựng",freq:"Định kỳ",insight:"Nhựa đường là đầu vào quan trọng của thi công hạ tầng giao thông.",impact:["Hạ tầng","Xây dựng"],note:"Hữu ích khi đánh giá biên lợi nhuận nhà thầu đường bộ.",driver:"wichart",commodity:true},
 
-    {id:"DGS10",name:"Lợi suất TPCP Mỹ 10 năm",group:"global",groupLabel:"Quốc tế",feed:"FRED",origin:"Federal Reserve Bank of St. Louis",freq:"Hàng ngày",unit:"%",insight:"US10Y là lãi suất tham chiếu quan trọng của tài sản toàn cầu. Lợi suất tăng nhanh thường gây áp lực lên định giá cổ phiếu tăng trưởng và dòng vốn mới nổi.",impact:["Định giá","Tỷ giá","Khối ngoại"],note:"Theo dõi cùng Fed Funds, CPI Mỹ và DXY.",driver:"fred"},
-    {id:"DGS2",name:"Lợi suất TPCP Mỹ 2 năm",group:"global",groupLabel:"Quốc tế",feed:"FRED",origin:"Federal Reserve Bank of St. Louis",freq:"Hàng ngày",unit:"%",insight:"US2Y phản ánh kỳ vọng chính sách Fed khá nhạy. Chênh lệch US10Y-US2Y thường được dùng để đọc hình dạng đường cong lợi suất.",impact:["Fed","Tỷ giá","Khối ngoại"],note:"Kết hợp với US10Y để đánh giá đường cong lợi suất.",driver:"fred"},
-    {id:"FEDFUNDS",name:"Fed Funds Rate",group:"global",groupLabel:"Quốc tế",feed:"FRED",origin:"Federal Reserve",freq:"Hàng tháng",unit:"%",insight:"Fed Funds Rate là mốc lãi suất cốt lõi của chính sách tiền tệ Mỹ, ảnh hưởng chi phí vốn và dòng tiền toàn cầu.",impact:["USD","Khối ngoại","Định giá"],note:"Thị trường thường phản ứng trước theo kỳ vọng, không chờ quyết định chính thức.",driver:"fred"},
-    {id:"UNRATE",name:"Tỷ lệ thất nghiệp Mỹ",group:"global",groupLabel:"Quốc tế",feed:"FRED",origin:"U.S. Bureau of Labor Statistics",freq:"Hàng tháng",unit:"%",insight:"Thất nghiệp là biến quan trọng trong nhiệm vụ kép của Fed. Thị trường theo dõi nó để đánh giá sức khỏe lao động và hướng lãi suất.",impact:["Fed","USD","Chứng khoán toàn cầu"],note:"Đọc cùng bảng lương phi nông nghiệp và tăng trưởng tiền lương.",driver:"fred"},
-    {id:"CPIAUCSL",name:"CPI Mỹ",group:"global",groupLabel:"Quốc tế",feed:"FRED",origin:"U.S. Bureau of Labor Statistics",freq:"Hàng tháng",unit:"chỉ số",insight:"CPI Mỹ là biến quan trọng chi phối kỳ vọng lãi suất Fed và lợi suất trái phiếu.",impact:["Fed","USD","Khối ngoại"],note:"Để đọc lạm phát, nên xem tốc độ YoY/MoM thay vì chỉ mức chỉ số.",driver:"fred"},
-    {id:"CPILFESL",name:"CPI lõi Mỹ",group:"global",groupLabel:"Quốc tế",feed:"FRED",origin:"U.S. Bureau of Labor Statistics",freq:"Hàng tháng",unit:"chỉ số",insight:"CPI lõi loại thực phẩm và năng lượng, giúp nhìn áp lực giá mang tính dai dẳng hơn.",impact:["Fed","US10Y","Định giá"],note:"Đặt cạnh CPI tổng thể và PCE lõi.",driver:"fred"},
-    {id:"INDPRO",name:"Sản xuất công nghiệp Mỹ",group:"global",groupLabel:"Quốc tế",feed:"FRED",origin:"Federal Reserve",freq:"Hàng tháng",unit:"chỉ số",insight:"Sản xuất công nghiệp cho biết nhịp hoạt động của khu vực công nghiệp Mỹ và chu kỳ kinh tế.",impact:["Hàng hóa","Chu kỳ kinh tế"],note:"Theo dõi cùng PMI/ISM và đơn hàng mới.",driver:"fred"},
-    {id:"RSAFS",name:"Doanh số bán lẻ Mỹ",group:"global",groupLabel:"Quốc tế",feed:"FRED",origin:"U.S. Census Bureau",freq:"Hàng tháng",unit:"triệu USD",insight:"Bán lẻ phản ánh sức khỏe tiêu dùng Mỹ, động lực lớn nhất của nền kinh tế này.",impact:["Fed","USD","Chứng khoán Mỹ"],note:"Cần lưu ý số liệu danh nghĩa chịu ảnh hưởng của giá.",driver:"fred"},
-    {id:"M2SL",name:"Cung tiền M2 Mỹ",group:"global",groupLabel:"Quốc tế",feed:"FRED",origin:"Federal Reserve",freq:"Hàng tháng",unit:"tỷ USD",insight:"M2 Mỹ cho biết quy mô tiền rộng trong nền kinh tế và là biến tham khảo về điều kiện thanh khoản.",impact:["Thanh khoản toàn cầu","Tài sản rủi ro"],note:"Không nên diễn giải M2 như một tín hiệu giao dịch độc lập.",driver:"fred"}
+    {id:"fed_policy",name:"Lãi suất điều hành FED",group:"global",groupLabel:"Quốc tế",feed:"Federal Reserve qua dữ liệu đóng gói",origin:"Federal Reserve",freq:"Theo FOMC",unit:"%",globalType:"fedPolicy",driver:"local",localSeries:["DFEDTARL","DFEDTARU"],insight:"FED thiết lập một khoảng mục tiêu cho federal funds rate; đây là biến trung tâm của điều kiện tài chính toàn cầu.",impact:["USD","US10Y","Khối ngoại"],note:"Mức hiện tại được đọc theo cận dưới và cận trên của target range."},
+    {id:"central_banks",name:"Lãi suất các NHTW lớn",group:"global",groupLabel:"Quốc tế",feed:"Nguồn NHTW chính thức",origin:"FED / ECB / BOJ / BOE",freq:"Theo quyết định",unit:"%",globalType:"centralBanks",driver:"local",insight:"So sánh lãi suất điều hành hiện tại của các ngân hàng trung ương lớn giúp đọc chênh lệch chính sách tiền tệ toàn cầu.",impact:["FX","Dòng vốn","Trái phiếu"],note:"FED hiển thị midpoint của target range; ECB dùng Deposit Facility; BOJ dùng policy rate; BOE dùng Bank Rate."},
+    {id:"us_cpi",name:"CPI Mỹ",group:"global",groupLabel:"Quốc tế",feed:"BLS qua FRED · dữ liệu đóng gói",origin:"U.S. Bureau of Labor Statistics",freq:"Hàng tháng",unit:"%",globalType:"inflation",driver:"local",localSeries:["CPIAUCSL","CPILFESL"],insight:"CPI và Core CPI Mỹ cần đọc theo MoM và YoY thay vì mức chỉ số tuyệt đối.",impact:["FED","USD","Lợi suất"],note:"Chart ưu tiên YoY; KPI hiển thị đồng thời MoM và YoY."},
+    {id:"us_pce",name:"PCE & Core PCE Mỹ",group:"global",groupLabel:"Quốc tế",feed:"BEA qua FRED · dữ liệu đóng gói",origin:"U.S. Bureau of Economic Analysis",freq:"Hàng tháng",unit:"%",globalType:"inflation",driver:"local",localSeries:["PCEPI","PCEPILFE"],insight:"PCE là thước đo lạm phát được FED theo dõi sát; Core PCE loại thực phẩm và năng lượng.",impact:["FED","USD","US10Y"],note:"Chart ưu tiên YoY; KPI hiển thị MoM và YoY."},
+    {id:"us_ppi",name:"PPI Mỹ",group:"global",groupLabel:"Quốc tế",feed:"BLS qua FRED · dữ liệu đóng gói",origin:"U.S. Bureau of Labor Statistics",freq:"Hàng tháng",unit:"%",globalType:"inflation",driver:"local",localSeries:["PPIFIS"],insight:"PPI đo biến động giá ở cấp nhà sản xuất và có thể báo hiệu áp lực chi phí trước khi truyền sang CPI.",impact:["FED","Biên lợi nhuận","USD"],note:"Dùng PPI Final Demand; chart ưu tiên YoY, KPI có MoM."},
+    {id:"us_jobs",name:"Báo cáo việc làm Mỹ",group:"global",groupLabel:"Quốc tế",feed:"BLS qua FRED · dữ liệu đóng gói",origin:"U.S. Bureau of Labor Statistics",freq:"Hàng tháng",globalType:"jobs",driver:"local",localSeries:["PAYEMS","UNRATE","CES0500000003"],insight:"Báo cáo việc làm tổng hợp số việc làm phi nông nghiệp, thất nghiệp và tăng trưởng tiền lương.",impact:["FED","USD","Trái phiếu"],note:"Nonfarm hiển thị thay đổi theo tháng; thất nghiệp và tiền lương hiển thị theo %."},
+    {id:"DGS2",name:"Lợi suất TPCP Mỹ 2 năm",group:"global",groupLabel:"Quốc tế",feed:"FRED · dữ liệu đóng gói",origin:"Federal Reserve Bank of St. Louis",freq:"Hàng ngày",unit:"%",driver:"local",localSeries:["DGS2"],insight:"US2Y phản ánh kỳ vọng chính sách FED khá nhạy.",impact:["FED","Tỷ giá","Khối ngoại"],note:"Kết hợp với US10Y để đánh giá đường cong lợi suất."},
+    {id:"DGS10",name:"Lợi suất TPCP Mỹ 10 năm",group:"global",groupLabel:"Quốc tế",feed:"FRED · dữ liệu đóng gói",origin:"Federal Reserve Bank of St. Louis",freq:"Hàng ngày",unit:"%",driver:"local",localSeries:["DGS10"],insight:"US10Y là lãi suất tham chiếu quan trọng của tài sản toàn cầu.",impact:["Định giá","Tỷ giá","Khối ngoại"],note:"Theo dõi cùng FED, lạm phát Mỹ và USD."}
   ];
 
   const groups = [
@@ -120,6 +126,58 @@
     if(item.group === "money") applyMoneyNormalization(payload,item);
     if(item.domesticFuel) applyDomesticFuelLatest(payload);
     return payload;
+  }
+
+  let localMarketBundlePromise = null;
+  async function loadLocalMarketBundle(){
+    if(!localMarketBundlePromise){
+      localMarketBundlePromise = fetch("./data/market-global.json",{cache:"no-store"}).then(r=>{
+        if(!r.ok) throw new Error("Không tải được gói dữ liệu quốc tế nội bộ");
+        return r.json();
+      });
+    }
+    return localMarketBundlePromise;
+  }
+  function calcPctSeries(data, lag){
+    return data.map((p,i)=>{
+      if(i<lag) return null;
+      const prev=Number(data[i-lag][1]), cur=Number(p[1]);
+      if(!Number.isFinite(prev)||!Number.isFinite(cur)||prev===0) return null;
+      return [p[0],(cur/prev-1)*100];
+    }).filter(Boolean);
+  }
+  function calcDiffSeries(data){
+    return data.map((p,i)=>i? [p[0],Number(p[1])-Number(data[i-1][1])] : null).filter(Boolean);
+  }
+  async function fetchLocalIndicator(item){
+    const bundle=await loadLocalMarketBundle();
+    if(item.globalType==="centralBanks"){
+      const rows=Object.values(bundle.central_banks||{});
+      return {title:item.name,updated:bundle.generated_at||"Theo nguồn",stacked:false,centralBanks:rows,series:rows.map(r=>({name:r.label,unit:"%",type:"bar",yAxisIndex:0,data:[[new Date(r.date+"T00:00:00Z").getTime(),Number(r.value)]]}))};
+    }
+    const ids=item.localSeries||[];
+    const sourceSeries=ids.map(id=>({id,...(bundle.series?.[id]||{})})).filter(s=>Array.isArray(s.data)&&s.data.length);
+    if(!sourceSeries.length) throw new Error("Gói dữ liệu nội bộ chưa có chuỗi cho chỉ tiêu này.");
+
+    if(item.globalType==="inflation"){
+      const series=sourceSeries.map(s=>({name:s.name.replace(" Mỹ","")+" YoY",unit:"%",type:"line",yAxisIndex:0,data:calcPctSeries(s.data,12)}));
+      const metrics=sourceSeries.map(s=>{ const y=calcPctSeries(s.data,12), m=calcPctSeries(s.data,1); return {name:s.name,yoy:y.length?y[y.length-1][1]:null,mom:m.length?m[m.length-1][1]:null,latest:s.data.length?s.data[s.data.length-1][1]:null}; });
+      return {title:item.name,updated:sourceSeries.map(s=>s.updated).filter(Boolean).sort().at(-1)||"Theo nguồn",stacked:false,series,metrics};
+    }
+    if(item.globalType==="jobs"){
+      const payroll=sourceSeries.find(s=>s.id==="PAYEMS");
+      const unrate=sourceSeries.find(s=>s.id==="UNRATE");
+      const wage=sourceSeries.find(s=>s.id==="CES0500000003");
+      const series=[];
+      if(payroll) series.push({name:"Thay đổi việc làm phi nông nghiệp",unit:"nghìn việc làm",type:"bar",yAxisIndex:0,data:calcDiffSeries(payroll.data)});
+      if(unrate) series.push({name:"Tỷ lệ thất nghiệp",unit:"%",type:"line",yAxisIndex:1,data:unrate.data});
+      if(wage) series.push({name:"Tăng lương theo giờ YoY",unit:"%",type:"line",yAxisIndex:1,data:calcPctSeries(wage.data,12)});
+      return {title:item.name,updated:sourceSeries.map(s=>s.updated).filter(Boolean).sort().at(-1)||"Theo nguồn",stacked:false,series};
+    }
+    if(item.globalType==="fedPolicy"){
+      return {title:item.name,updated:sourceSeries.map(s=>s.updated).filter(Boolean).sort().at(-1)||"Theo nguồn",stacked:false,series:sourceSeries.map((s,i)=>({name:i===0?"Cận dưới":"Cận trên",unit:"%",type:"line",yAxisIndex:0,data:s.data}))};
+    }
+    return {title:item.name,updated:sourceSeries[0].updated||"Theo nguồn",stacked:false,series:sourceSeries.map(s=>({name:s.name||item.name,unit:item.unit||s.unit||"",type:"line",yAxisIndex:0,data:s.data}))};
   }
 
   function applyMacroNormalization(payload,item){
@@ -367,7 +425,8 @@
       const card = document.querySelector(`[data-overview-id="${id}"]`);
       if(!item || !card) return;
       try{
-        const payload = item.driver === "fred" ? await fetchFred(item) : await fetchWichart(item);
+        if(item.driver === "pending") throw new Error("PENDING_SOURCE");
+      const payload = item.driver === "local" ? await fetchLocalIndicator(item) : (item.driver === "fred" ? await fetchFred(item) : await fetchWichart(item));
         const primary = payload.series[0];
         const p = latestOf(primary);
         const prev = primary?.data?.length > 1 ? primary.data[primary.data.length-2] : null;
@@ -576,9 +635,61 @@
     return false;
   }
 
+  function renderGlobalKpis(payload,item){
+    if(item.group!=="global") return false;
+    const card=(label,value,unit="")=>`<div class="md-kpi"><span>${label}</span><strong>${value}</strong><em>${unit}</em></div>`;
+    if(item.globalType==="centralBanks"){
+      $("marketKpis").innerHTML=(payload.centralBanks||[]).map(r=>card(r.label,r.display||fmt(r.value)+"%","")).join("");
+      return true;
+    }
+    if(item.globalType==="fedPolicy"){
+      const lo=latestOf(payload.series.find(s=>/Cận dưới/i.test(s.name)));
+      const hi=latestOf(payload.series.find(s=>/Cận trên/i.test(s.name)));
+      const l=lo?.[1], h=hi?.[1];
+      $("marketKpis").innerHTML=[
+        card("Target range",Number.isFinite(l)&&Number.isFinite(h)?fmt(l)+"–"+fmt(h):"—","%"),
+        card("Midpoint",Number.isFinite(l)&&Number.isFinite(h)?fmt((l+h)/2):"—","%"),
+        card("Cận dưới",Number.isFinite(l)?fmt(l):"—","%"),
+        card("Cận trên",Number.isFinite(h)?fmt(h):"—","%")
+      ].join("");
+      return true;
+    }
+    if(item.globalType==="inflation"){
+      const m=payload.metrics||[];
+      const a=m[0], b=m[1];
+      const rows=b ? [
+        [a?.name||item.name+" tổng thể",a?.yoy,"YoY","%"],
+        [a?.name||item.name+" tổng thể",a?.mom,"MoM","%"],
+        [b?.name||"Lõi",b?.yoy,"YoY","%"],
+        [b?.name||"Lõi",b?.mom,"MoM","%"]
+      ] : [
+        [a?.name||item.name,a?.yoy,"YoY","%"],
+        [a?.name||item.name,a?.mom,"MoM","%"],
+        [a?.name||item.name,a?.latest,"Chỉ số",""],
+        ["Kỳ cập nhật",payload.updated||"—","",""]
+      ];
+      $("marketKpis").innerHTML=rows.map(([n,v,p,u])=>card(n+(p?" · "+p:""),Number.isFinite(v)?((u==="%"&&v>=0)?"+":"")+fmt(v):String(v??"—"),u)).join("");
+      return true;
+    }
+    if(item.globalType==="jobs"){
+      const payroll=payload.series.find(s=>/việc làm phi nông nghiệp/i.test(s.name));
+      const unrate=payload.series.find(s=>/thất nghiệp/i.test(s.name));
+      const wage=payload.series.find(s=>/lương theo giờ/i.test(s.name));
+      $("marketKpis").innerHTML=[
+        card("Nonfarm · thay đổi tháng",latestOf(payroll)?(latestOf(payroll)[1]>=0?"+":"")+fmt(latestOf(payroll)[1]):"—","nghìn"),
+        card("Tỷ lệ thất nghiệp",latestOf(unrate)?fmt(latestOf(unrate)[1]):"—","%"),
+        card("Tăng lương theo giờ · YoY",latestOf(wage)?(latestOf(wage)[1]>=0?"+":"")+fmt(latestOf(wage)[1]):"—","%"),
+        card("Kỳ cập nhật",payload.updated||"—","")
+      ].join("");
+      return true;
+    }
+    return false;
+  }
+
   function renderKpis(payload,item){
     if(item.macroType && renderMacroKpis(item)) return;
     if(renderMoneyKpis(payload,item)) return;
+    if(renderGlobalKpis(payload,item)) return;
     const primary = getSelectedSeries(payload,item);
     const p = latestOf(primary);
     const prev = primary?.data?.length > 1 ? primary.data[primary.data.length-2] : null;
@@ -610,6 +721,21 @@
 
   function renderChart(payload,item){
     if(!chart) throw new Error("Không tải được thư viện biểu đồ.");
+    if(item.globalType==="centralBanks"){
+      const rows=payload.centralBanks||[];
+      if(!rows.length) throw new Error("Nguồn chưa trả về dữ liệu.");
+      chart.clear();
+      chart.setOption({
+        animationDuration:500,
+        grid:{left:60,right:24,top:30,bottom:55,containLabel:true},
+        tooltip:{trigger:"axis",axisPointer:{type:"shadow"},valueFormatter:(v)=>fmt(v)+"%"},
+        xAxis:{type:"category",data:rows.map(r=>r.label),axisLabel:{color:"#596174",fontWeight:700}},
+        yAxis:{type:"value",axisLabel:{color:"#747c8c",formatter:(v)=>fmt(v)+"%"},splitLine:{lineStyle:{color:"#eef0f5"}}},
+        series:[{name:"Lãi suất điều hành",type:"bar",barMaxWidth:52,data:rows.map(r=>Number(r.value)),itemStyle:{borderRadius:[8,8,0,0]}}],
+        toolbox:{right:8,feature:{saveAsImage:{name:item.id}}}
+      },true);
+      return;
+    }
     const colors = ["#7357ff","#ff8b3d","#0f7c83","#f2b94b","#d94c4c"];
     const allValues = payload.series.flatMap(s => s.data.map(p => p[1]));
     const option = {
@@ -680,7 +806,7 @@
       $("updatedAt").textContent = "Chưa cập nhật";
       $("marketKpis").innerHTML = "";
       $("chartMessage").hidden = false;
-      $("chartMessage").textContent = "Nguồn " + item.feed + " hiện không phản hồi hoặc trình duyệt chặn truy cập chéo miền. ChartLab không hiển thị dữ liệu giả. Hãy thử tải lại sau.";
+      $("chartMessage").textContent = err?.message === "PENDING_SOURCE" ? "ChartLab đang chuẩn hóa nguồn chuỗi lịch sử cho chỉ tiêu này. Chưa hiển thị cho đến khi nguồn đủ tin cậy; không sử dụng dữ liệu giả." : ("Nguồn " + item.feed + " hiện không phản hồi hoặc dữ liệu đóng gói chưa sẵn sàng. ChartLab không hiển thị dữ liệu giả.");
       chart?.clear();
     }finally{
       chart?.hideLoading();
