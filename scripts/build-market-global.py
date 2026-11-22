@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-import json, os, urllib.request, urllib.parse, xml.etree.ElementTree as ET
+import csv, io, json, os, re, urllib.request, urllib.parse, xml.etree.ElementTree as ET
 from datetime import datetime, timezone
 
-OUT="_site/data/market-global.json"
+OUT="_site/data/market-global.json"\nOUT_JS="_site/data/market-global-data.js"
 NOW=datetime.now(timezone.utc)
 
 def ts(date_str):
@@ -52,6 +52,44 @@ def fetch_treasury():
             pass
     return r2,r10
 
+
+def fetch_csv_url(url):
+    req=urllib.request.Request(url,headers={"User-Agent":"Mozilla/5.0 ChartLab/1.0"})
+    with urllib.request.urlopen(req,timeout=30) as r:
+        return r.read().decode("utf-8","replace")
+
+def fetch_brent_datahub():
+    txt=fetch_csv_url("https://datahub.io/core/oil-prices/_r/-/data/brent-daily.csv")
+    rows=[]
+    for row in csv.DictReader(io.StringIO(txt)):
+        try:
+            d=row.get("Date") or row.get("date")
+            v=row.get("Price") or row.get("price")
+            if not d or not v: continue
+            if d < "2024-01-01": continue
+            rows.append([ts(d[:10]),float(v)])
+        except Exception:
+            pass
+    return sorted(rows)
+
+def fetch_crack_321():
+    req=urllib.request.Request("https://thinkingonenergy.com/data/SPREAD_321_CRACK/",headers={"User-Agent":"Mozilla/5.0 ChartLab/1.0"})
+    with urllib.request.urlopen(req,timeout=30) as r:
+        txt=r.read().decode("utf-8","replace")
+    rows=[]
+    seen=set()
+    for d,v in re.findall(r'(20\\d{2}-\\d{2}-\\d{2})\\s*</?[^>]*>?\\s*[^0-9-]{0,20}(-?\\d+(?:\\.\\d+)?)',txt):
+        try:
+            key=(d,float(v))
+            if key in seen: continue
+            seen.add(key)
+            if "2026-" in d:
+                rows.append([ts(d),float(v)])
+        except Exception:
+            pass
+    rows=sorted(rows)
+    return rows[-180:]
+
 payload={"generated_at":NOW.isoformat(),"series":{},"central_banks":{
   "FED":{"label":"FED","value":3.875,"display":"3,75–4,00%","date":"2026-10-29","source":"Federal Reserve"},
   "ECB":{"label":"ECB","value":2.50,"display":"2,50%","date":"2026-09-16","source":"ECB · Deposit facility"},
@@ -99,6 +137,20 @@ put(payload,"GOLD_INTL","Vàng quốc tế","USD/oz",[
  [ts("2026-11-16"),3856.52],[ts("2026-11-17"),3849.21],[ts("2026-11-18"),3725.18],[ts("2026-11-19"),3624.63],[ts("2026-11-20"),3539.00]
 ],"2026-11-20")
 
+# Brent daily from DataHub mirror of EIA public series.
+try:
+    brent=fetch_brent_datahub()
+    if brent: put(payload,"BRENT","Dầu Brent","USD/thùng",brent)
+except Exception as e:
+    payload["brent_error"]=str(e)
+
+# 3-2-1 crack spread from a public data page.
+try:
+    crack=fetch_crack_321()
+    if crack: put(payload,"CRACK_321","Crack spread 3-2-1","USD/thùng",crack)
+except Exception as e:
+    payload["crack_error"]=str(e)
+
 # Domestic commodities from published sources.
 put(payload,"CA_TRA_DONG_THAP","Cá tra thịt trắng 0,7–1,0 kg/con – giá giữa khoảng","đồng/kg",[
  [ts("2026-11-06"),36500],[ts("2026-11-13"),36750],[ts("2026-11-20"),36750]
@@ -113,7 +165,9 @@ put(payload,"VN_RETAIL_ELECTRICITY","Giá bán lẻ điện bình quân Việt N
 os.makedirs(os.path.dirname(OUT),exist_ok=True)
 with open(OUT,"w",encoding="utf-8") as f:
     json.dump(payload,f,ensure_ascii=False,separators=(",",":"))
+with open(OUT_JS,"w",encoding="utf-8") as f:
+    f.write("window.CHARTLAB_MARKET_GLOBAL=" + json.dumps(payload,ensure_ascii=False,separators=(",",":")) + ";\\n")
 ok=sum(bool(v.get("data")) for v in payload["series"].values())
-print("Wrote",OUT,"series",ok,"keys",",".join(payload["series"].keys()))
-if ok < 12:
-    raise SystemExit("ERROR: international bundle incomplete; expected >=12 series")
+print("Wrote",OUT,"and",OUT_JS,"series",ok,"keys",",".join(payload["series"].keys()))
+if ok < 14:
+    raise SystemExit("ERROR: international bundle incomplete; expected >=14 series")
