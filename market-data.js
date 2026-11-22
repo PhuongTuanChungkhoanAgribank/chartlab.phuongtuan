@@ -800,7 +800,8 @@
     $("marketKpis").innerHTML = `<div class="md-kpi"><span>Trạng thái</span><strong>Đang tải…</strong></div>`;
     chart?.showLoading("default",{text:"Đang lấy dữ liệu miễn phí..."});
     try{
-      const payload = item.driver === "fred" ? await fetchFred(item) : await fetchWichart(item);
+      if(item.driver === "pending") throw new Error("PENDING_SOURCE");
+      const payload = item.driver === "local" ? await fetchLocalIndicator(item) : (item.driver === "fred" ? await fetchFred(item) : await fetchWichart(item));
       activeData = payload;
       activeItem = item;
       if(item.domesticFuel && !payload.series.some(s=>s.name===selectedFuelSeries)){
