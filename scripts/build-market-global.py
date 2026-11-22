@@ -2,7 +2,8 @@
 import csv, io, json, os, re, urllib.request, urllib.parse, xml.etree.ElementTree as ET
 from datetime import datetime, timezone
 
-OUT="_site/data/market-global.json"\nOUT_JS="_site/data/market-global-data.js"
+OUT="_site/data/market-global.json"
+OUT_JS="_site/data/market-global-data.js"
 NOW=datetime.now(timezone.utc)
 
 def ts(date_str):
