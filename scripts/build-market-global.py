@@ -165,7 +165,7 @@ put(payload,"VN_RETAIL_ELECTRICITY","Giá bán lẻ điện bình quân Việt N
 os.makedirs(os.path.dirname(OUT),exist_ok=True)
 with open(OUT,"w",encoding="utf-8") as f:
     json.dump(payload,f,ensure_ascii=False,separators=(",",":"))
-ok=sum(bool(v.get("data")) for v in payload["series"].values())
+with open(OUT_JS,"w",encoding="utf-8") as f:\n    f.write("window.CHARTLAB_MARKET_GLOBAL=" + json.dumps(payload,ensure_ascii=False,separators=(",",":")) + ";\\n")\nok=sum(bool(v.get("data")) for v in payload["series"].values())
 print("Wrote",OUT,"and",OUT_JS,"series",ok,"keys",",".join(payload["series"].keys()))
 if ok < 14:
-    raise SystemExit("ERROR: international bundle incomplete; expected >=12 series")
+    raise SystemExit("ERROR: international bundle incomplete; expected >=14 series")
