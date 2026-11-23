@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import csv, io, json, os, re, urllib.request, urllib.parse, xml.etree.ElementTree as ET
+import csv, io, json, os, re, urllib.request, urllib.parse, xml.etree.ElementTree as ET, zipfile
 from datetime import datetime, timezone
 
 OUT="_site/data/market-global.json"
@@ -91,6 +91,81 @@ def fetch_crack_321():
     rows=sorted(rows)
     return rows[-180:]
 
+
+def fetch_bea_pce_bulk():
+    """Load BEA NIPA monthly table 2.8.4 and derive MoM/YoY for PCE and core PCE."""
+    urls=[
+      "https://apps.bea.gov/national/Release/TXT/NipaDataM.zip",
+      "https://apps.bea.gov/national/Release/TXT/NIPADataM.zip"
+    ]
+    raw=None
+    last_error=None
+    for url in urls:
+        try:
+            req=urllib.request.Request(url,headers={"User-Agent":"ChartLab/1.0"})
+            with urllib.request.urlopen(req,timeout=45) as r:
+                raw=r.read()
+            if raw: break
+        except Exception as e:
+            last_error=e
+    if not raw:
+        raise last_error or RuntimeError("BEA monthly bulk file unavailable")
+
+    z=zipfile.ZipFile(io.BytesIO(raw))
+    candidates=[n for n in z.namelist() if n.lower().endswith(".txt") or n.lower().endswith(".csv")]
+    rows=[]
+    for name in candidates:
+        try:
+            txt=z.read(name).decode("utf-8-sig","replace")
+        except Exception:
+            continue
+        if "T20804" not in txt and "2.8.4" not in txt and "Personal consumption expenditures" not in txt:
+            continue
+        reader=csv.DictReader(io.StringIO(txt))
+        for r in reader:
+            table=(r.get("TableName") or r.get("Table") or "").strip()
+            line=(r.get("LineNumber") or r.get("Line") or "").strip()
+            period=(r.get("TimePeriod") or r.get("Period") or "").strip()
+            value=(r.get("DataValue") or r.get("Value") or "").replace(",","").strip()
+            if table and "20804" not in table.replace(".",""):
+                continue
+            if line not in ("1","6"):
+                continue
+            m=re.match(r"(20\\d{2})M(\\d{1,2})$",period)
+            if not m:
+                continue
+            try:
+                date=f"{int(m.group(1)):04d}-{int(m.group(2)):02d}-01"
+                if date < "2020-01-01": continue
+                rows.append((line,ts(date),float(value)))
+            except Exception:
+                pass
+        if rows:
+            break
+
+    if not rows:
+        raise RuntimeError("BEA bulk file parsed but table 2.8.4 was not found")
+
+    by={"1":[],"6":[]}
+    for line,t,v in rows:
+        by[line].append([t,v])
+    for k in by: by[k]=sorted(by[k])
+
+    def pct(data,lag):
+        out=[]
+        for i in range(lag,len(data)):
+            prev=float(data[i-lag][1]); cur=float(data[i][1])
+            if prev:
+                out.append([data[i][0],(cur/prev-1)*100])
+        return out
+
+    return {
+      "PCE_YOY":pct(by["1"],12),
+      "CORE_PCE_YOY":pct(by["6"],12),
+      "PCE_MOM":pct(by["1"],1),
+      "CORE_PCE_MOM":pct(by["6"],1)
+    }
+
 payload={"generated_at":NOW.isoformat(),"series":{},"central_banks":{
   "FED":{"label":"FED","value":3.875,"display":"3,75–4,00%","date":"2026-10-29","source":"Federal Reserve"},
   "ECB":{"label":"ECB","value":2.50,"display":"2,50%","date":"2026-09-16","source":"ECB · Deposit facility"},
@@ -98,9 +173,29 @@ payload={"generated_at":NOW.isoformat(),"series":{},"central_banks":{
   "BOE":{"label":"BOE","value":4.00,"display":"4,00%","date":"2026-11-05","source":"Bank of England"}
 }}
 
-# FED target range – official FOMC history/current rate.
-put(payload,"FED_LOWER","Cận dưới Fed Funds","%",[[ts("2025-12-11"),3.50],[ts("2026-06-18"),3.50],[ts("2026-09-17"),3.75],[ts("2026-10-29"),3.75]])
-put(payload,"FED_UPPER","Cận trên Fed Funds","%",[[ts("2025-12-11"),3.75],[ts("2026-06-18"),3.75],[ts("2026-09-17"),4.00],[ts("2026-10-29"),4.00]])
+# FED target range – official FOMC change dates, extended history.
+fed_history=[
+ ("2021-01-01",0.00,0.25),
+ ("2022-03-17",0.25,0.50),
+ ("2022-05-05",0.75,1.00),
+ ("2022-06-16",1.50,1.75),
+ ("2022-07-28",2.25,2.50),
+ ("2022-09-22",3.00,3.25),
+ ("2022-11-03",3.75,4.00),
+ ("2022-12-15",4.25,4.50),
+ ("2023-02-02",4.50,4.75),
+ ("2023-03-23",4.75,5.00),
+ ("2023-05-04",5.00,5.25),
+ ("2023-07-27",5.25,5.50),
+ ("2024-09-19",4.75,5.00),
+ ("2024-11-08",4.50,4.75),
+ ("2024-12-19",4.25,4.50),
+ ("2025-12-11",3.50,3.75),
+ ("2026-09-17",3.75,4.00),
+ ("2026-10-29",3.75,4.00)
+]
+put(payload,"FED_LOWER","Cận dưới Fed Funds","%",[[ts(d),lo] for d,lo,hi in fed_history])
+put(payload,"FED_UPPER","Cận trên Fed Funds","%",[[ts(d),hi] for d,lo,hi in fed_history])
 
 # BLS direct public API.
 try:
@@ -126,12 +221,23 @@ try:
 except Exception as e:
     payload["treasury_error"]=str(e)
 
-# BEA published PCE readings. Use published percentages directly, not reconstructed index levels.
-pce_dates=["2026-06-01","2026-07-01","2026-08-01","2026-09-01"]
-put(payload,"PCE_YOY","PCE Mỹ YoY","%",[[ts(d),v] for d,v in zip(pce_dates,[3.5,3.4,3.4,3.6])],"2026-09-01")
-put(payload,"CORE_PCE_YOY","Core PCE Mỹ YoY","%",[[ts(d),v] for d,v in zip(pce_dates,[3.0,3.0,3.0,3.1])],"2026-09-01")
-put(payload,"PCE_MOM","PCE Mỹ MoM","%",[[ts(d),v] for d,v in zip(pce_dates,[-0.1,0.2,0.3,0.5])],"2026-09-01")
-put(payload,"CORE_PCE_MOM","Core PCE Mỹ MoM","%",[[ts(d),v] for d,v in zip(pce_dates,[0.1,0.2,0.2,0.3])],"2026-09-01")
+# BEA PCE/Core PCE monthly history from official NIPA bulk data.
+try:
+    pce=fetch_bea_pce_bulk()
+    names={
+      "PCE_YOY":"PCE Mỹ YoY","CORE_PCE_YOY":"Core PCE Mỹ YoY",
+      "PCE_MOM":"PCE Mỹ MoM","CORE_PCE_MOM":"Core PCE Mỹ MoM"
+    }
+    for key,data in pce.items():
+        if data: put(payload,key,names[key],"%",data)
+except Exception as e:
+    payload["bea_pce_error"]=str(e)
+    # Fallback: retain verified latest BEA readings rather than fabricate history.
+    pce_dates=["2026-06-01","2026-07-01","2026-08-01","2026-09-01"]
+    put(payload,"PCE_YOY","PCE Mỹ YoY","%",[[ts(d),v] for d,v in zip(pce_dates,[3.5,3.4,3.4,3.6])],"2026-09-01")
+    put(payload,"CORE_PCE_YOY","Core PCE Mỹ YoY","%",[[ts(d),v] for d,v in zip(pce_dates,[3.0,3.0,3.0,3.1])],"2026-09-01")
+    put(payload,"PCE_MOM","PCE Mỹ MoM","%",[[ts(d),v] for d,v in zip(pce_dates,[-0.1,0.2,0.3,0.5])],"2026-09-01")
+    put(payload,"CORE_PCE_MOM","Core PCE Mỹ MoM","%",[[ts(d),v] for d,v in zip(pce_dates,[0.1,0.2,0.2,0.3])],"2026-09-01")
 
 # Gold international – recent verified observations retained locally so the chart never depends on browser CORS.
 put(payload,"GOLD_INTL","Vàng quốc tế","USD/oz",[
