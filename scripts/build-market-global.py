@@ -190,6 +190,8 @@ fed_history=[
  ("2024-09-19",4.75,5.00),
  ("2024-11-08",4.50,4.75),
  ("2024-12-19",4.25,4.50),
+ ("2025-09-18",4.00,4.25),
+ ("2025-10-30",3.75,4.00),
  ("2025-12-11",3.50,3.75),
  ("2026-09-17",3.75,4.00),
  ("2026-10-29",3.75,4.00)
@@ -278,3 +280,7 @@ ok=sum(bool(v.get("data")) for v in payload["series"].values())
 print("Wrote",OUT,"and",OUT_JS,"series",ok,"keys",",".join(payload["series"].keys()))
 if ok < 14:
     raise SystemExit("ERROR: international bundle incomplete; expected >=14 series")
+if len(payload["series"].get("PCE_YOY",{}).get("data",[])) < 60:
+    raise SystemExit("ERROR: PCE history is still too short; expected at least 60 monthly observations")
+if len(payload["series"].get("FED_LOWER",{}).get("data",[])) < 20:
+    raise SystemExit("ERROR: FED policy history is still too short")
