@@ -110,6 +110,16 @@
     const analyze = topbar?.querySelector(".analyze-nav");
     if(!topbar || !oldNav) return;
 
+    if(brand && !brand.dataset.marketHomeBound){
+      brand.dataset.marketHomeBound="1";
+      brand.setAttribute("aria-label","Về giao diện Dữ liệu thị trường");
+      brand.addEventListener("click",(e)=>{
+        e.preventDefault();
+        e.stopPropagation();
+        window.location.href=MARKET_PAGE;
+      },true);
+    }
+
     if(brand && !topbar.querySelector(".chartlab-profile-link")){
       const profile=document.createElement("a");
       profile.className="chartlab-profile-link";
