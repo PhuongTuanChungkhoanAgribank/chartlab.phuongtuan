@@ -117,7 +117,7 @@
       profile.target="_blank";
       profile.rel="noopener noreferrer";
       profile.setAttribute("aria-label","Về Phương Tuấn — mở trang giới thiệu trong tab mới");
-      profile.innerHTML='<span class="chartlab-profile-mark">PT</span><span class="chartlab-profile-copy"><b>Về Phương Tuấn</b><small>Giới thiệu ↗</small></span>';
+      profile.innerHTML='<span class="chartlab-profile-mark" aria-hidden="true"><svg viewBox="0 0 24 24" width="16" height="16" fill="none"><circle cx="12" cy="8" r="3.2" stroke="currentColor" stroke-width="1.8"/><path d="M5.5 19c.7-3.2 3.1-5 6.5-5s5.8 1.8 6.5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span><span class="chartlab-profile-copy"><b>Về Phương Tuấn</b><small>Giới thiệu ↗</small></span>';
       brand.insertAdjacentElement("afterend",profile);
     }
 
