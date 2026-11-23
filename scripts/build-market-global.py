@@ -93,48 +93,34 @@ def fetch_crack_321():
 
 
 def fetch_pce_stable_mirrors():
-    """Fetch long monthly PCE/Core PCE index history from stable public mirrors of BEA/FRED series."""
-    def read_csv_series(url, value_candidates):
-        txt=fetch_csv_url(url)
-        rows=[]
-        reader=csv.DictReader(io.StringIO(txt))
-        for r in reader:
-            date=(r.get("date") or r.get("Date") or r.get("observation_date") or r.get("DATE") or "").strip()
-            if not date or date < "2020-01-01":
-                continue
-            value=None
-            for k in value_candidates:
-                raw=r.get(k)
-                if raw not in (None,""):
-                    try:
-                        value=float(str(raw).replace(",",""))
-                        break
-                    except Exception:
-                        pass
-            if value is None:
-                for k,v in r.items():
-                    if k.lower() in ("date","unit","series","source","observation_date"):
-                        continue
-                    try:
-                        value=float(str(v).replace(",",""))
-                        break
-                    except Exception:
-                        pass
-            if value is not None:
-                try: rows.append([ts(date[:10]),value])
-                except Exception: pass
-        return sorted(rows)
+    """Fetch long monthly PCE/Core PCE history from a public GitHub mirror of FRED observations."""
+    url="https://raw.githubusercontent.com/superpilot69/fred-us-macro-open-data/main/data/fred-us-macro-history.json"
+    req=urllib.request.Request(url,headers={"User-Agent":"ChartLab/1.0"})
+    with urllib.request.urlopen(req,timeout=45) as r:
+        obj=json.load(r)
 
-    headline=read_csv_series(
-      "https://raw.githubusercontent.com/jerehere/calcfi-open-data/main/datasets/pce/data.csv",
-      ["value","PCEPI","pce","index"]
-    )
-    core=read_csv_series(
-      "https://eco3min.fr/dataset/us-core-pce.csv",
-      ["core_pce_index","PCEPILFE","value","index"]
-    )
+    wanted={"PCEPI":"headline","PCEPILFE":"core"}
+    found={}
+    for s in obj.get("series",[]):
+        sid=s.get("id")
+        if sid not in wanted:
+            continue
+        rows=[]
+        for o in s.get("observations",[]):
+            d=str(o.get("date") or "")[:10]
+            v=o.get("value")
+            if not d or d < "2020-01-01":
+                continue
+            try:
+                rows.append([ts(d),float(v)])
+            except Exception:
+                pass
+        found[wanted[sid]]=sorted(rows)
+
+    headline=found.get("headline",[])
+    core=found.get("core",[])
     if len(headline)<60 or len(core)<60:
-        raise RuntimeError(f"PCE mirror too short: headline={len(headline)}, core={len(core)}")
+        raise RuntimeError(f"PCE GitHub history too short: headline={len(headline)}, core={len(core)}")
 
     def pct(data,lag):
         out=[]
