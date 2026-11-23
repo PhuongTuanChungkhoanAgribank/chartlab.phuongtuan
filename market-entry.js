@@ -1,8 +1,23 @@
 (() => {
   const MARKET_PAGE = "./market-data.html";
+  const PROFILE_PAGE = "https://phuongtuantaichinh.awarechurn1.chatgpt.site/";
 
   const style = document.createElement("style");
   style.textContent = `
+    .chartlab-profile-link{
+      display:flex;align-items:center;gap:9px;margin-left:6px;padding-left:16px;
+      border-left:1px solid #e4e7ee;text-decoration:none;color:#343b4c;white-space:nowrap
+    }
+    .chartlab-profile-mark{
+      width:30px;height:30px;border-radius:10px;display:grid;place-items:center;
+      background:linear-gradient(135deg,#f7f1ff,#fff7df);border:1px solid #e8dafb;
+      color:#6d28d9;font-size:10px;font-weight:900;letter-spacing:.02em
+    }
+    .chartlab-profile-copy{display:flex;flex-direction:column;line-height:1.12}
+    .chartlab-profile-copy b{font-size:12px;color:#292f3d}
+    .chartlab-profile-copy small{font-size:9px;color:#9a7a22;margin-top:3px;font-weight:750}
+    .chartlab-profile-link:hover .chartlab-profile-mark{transform:translateY(-1px);box-shadow:0 8px 18px rgba(109,40,217,.12)}
+    .chartlab-profile-link:hover .chartlab-profile-copy b{color:#6d28d9}
     .chartlab-grouped-nav{display:flex;align-items:center;gap:8px;margin-left:auto}
     .chartlab-nav-group{position:relative}
     .chartlab-nav-trigger{
@@ -29,7 +44,15 @@
     .chartlab-dropdown .practice{margin-top:6px;border-top:1px solid #eceef4;padding-top:8px}
     .chartlab-dropdown .practice button{background:#fff8e9;color:#a87500;font-weight:800}
     .chartlab-dropdown .practice button:hover{background:#fff2cf}
-    @media(max-width:980px){.chartlab-grouped-nav{display:none}}
+    @media(max-width:980px){
+      .chartlab-grouped-nav{display:none}
+      .chartlab-profile-link{margin-left:auto;padding-left:12px}
+      .chartlab-profile-copy small{display:none}
+    }
+    @media(max-width:560px){
+      .chartlab-profile-copy b{font-size:10px}
+      .chartlab-profile-mark{width:27px;height:27px;border-radius:9px}
+    }
   `;
   document.head.appendChild(style);
 
@@ -82,9 +105,22 @@
 
   function syncDesktop(){
     const topbar = document.querySelector(".topbar-inner");
+    const brand = topbar?.querySelector(".brand");
     const oldNav = topbar?.querySelector(".nav-links");
     const analyze = topbar?.querySelector(".analyze-nav");
     if(!topbar || !oldNav) return;
+
+    if(brand && !topbar.querySelector(".chartlab-profile-link")){
+      const profile=document.createElement("a");
+      profile.className="chartlab-profile-link";
+      profile.href=PROFILE_PAGE;
+      profile.target="_blank";
+      profile.rel="noopener noreferrer";
+      profile.setAttribute("aria-label","Về Phương Tuấn — mở trang giới thiệu trong tab mới");
+      profile.innerHTML='<span class="chartlab-profile-mark">PT</span><span class="chartlab-profile-copy"><b>Về Phương Tuấn</b><small>Giới thiệu ↗</small></span>';
+      brand.insertAdjacentElement("afterend",profile);
+    }
+
     let grouped = topbar.querySelector(".chartlab-grouped-nav");
     if(!grouped){
       grouped = createGroupedNav();
