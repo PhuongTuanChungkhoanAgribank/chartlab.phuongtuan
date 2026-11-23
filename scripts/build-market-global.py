@@ -92,64 +92,49 @@ def fetch_crack_321():
     return rows[-180:]
 
 
-def fetch_bea_pce_bulk():
-    """Load BEA NIPA monthly table 2.8.4 and derive MoM/YoY for PCE and core PCE."""
-    urls=[
-      "https://apps.bea.gov/national/Release/TXT/NipaDataM.zip",
-      "https://apps.bea.gov/national/Release/TXT/NIPADataM.zip"
-    ]
-    raw=None
-    last_error=None
-    for url in urls:
-        try:
-            req=urllib.request.Request(url,headers={"User-Agent":"ChartLab/1.0"})
-            with urllib.request.urlopen(req,timeout=45) as r:
-                raw=r.read()
-            if raw: break
-        except Exception as e:
-            last_error=e
-    if not raw:
-        raise last_error or RuntimeError("BEA monthly bulk file unavailable")
-
-    z=zipfile.ZipFile(io.BytesIO(raw))
-    candidates=[n for n in z.namelist() if n.lower().endswith(".txt") or n.lower().endswith(".csv")]
-    rows=[]
-    for name in candidates:
-        try:
-            txt=z.read(name).decode("utf-8-sig","replace")
-        except Exception:
-            continue
-        if "T20804" not in txt and "2.8.4" not in txt and "Personal consumption expenditures" not in txt:
-            continue
+def fetch_pce_stable_mirrors():
+    """Fetch long monthly PCE/Core PCE index history from stable public mirrors of BEA/FRED series."""
+    def read_csv_series(url, value_candidates):
+        txt=fetch_csv_url(url)
+        rows=[]
         reader=csv.DictReader(io.StringIO(txt))
         for r in reader:
-            table=(r.get("TableName") or r.get("Table") or "").strip()
-            line=(r.get("LineNumber") or r.get("Line") or "").strip()
-            period=(r.get("TimePeriod") or r.get("Period") or "").strip()
-            value=(r.get("DataValue") or r.get("Value") or "").replace(",","").strip()
-            if table and "20804" not in table.replace(".",""):
+            date=(r.get("date") or r.get("Date") or r.get("observation_date") or r.get("DATE") or "").strip()
+            if not date or date < "2020-01-01":
                 continue
-            if line not in ("1","6"):
-                continue
-            m=re.match(r"(20\\d{2})M(\\d{1,2})$",period)
-            if not m:
-                continue
-            try:
-                date=f"{int(m.group(1)):04d}-{int(m.group(2)):02d}-01"
-                if date < "2020-01-01": continue
-                rows.append((line,ts(date),float(value)))
-            except Exception:
-                pass
-        if rows:
-            break
+            value=None
+            for k in value_candidates:
+                raw=r.get(k)
+                if raw not in (None,""):
+                    try:
+                        value=float(str(raw).replace(",",""))
+                        break
+                    except Exception:
+                        pass
+            if value is None:
+                for k,v in r.items():
+                    if k.lower() in ("date","unit","series","source","observation_date"):
+                        continue
+                    try:
+                        value=float(str(v).replace(",",""))
+                        break
+                    except Exception:
+                        pass
+            if value is not None:
+                try: rows.append([ts(date[:10]),value])
+                except Exception: pass
+        return sorted(rows)
 
-    if not rows:
-        raise RuntimeError("BEA bulk file parsed but table 2.8.4 was not found")
-
-    by={"1":[],"6":[]}
-    for line,t,v in rows:
-        by[line].append([t,v])
-    for k in by: by[k]=sorted(by[k])
+    headline=read_csv_series(
+      "https://raw.githubusercontent.com/jerehere/calcfi-open-data/main/datasets/pce/data.csv",
+      ["value","PCEPI","pce","index"]
+    )
+    core=read_csv_series(
+      "https://eco3min.fr/dataset/us-core-pce.csv",
+      ["core_pce_index","PCEPILFE","value","index"]
+    )
+    if len(headline)<60 or len(core)<60:
+        raise RuntimeError(f"PCE mirror too short: headline={len(headline)}, core={len(core)}")
 
     def pct(data,lag):
         out=[]
@@ -160,10 +145,10 @@ def fetch_bea_pce_bulk():
         return out
 
     return {
-      "PCE_YOY":pct(by["1"],12),
-      "CORE_PCE_YOY":pct(by["6"],12),
-      "PCE_MOM":pct(by["1"],1),
-      "CORE_PCE_MOM":pct(by["6"],1)
+      "PCE_YOY":pct(headline,12),
+      "CORE_PCE_YOY":pct(core,12),
+      "PCE_MOM":pct(headline,1),
+      "CORE_PCE_MOM":pct(core,1)
     }
 
 payload={"generated_at":NOW.isoformat(),"series":{},"central_banks":{
@@ -225,7 +210,7 @@ except Exception as e:
 
 # BEA PCE/Core PCE monthly history from official NIPA bulk data.
 try:
-    pce=fetch_bea_pce_bulk()
+    pce=fetch_pce_stable_mirrors()
     names={
       "PCE_YOY":"PCE Mỹ YoY","CORE_PCE_YOY":"Core PCE Mỹ YoY",
       "PCE_MOM":"PCE Mỹ MoM","CORE_PCE_MOM":"Core PCE Mỹ MoM"
