@@ -387,7 +387,7 @@
   }
 
   function applyDomesticFuelLatest(payload){
-    const rows = [
+    const baseline = [
       ["2026-10-08T15:00:00+07:00",29050,27700,29120],
       ["2026-10-15T15:00:00+07:00",27520,26670,28800],
       ["2026-10-22T15:00:00+07:00",25710,25060,29250],
@@ -396,16 +396,44 @@
       ["2026-11-03T22:00:00+07:00",24230,23200,28870],
       ["2026-11-05T15:00:00+07:00",22650,20890,28690],
       ["2026-11-12T15:00:00+07:00",21840,19390,26820],
-      ["2026-11-19T15:00:00+07:00",21100,18570,26340]
+      ["2026-11-19T15:00:00+07:00",21100,18570,26340],
+      ["2026-11-26T15:00:00+07:00",21050,18390,24960]
     ].map(r=>[new Date(r[0]).getTime(),r[1],r[2],r[3]]);
 
+    const lastBaselineTs = baseline[baseline.length-1][0];
+    const original = Array.isArray(payload.series) ? payload.series : [];
+    const findSeries = (patterns) => original.find(s => patterns.some(rx => rx.test(String(s.name||""))));
+    const srcE10 = findSeries([/E10.*95.*V/i,/RON.?95.*V/i]);
+    const srcE5 = findSeries([/E5.*92/i,/RON.?92/i]);
+    const srcDiesel = findSeries([/diesel/i,/DO.*0[,.]?05/i,/đi[eê]zen/i]);
+
+    function merge(baseIndex, src){
+      const map = new Map(baseline.map(r=>[r[0],r[baseIndex]]));
+      if(src?.data){
+        src.data.forEach(([ts,val])=>{
+          const t=Number(ts), v=Number(val);
+          if(Number.isFinite(t)&&Number.isFinite(v)&&t>lastBaselineTs) map.set(t,v);
+        });
+      }
+      return [...map.entries()].sort((a,b)=>a[0]-b[0]);
+    }
+
+    const e10Data = merge(1,srcE10);
+    const e5Data = merge(2,srcE5);
+    const dieselData = merge(3,srcDiesel);
+    const latestTs = Math.max(
+      e10Data.at(-1)?.[0]||lastBaselineTs,
+      e5Data.at(-1)?.[0]||lastBaselineTs,
+      dieselData.at(-1)?.[0]||lastBaselineTs
+    );
+
     payload.series = [
-      {name:"E10 RON95-V",unit:"đồng/lít",type:"line",yAxisIndex:0,data:rows.map(r=>[r[0],r[1]])},
-      {name:"E5 RON92",unit:"đồng/lít",type:"line",yAxisIndex:0,data:rows.map(r=>[r[0],r[2]])},
-      {name:"Diesel",unit:"đồng/lít",type:"line",yAxisIndex:0,data:rows.map(r=>[r[0],r[3]])}
+      {name:"E10 RON95-V",unit:"đồng/lít",type:"line",yAxisIndex:0,data:e10Data},
+      {name:"E5 RON92-II",unit:"đồng/lít",type:"line",yAxisIndex:0,data:e5Data},
+      {name:"Diesel DO 0,05S-II",unit:"đồng/lít",type:"line",yAxisIndex:0,data:dieselData}
     ];
-    payload.title = "Giá xăng dầu bán lẻ trong nước";
-    payload.updated = "15:00 19/11/2026";
+    payload.title = "Giá xăng dầu bán lẻ Petrolimex – Vùng 1";
+    payload.updated = new Date(latestTs).toLocaleString("vi-VN",{timeZone:"Asia/Ho_Chi_Minh",hour:"2-digit",minute:"2-digit",day:"2-digit",month:"2-digit",year:"numeric"});
   }
 
   async function fetchFred(item){
