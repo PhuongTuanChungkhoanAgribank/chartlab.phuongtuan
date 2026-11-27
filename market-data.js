@@ -67,6 +67,19 @@
   let activeItem = null;
   let selectedFuelSeries = "E10 RON95-V";
   const overviewIds = ["cpi","td","lslnh","DGS10"];
+  const officialOmoTenderByDate = {
+    "2026-11-26": 29199.53
+  };
+
+  function dateKeyFromTs(ts){
+    try{
+      return new Date(Number(ts)).toLocaleDateString("en-CA",{timeZone:"Asia/Ho_Chi_Minh"});
+    }catch(_){ return ""; }
+  }
+  function pointAtTs(series,ts){
+    if(!series?.data?.length || !Number.isFinite(Number(ts))) return null;
+    return series.data.find(p=>Number(p[0])===Number(ts)) || null;
+  }
 
   function fmt(v){
     if(v === null || v === undefined || Number.isNaN(Number(v))) return "—";
@@ -366,6 +379,24 @@
         if(/sbv-bill/i.test(String(s.name||""))) s.name = "Bơm/hút ròng tín phiếu NHNN";
         if(/omo/i.test(String(s.name||""))) s.name = "Bơm/hút ròng OMO";
       });
+
+      // Rebuild the total series from the two component flows instead of trusting
+      // the upstream aggregate when it diverges from OMO + SBV bills.
+      const omo = payload.series.find(s=>/Bơm\/hút ròng OMO/i.test(String(s.name||"")));
+      const bill = payload.series.find(s=>/tín phiếu NHNN/i.test(String(s.name||"")));
+      let total = payload.series.find(s=>/tổng hợp NHNN/i.test(String(s.name||"")));
+      if(omo){
+        const billByTs = new Map((bill?.data||[]).map(([ts,val])=>[Number(ts),Number(val)||0]));
+        const rebuilt = (omo.data||[]).map(([ts,val])=>[Number(ts),Number(val)+(billByTs.get(Number(ts))||0)]);
+        if(total){
+          total.data = rebuilt;
+          total.unit = omo.unit || total.unit;
+          total.yAxisIndex = 0;
+        }else{
+          total = {name:"Bơm/hút ròng tổng hợp NHNN",unit:omo.unit||"tỷ VND",type:"line",yAxisIndex:0,data:rebuilt};
+          payload.series.push(total);
+        }
+      }
     }
 
     if(item.id === "tpkb"){
@@ -640,12 +671,26 @@
 
     if(item.id === "nvttm"){
       const omo=byName(/OMO/i), bill=byName(/tín phiếu/i), total=byName(/tổng hợp NHNN/i);
+      const omoLatest=latestOf(omo);
+      const ts=omoLatest?.[0];
+      const netOmo=omoLatest ? Number(omoLatest[1]) : null;
+      const billPoint=ts!==undefined ? pointAtTs(bill,ts) : null;
+      const netBill=billPoint ? Number(billPoint[1]) : 0;
+      const totalPoint=ts!==undefined ? pointAtTs(total,ts) : latestOf(total);
+      const totalNet=totalPoint ? Number(totalPoint[1]) : (netOmo===null?null:netOmo+netBill);
+      const key=ts!==undefined ? dateKeyFromTs(ts) : "";
+      const tender=officialOmoTenderByDate[key] ?? null;
+      const maturity=(tender!==null && netOmo!==null) ? tender-netOmo : null;
+      const signed=v=>v===null||!Number.isFinite(Number(v)) ? "—" : (Number(v)>=0?"+":"")+fmt(Number(v));
+      const amount=v=>v===null||!Number.isFinite(Number(v)) ? "—" : fmt(Number(v));
+      const billNote = billPoint ? `tỷ VND · gồm tín phiếu ${signed(netBill)}` : "tỷ VND";
       const cards=[
-        ["Bơm/hút ròng OMO",latestOf(omo),omo?.unit||"tỷ VND"],
-        ["Bơm/hút ròng tín phiếu",latestOf(bill),bill?.unit||"tỷ VND"],
-        ["Bơm/hút ròng tổng hợp NHNN",latestOf(total),total?.unit||"tỷ VND"]
+        ["OMO trúng thầu",amount(tender),"tỷ VND"],
+        ["OMO đáo hạn",amount(maturity),"tỷ VND"],
+        ["Bơm/hút ròng OMO",signed(netOmo),omo?.unit||"tỷ VND"],
+        ["Bơm/hút ròng tổng hợp NHNN",signed(totalNet),billNote]
       ];
-      $("marketKpis").innerHTML = cards.map(k=>`<div class="md-kpi"><span>${k[0]}</span><strong>${k[1]?(k[1][1]>=0?"+":"")+fmt(k[1][1]):"—"}</strong><em>${k[2]}</em></div>`).join("") + `<div class="md-kpi"><span>Quy ước</span><strong>+ Bơm / − Hút</strong><em>ròng</em></div>`;
+      $("marketKpis").innerHTML = cards.map(k=>`<div class="md-kpi"><span>${k[0]}</span><strong>${k[1]}</strong><em>${k[2]}</em></div>`).join("");
       return true;
     }
 
